@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+
+{% block sideMenu %}
+{% include 'partials/overview-menu.html' %}
+{% endblock %}
+{% block body %}
+<div class="content-i">
+  <div class="content-box">
+    <div class="row">
+      <div class="col-sm-12 col-xxxl-12">
+        <div class="element-wrapper">
+          <h6 class="element-header">
+            Sites
+          </h6>
+          <div class="element-box">
+            <div class="table-responsive">
+              <table class="table table-lightborder">
+                <thead>
+                  <tr>
+                    <th>
+                      Sites
+                    </th>
+              <!--    <th>
+                      Products
+                    </th> !-->
+                    <th class="text-center">
+                      Status
+                    </th>
+                    <th class="text-right">
+
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for site in sites %}
+                  <tr>
+                    <td class="nowrap">
+                      {{site.name}}
+                    </td>
+                    <td class="text-center">
+                      <div class="status-pill green" data-title="Complete" data-toggle="tooltip"></div>
+                    </td>
+                    <td class="text-right">
+                      <a class="btn btn-white btn-sm" href="/beheer/site/{{site.id}}">
+                        <span>beheer</span>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--------------------
+  START - Sidebar
+  -------------------->
+  <div class="content-panel">
+    <div class="content-panel-close">
+      <i class="os-icon os-icon-close"></i>
+    </div>
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        Snelle Links
+      </h6>
+      <div class="element-box-tp">
+        <div class="el-buttons-list full-width">
+          <a class="btn btn-white btn-sm" data-toggle="modal" data-target="#onboardingWideSlideModal" href="#"><i class="os-icon os-icon-delivery-box-2"></i>
+            <span>Maak nieuwe site aan</span>
+          </a>
+          <a class="btn btn-white btn-sm" href="#">
+            <i class="os-icon os-icon-window-content"></i>
+            <span>Maak een mailing aan</span>
+          </a>
+          <a class="btn btn-white btn-sm" href="#">
+            <i class="os-icon os-icon-wallet-loaded"></i>
+            <span>Maak een gebruiker aan</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!--------------------
+    START - Recent Activity
+    -------------------->
+
+  </div>
+  <!--------------------
+  END - Sidebar
+  -------------------->
+</div>
+{% endblock %}

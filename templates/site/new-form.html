@@ -1,0 +1,185 @@
+<form method="POST" action="/site">
+  <div class="onboarding-slider-w">
+    <div class="onboarding-slide">
+      <div class="onboarding-side-by-side">
+        <div class="onboarding-media">
+          <img alt="" src="img/bigicon5.png" width="200px">
+        </div>
+        <div class="onboarding-content with-gradient">
+          <h4 class="onboarding-title">
+             Maak een nieuwe site aan
+          </h4>
+          <div class="onboarding-text">
+            Wijs de DNS records van de opgegeven domeinnamen
+            naar IP adres 103.2332.3222.<br />
+            <a href="#">
+              Lees hier meer over DNS records
+            </a>
+          </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="">Naam van de website</label>
+                  <input
+                    class="form-control"
+                    placeholder="Bijv. Javabrug"
+                    type="text"
+                    value=""
+                    name="siteName"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="">Domeinnaam Testomgeving (beschermd met wachtwoord)</label>
+                  <br />
+                  <small>
+                    Voor nu werken enkel domeinnamen met *.openstad.baboom.nl direct,
+                    voor andere domeinnamen is een dns wijziging nodig.
+                  </small>
+                  <input
+                    class="form-control"
+                    placeholder="Bijv. javabrug-test.openstad.baboom.nl"
+                    type="text"
+                    value=""
+                    name="stagingUrl"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="">Domeinnaam Liveomgeving</label>
+                  <input
+                    class="form-control"
+                    placeholder="Bijv. javabrug.amsterdam.nl"
+                    type="text"
+                    value=""
+                    name="productionUrl"
+                  />
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="onboarding-slide">
+      <div class="onboarding-side-by-side">
+        <div class="onboarding-media">
+          <img alt="" src="img/bigicon6.png" width="200px">
+        </div>
+        <div class="onboarding-content with-gradient">
+          <h4 class="onboarding-title">
+            Type website
+          </h4>
+          <div class="onboarding-text">
+            Aan de hand van gekozen type wordt
+            de website gegenereerd.
+            Zowel de content als instellingen kunnen later aangepast worden.
+          </div>
+          <div class="row">
+            <div class="col-sm-4">
+              <input type="checkbox" name="type" value="blanco" id="check-type-blanco" />
+              <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-blanco" style="font-size: 15px; width: 100%;">
+                <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                <br />
+                <br />
+                Blanco
+              </label>
+            </div>
+            <div class="col-sm-4">
+              <input type="checkbox" name="type" value="landing" id="check-type-landing" />
+              <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-landing" style="font-size: 15px;width: 100%;">
+                <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                <br />
+                Landings- <br />pagina
+              </label>
+            </div>
+            <div class="col-sm-4">
+              <input type="checkbox" name="type" value="idea-collection" id="check-type-idea-collection" />
+              <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-idea-collection" style="font-size: 15px;width: 100%;">
+                <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                <br />
+                Ideeën- <br />verzamelen
+              </label>
+            </div>
+            <div class="col-sm-4">
+              <input type="checkbox" name="type" value="idea-vote" id="check-type-idea-vote" />
+              <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-idea-vote" style="font-size: 15px;width: 100%;">
+                <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                <br />
+                Ideeën- <br />stemmen
+              </label>
+            </div>
+            <div class="col-sm-4">
+              <input type="checkbox" name="type" value="info" id="check-type-info" />
+              <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-info" style="font-size: 15px;width: 100%;">
+                <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                <br />
+                Informatieve- <br />site
+              </label>
+            </div>
+            <div class="col-sm-4">
+              <input type="checkbox" name="type" value="participatory-budget" id="check-type-participatory-budget" />
+              <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-participatory-budget" style="font-size: 15px;width: 100%;">
+                <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                <br />
+                Budget- <br />begroten
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="onboarding-slide">
+      <div class="onboarding-side-by-side">
+        <div class="onboarding-media">
+          <img alt="" src="img/bigicon2.png" width="200px">
+        </div>
+        <div class="onboarding-content with-gradient">
+          <h4 class="onboarding-title">
+            Mailingsinstellingen
+          </h4>
+          <div class="onboarding-text">
+            Stel in welke email de afzender van de standaardemails moet krijgen.
+            Dit zijn e-mails die automatisch door de site verzonden worden zoals:
+            wachtwoord vergeten, reacties op reacties, status wijzigingen etc.
+            Zorg dat DNS instellingen goed staan zodat email niet in spam terecht komt:
+            <a href="#" target="_blank">
+              Lees hier meer over mailing DNS records
+            </a>
+          </div>
+
+
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="">E-mail</label>
+              <input
+                class="form-control"
+                placeholder="Bijv. javabrug@amsterdam.nl"
+                type="text" value=""
+              />
+            </div>
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="">Naam verzender email</label>
+                <input
+                  class="form-control"
+                  placeholder="Bijv. Gemeente Amsterdam"
+                  type="text" value=""
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12">
+            <div class="form-group">
+              <button type="submit" class="mr-2 mb-2 btn btn-outline-primary ">
+                Site aanmaken
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
