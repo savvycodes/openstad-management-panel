@@ -45,7 +45,6 @@ exports.dbExists = (dbName) => {
 
         // List all the available databases
         adminDb.listDatabases(function(err, dbs) {
-          assert.equal(null, err);
           const found = dbs.databases.find(name => dbName === name);
           db.close();
           resolve(!!found)

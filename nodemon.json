@@ -1,0 +1,4 @@
+{
+    "watch": ["app.js", "templates", "controllers", "services", "middleware", "config", "nunjucks"],
+    "ext": "js json html"
+}

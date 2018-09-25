@@ -17,6 +17,7 @@ const nunjucksEnv = nunjucks.configure('templates', {
 
 const copyDb = require('./services/mongo').copyMongoDb;
 const dbExists = require('./services/mongo').dbExists;
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
@@ -26,24 +27,31 @@ const cleanUrl = (url) => {
 }
 
 app.get('/', (req, res) => {
-  console.log('---> 1');
+  console.log('Site', Site);
 
-  Site.fetchAll().then(function (resData) {
-    const sites = resData;
-    console.log('---> 2', resData);
+  Site
+    .fetchAll()
+    .then(function (resData) {
+      const sites = resData.serialize();
 
-    res.render('overview.html', {
-      sites: sites
-    });
+      res.render('overview.html', {
+        sites: sites
+      });
   });
 });
 
 app.get('/beheer/site/:siteId', (req, res) => {
-  Site.fetch(req.params.siteId).then(function (site) {
-    res.render('site.html', {
-      site: site
+  console.log('Site', Site);
+
+  new Site({
+    id: req.params.siteId
+  })
+    .fetch()
+    .then(function (site) {
+      res.render('site.html', {
+        site: site
+      });
     });
-  });
 });
 
 app.get('/beheer/copy/:oldName/:newName', (req, res) => {
@@ -51,8 +59,8 @@ app.get('/beheer/copy/:oldName/:newName', (req, res) => {
     .then(() => {
       res.status(200).json({ success: 'Copied DB'});
     })
-    .catch(() => {
-      res.status(500).json({ error: 'An error occured: ' + e.msg });
+    .catch((e) => {
+      res.status(500).json({ error: 'An error occured: ' + e });
     });
 });
 
@@ -60,36 +68,46 @@ app.post('/site', (req, res) => {
   const type = req.body.type;
   const stagingUrl = cleanUrl(req.body.stagingUrl);
   const productionUrl = cleanUrl(req.body.productionUrl);
+  console.log('---> res 1', req.body);
+
   dbExists(type)
     .then((exists) => {
-      const dbName = exists ? type : 'default';
+      const dbName = exists ? type : 'localhost';
+      console.log('---> res 2', stagingUrl);
+      const stagingUrlDB = stagingUrl.replace(/\./g, '');
+      console.log('---> res stagingUrl', stagingUrlDB);
 
       /**
        * Create database for stagingUrl
        */
-      copyDb(dbName, stagingUrl)
-        .then(() => {
-          Site.add({
+      copyDb(dbName, stagingUrlDB)
+        .then((response) => {
+          console.log('---> res', response);
+
+          new Site({
             'name': req.body.siteName,
             'productionUrl': productionUrl,
             'stagingUrl': stagingUrl,
             'fromEmail': req.body.fromEmail,
             'fromName': req.body.fromName,
-          }).then(function (site) {
-            res.redirect(stagingUrl);
+          }).save().then(function (site) {
+            res.redirect('http://' + stagingUrl);
           });
         })
         .catch((e) => {
+          console.log(e);
           res.status(500).json({ error: 'An error occured copying the DB: ' + e.msg });
         });
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log(e);
 
+      res.status(500).json({ error: 'An error occured checking if the DB exists: ' + e.msg });
     })
 });
 
-app.listen(3000, function() {
-  console.log('Express server listening on port ' + 3000);
+app.listen(process.env.PORT, function() {
+  console.log('Express server listening on port ' + process.env.PORT);
 });
 
 module.exports = app;
