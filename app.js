@@ -8,7 +8,9 @@ const bodyParser  = require('body-parser');
 const nunjucks    = require('nunjucks');
 //const flash       = require('express-flash');
 const app         = express();
-
+const cleanUrl = (url) => {
+  return url.replace(['http://', 'https://'], '');
+}
 
 //app.set('views', __dirname + '/templates');
 
@@ -25,9 +27,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 //app.use(flash());
 
-const cleanUrl = (url) => {
-  return url.replace(['http://', 'https://'], '');
-}
+
+app.use((req, res, next) => {
+  res.locals.productionServerIp = process.env.PRODUCTION_SERVER_IP;
+  res.locals.wildcardHost = process.env.WILDCARD_HOST;
+  next();
+});
+
 
 app.get('/', (req, res) => {
   Site
