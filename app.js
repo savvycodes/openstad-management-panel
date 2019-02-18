@@ -6,7 +6,7 @@ const isDev       = process.env.ENVIRONMENT === 'development';
 const Site        = require('./models').Site;
 const bodyParser  = require('body-parser');
 const nunjucks    = require('nunjucks');
-const flash       = require('express-flash');
+//const flash       = require('express-flash');
 const app         = express();
 
 
@@ -23,7 +23,7 @@ const dbExists = require('./services/mongo').dbExists;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
-app.use(flash());
+//app.use(flash());
 
 const cleanUrl = (url) => {
   return url.replace(['http://', 'https://'], '');
