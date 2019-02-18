@@ -70,7 +70,7 @@ app.post('/site', (req, res) => {
 
   dbExists(type)
     .then((exists) => {
-      const dbName = exists ? type : 'localhost';
+      const dbName = exists ? type : process.env.DEFAULT_DB;
       const stagingUrlDB = stagingUrl.replace(/\./g, '');
 
       /**
