@@ -3,7 +3,7 @@
     <div class="onboarding-slide">
       <div class="onboarding-side-by-side">
         <div class="onboarding-media">
-          <img alt="" src="img/bigicon5.png" width="200px">
+          <img alt="" src="/img/bigicon5.png" width="200px">
         </div>
         <div class="onboarding-content with-gradient">
           <h4 class="onboarding-title">
@@ -31,19 +31,20 @@
               </div>
               <div class="col-sm-12">
                 <div class="form-group">
-                  <label for="">Domeinnaam Testomgeving (beschermd met wachtwoord)</label>
+                  <label for="">Naam staging (beschermd met wachtwoord)</label>
                   <br />
                   <small>
                     Domeinnamen met *.{{wildcardHost}} direct,
                     voor andere domeinnamen is een dns wijziging nodig.
                   </small>
-                  <input
-                    class="form-control"
-                    placeholder="Bijv. stemvan.{{wildcardHost}}"
-                    type="text"
-                    value=""
-                    name="stagingUrl"
-                  />
+                  <div class="form-group row">
+                    <div class="col-sm-5">
+                      <input class="form-control" placeholder="" type="text" name="stagingName" value="{{site.name}}" />
+                    </div>
+                    <div class="col-sm-7">
+                      <input class="form-control" placeholder="" type="text" value="{{wildcardHost}}" disabled>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="col-sm-12">
@@ -65,7 +66,7 @@
     <div class="onboarding-slide">
       <div class="onboarding-side-by-side">
         <div class="onboarding-media">
-          <img alt="" src="img/bigicon6.png" width="200px">
+          <img alt="" src="/img/bigicon6.png" width="200px">
         </div>
         <div class="onboarding-content with-gradient">
           <h4 class="onboarding-title">
@@ -133,7 +134,7 @@
     <div class="onboarding-slide">
       <div class="onboarding-side-by-side">
         <div class="onboarding-media">
-          <img alt="" src="img/bigicon2.png" width="200px">
+          <img alt="" src="/img/bigicon2.png" width="200px">
         </div>
         <div class="onboarding-content with-gradient">
           <h4 class="onboarding-title">

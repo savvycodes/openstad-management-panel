@@ -1,5 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
 const port = 27017;
+const MongoServer = new mongodb.Server("127.0.0.1", port);
 const url = 'mongodb://localhost:' + port;
 
 exports.copyMongoDb = (oldDbName, newDbName) => {
@@ -35,24 +37,44 @@ exports.dbExists = (dbName) => {
 
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, (err, db) => {
-      console.log('---> err', err);
-
       if (err) {
         reject(err);
       } else {
         var adminDb = db.admin();
-        console.log('---> adminDb', adminDb);
 
         // List all the available databases
         adminDb.listDatabases(function(err, dbs) {
-          console.log('---> err', err);
-
-          console.log('---> dbs.dbName', dbName);
-          console.log('---> dbs.databases', dbs.databases);
           const found = dbs.databases.find(name => dbName === name);
           db.close();
           resolve(!!found)
         });
+      }
+    });
+  });
+}
+
+exports.deleteDb = (dbName) => {
+  var url = 'mongodb://localhost:27017';
+
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, (err, db) => {
+      if (err) {
+        reject(err);
+      } else {
+        var adminDb = db.admin();
+
+        new mongodb.Db(dbName, MongoServer, {}).open(function (error, client) {
+          console.log('---> err', error);
+            if(error) callback(error);
+            // drop the database
+            client.dropDatabase(function(err, result) {
+                if(err) callback(err);
+                client.close();
+            });
+        });
+
+        db.close();
+        resolve();
       }
     });
   });

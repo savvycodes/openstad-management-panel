@@ -1,9 +1,9 @@
 <ul class="main-menu">
   <li class="sub-header">
-    <span>SITE</span>
+    <span>SITE {{site.name}}</span>
   </li>
   <li class="">
-    <a href="/" target="_blank">
+    <a href="/beheer/site/{{site.id}}">
       <div class="icon-w">
         <div class="os-icon os-icon-layers"></div>
       </div>
@@ -11,7 +11,7 @@
     </a>
   </li>
   <li class="">
-    <a href="#">
+    <a href="/beheer/site/{{site.id}}/settings">
       <div class="icon-w">
         <div class="os-icon os-icon-ui-46"></div>
       </div>
@@ -19,7 +19,7 @@
     </a>
   </li>
   <li class="">
-    <a href="/" target="_blank">
+    <a href="https://{{site.stagingUrl}}" target="_blank">
       <div class="icon-w">
         <div class="os-icon os-icon-layers"></div>
       </div>
@@ -27,7 +27,7 @@
     </a>
   </li>
   <li class="">
-    <a href="#" target="_blank">
+    <a href="/beheer/site/{{site.id}}/submissions">
       <div class="icon-w">
         <div class="os-icon os-icon-layers"></div>
       </div>
@@ -35,7 +35,7 @@
     </a>
   </li>
   <li class="">
-    <a href="#" target="_blank">
+    <a href="/beheer/site/{{site.id}}/arguments">
       <div class="icon-w">
         <div class="os-icon os-icon-layers"></div>
       </div>
@@ -43,33 +43,19 @@
     </a>
   </li>
   <li class="">
-    <a href="#" target="_blank">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
-      <span>Vormgeving </span>
-    </a>
-  </li>
-  <li class="">
-    <a href="#">
+    <a href="/beheer/site/{{site.id}}/security">
       <div class="icon-w">
         <div class="os-icon os-icon-users"></div>
       </div>
-      <span>Security & authenticatie</span>
+      <span>Beveiliging & authenticatie</span>
     </a>
   </li>
   <li class="">
-    <a href="#">
+    <a href="/beheer/site/{{site.id}}/users">
       <div class="icon-w">
         <div class="os-icon os-icon-users"></div>
       </div>
       <span>Gebruikers</span>
     </a>
   </li>
-
-
-
-
-
-
 </ul>
