@@ -1,0 +1,35 @@
+{% extends 'user-layout.html' %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        Ideas
+      </h6>
+      <div class="element-box">
+        <table id="dataTable1" width="100%" class="table table-striped table-lightfont">
+         <thead>
+            <tr>
+               <th>Title</th>
+               <th>Description</th>
+               <th>Gemaakt op</th>
+               <th> </th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for idea in ideas %}
+            <tr>
+               <td>{{ idea.title }}</td>
+               <td>{{ idea.description }}</td>
+               <td>{{ idea.created_at }}</td>
+               <td> <a href="/api/site/{{site.id}}/idea/{{idea.id}}" > Bewerken </a> </td>
+            </tr>
+            {% endfor %}
+         </tbody>
+       </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

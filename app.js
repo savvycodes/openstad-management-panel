@@ -1,18 +1,24 @@
 // Load environment variables from .env file
 var dotenv = require('dotenv');
 dotenv.load();
-const express     = require('express');
-const isDev       = process.env.ENVIRONMENT === 'development';
-const Site        = require('./models').Site;
-const bodyParser  = require('body-parser');
-const cookieParser                = require('cookie-parser');
-const expressSession              = require('express-session')
-const nunjucks    = require('nunjucks');
-const flash       = require('express-flash');
-const app         = express();
+const express           = require('express');
+const isDev             = process.env.ENVIRONMENT === 'development';
+const Site              = require('./models').Site;
+const bodyParser        = require('body-parser');
+const cookieParser      = require('cookie-parser');
+const expressSession    = require('express-session')
+const nunjucks          = require('nunjucks');
+const flash             = require('express-flash');
+const app               = express();
+
+const ideaMw            = require('./middleware/idea');
+const siteMW            = require('./middleware/site');
+
 const cleanUrl = (url) => {
   return url.replace(['http://', 'https://'], '');
 }
+
+
 
 const slugify = (text) => {
   return text.toString().toLowerCase()
@@ -80,28 +86,49 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/beheer/site/:siteId', (req, res) => {
-  new Site({
-    id: req.params.siteId
-  })
-    .fetch()
-    .then(function (site) {
-      res.render('site/main.html', {
-        site: site.serialize()
-      });
+app.get('/beheer/site/:siteId/idea/:ideaId',
+  ideaMw.oneForSite,
+  siteMw.withOne,
+  (req, res) => {
+    res.render('site/main.html');
+  }
+);
+
+
+app.post('/beheer/site/:siteId/idea/:ideaId',
+  ideaMw.oneForSite,
+  siteMw.withOne,
+  (req, res) => {
+    rp({
+
+    })
+    .then(function (idea) {
+      req.idea = idea;
+      res.locals.idea = idea;
+      next();
+    })
+    .catch(function (err) {
+      next();
     });
+  }
 });
 
-app.get('/beheer/site/:siteId/:page', (req, res) => {
-  new Site({
-    id: req.params.siteId
-  })
-    .fetch()
-    .then(function (site) {
-      res.render('site/'+ req.params.page + '.html', {
-        site:  site.serialize()
-      });
-    });
+
+app.get('/beheer/site/:siteId/:page',
+  ideaMw.allForSite,
+  siteMw.withOne,
+  (req, res) => {
+    res.render('site/'+ req.params.page + '.html');
+  }
+);
+
+
+app.get('/beheer/idea/:ideaId',
+  ideaMw.oneForSite,
+  siteMw.withOne,
+  (req, res) => {
+    res.render('site/'+ req.params.page + '.html');
+  }
 });
 
 app.get('/beheer/copy/:oldName/:newName', (req, res) => {
