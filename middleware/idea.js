@@ -13,14 +13,13 @@ exports.allForSite = (req, res, next) => {
 
   rp(options)
     .then(function (ideas) {
-       console.log('===> ideas', ideas);
+    //   console.log('===> ideas', ideas);
        req.ideas = ideas;
        res.locals.ideas = ideas;
        next();
     })
     .catch(function (err) {
       next();
-
     });
 }
 

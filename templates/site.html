@@ -47,16 +47,16 @@ END - Main Menu
       <div class="logged-user-w">
         <div class="logged-user-i">
           <div class="avatar-w">
-            <img alt="" src="/img/may-britt.jpeg">
+            <img alt="" src="/img/avatar.png">
           </div>
           <div class="logged-user-menu color-style-bright">
             <div class="logged-user-avatar-info">
               <div class="avatar-w">
-                <img alt="" src="/img/may-britt.jpeg">
+                <img alt="" src="/img/avatar.png">
               </div>
               <div class="logged-user-info-w">
                 <div class="logged-user-name">
-                  May-Britt
+                  {{user.firstName}}
                 </div>
                 <div class="logged-user-role">
                   Administrator
@@ -69,7 +69,7 @@ END - Main Menu
             <ul>
 
               <li>
-                <a href="#"><i class="os-icon os-icon-signs-11"></i><span>Logout</span></a>
+                <a href="/logout"><i class="os-icon os-icon-signs-11"></i><span>Logout</span></a>
               </li>
             </ul>
           </div>
@@ -217,6 +217,7 @@ END - Main Menu
         <h6 class="element-header">
           Snelle Links
         </h6>
+
       <!--  <div class="element-box-tp">
           <div class="el-buttons-list full-width">
             <a class="btn btn-white btn-sm" href="#">

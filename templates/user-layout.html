@@ -43,11 +43,11 @@
           <div class="menu-and-user">
             <div class="logged-user-w">
               <div class="avatar-w">
-                <img alt="" src="/img/may-britt.jpeg">
+                <img alt="" src="/img/avatar.png">
               </div>
               <div class="logged-user-info-w">
                 <div class="logged-user-name">
-                  May-Britt
+                  {{user.firstName}}
                 </div>
                 <div class="logged-user-role">
                   Administrator
@@ -78,11 +78,11 @@
           <div class="logged-user-w avatar-inline">
             <div class="logged-user-i">
               <div class="avatar-w">
-                <img alt="" src="/img/may-britt.jpeg">
+                <img alt="" src="/img/avatar.png">
               </div>
               <div class="logged-user-info-w">
                 <div class="logged-user-name">
-                  May-Britt
+                  {{user.firstName}}
                 </div>
                 <div class="logged-user-role">
                   Administrator
@@ -94,11 +94,11 @@
               <div class="logged-user-menu color-style-bright">
                 <div class="logged-user-avatar-info">
                   <div class="avatar-w">
-                    <img alt="" src="/img/may-britt.jpeg">
+                    <img alt="" src="/img/avatar.png">
                   </div>
                   <div class="logged-user-info-w">
                     <div class="logged-user-name">
-                      May-Britt
+                      {{user.firstName}}
                     </div>
                     <div class="logged-user-role">
                       Administrator
@@ -170,16 +170,16 @@
               <div class="logged-user-w">
                 <div class="logged-user-i">
                   <div class="avatar-w">
-                    <img alt="" src="/img/may-britt.jpeg">
+                    <img alt="" src="/img/avatar.png">
                   </div>
                   <div class="logged-user-menu color-style-bright">
                     <div class="logged-user-avatar-info">
                       <div class="avatar-w">
-                        <img alt="" src="/img/may-britt.jpeg">
+                        <img alt="" src="/img/avatar.png">
                       </div>
                       <div class="logged-user-info-w">
                         <div class="logged-user-name">
-                          May-Britt
+                          {{user.firstName}}
                         </div>
                         <div class="logged-user-role">
                           Administrator
@@ -191,19 +191,7 @@
                     </div>
                     <ul>
                       <li>
-                        <a href="/apps_email.html"><i class="os-icon os-icon-mail-01"></i><span>Incoming Mail</span></a>
-                      </li>
-                      <li>
-                        <a href="/users_profile_big.html"><i class="os-icon os-icon-user-male-circle2"></i><span>Profile Details</span></a>
-                      </li>
-                      <li>
-                        <a href="/users_profile_small.html"><i class="os-icon os-icon-coins-4"></i><span>Billing Details</span></a>
-                      </li>
-                      <li>
-                        <a href="/#"><i class="os-icon os-icon-others-43"></i><span>Notifications</span></a>
-                      </li>
-                      <li>
-                        <a href="/#"><i class="os-icon os-icon-signs-11"></i><span>Logout</span></a>
+                        <a href="/logout"><i class="os-icon os-icon-signs-11"></i><span>Logout</span></a>
                       </li>
                     </ul>
                   </div>
@@ -225,7 +213,7 @@
           </div>
 
           <div class="content-w">
-    
+
             <div class="content-panel-toggler">
               <i class="os-icon os-icon-grid-squares-22"></i><span>Sidebar</span>
             </div>
@@ -244,22 +232,11 @@
                   <h6 class="element-header">
                     Snelle Links
                   </h6>
-                <!--  <div class="element-box-tp">
-                    <div class="el-buttons-list full-width">
-                      <a class="btn btn-white btn-sm" href="#">
-                        <i class="os-icon os-icon-window-content"></i>
-                        <span>Maak een idee aan</span>
-                      </a>
-                      <a class="btn btn-white btn-sm" href="#">
-                        <i class="os-icon os-icon-window-content"></i>
-                        <span>Maak een mailing aan</span>
-                      </a>
-                      <a class="btn btn-white btn-sm" href="#">
-                        <i class="os-icon os-icon-wallet-loaded"></i>
-                        <span>Maak een gebruiker aan</span>
-                      </a>
+                  <div class="element-box-tp">
+                     <div class="el-buttons-list full-width">
+                       {% block quickLinks %}{% endblock %}
                     </div>
-                  </div>!-->
+                  </div>
                 </div>
                 <!--------------------
                 START - Recent Activity

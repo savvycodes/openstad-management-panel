@@ -12,7 +12,9 @@ const flash             = require('express-flash');
 const app               = express();
 
 const ideaMw            = require('./middleware/idea');
-const siteMW            = require('./middleware/site');
+const siteMw            = require('./middleware/site');
+const enrichMw          = require('./middleware/enrich');
+const authMw            = require('./middleware/auth');
 
 const cleanUrl = (url) => {
   return url.replace(['http://', 'https://'], '');
@@ -66,12 +68,17 @@ app.use(expressSession({
 }));
 app.use(flash());
 
+app.use(enrichMw.run);
 
-app.use((req, res, next) => {
-  res.locals.productionServerIp = process.env.PRODUCTION_SERVER_IP;
-  res.locals.wildcardHost = process.env.WILDCARD_HOST;
-  next();
-});
+/**
+ * Make sure user is isAuthenticated & has rights to access
+ */
+app.use(
+  authMw.check,
+  authMw.fetchUserData,
+  authMw.ensureAuthenticated,
+  authMw.ensureRights
+);
 
 
 app.get('/', (req, res) => {
@@ -90,46 +97,115 @@ app.get('/beheer/site/:siteId/idea/:ideaId',
   ideaMw.oneForSite,
   siteMw.withOne,
   (req, res) => {
-    res.render('site/main.html');
+    res.render('site/idea/form.html');
   }
 );
 
+app.get('/beheer/site/:siteId/idea',
+  siteMw.withOne,
+  (req, res) => {
+    res.render('site/idea/form.html');
+  }
+);
 
 app.post('/beheer/site/:siteId/idea/:ideaId',
   ideaMw.oneForSite,
   siteMw.withOne,
-  (req, res) => {
-    rp({
+  (req, res, next) => {
 
-    })
-    .then(function (idea) {
-      req.idea = idea;
-      res.locals.idea = idea;
-      next();
-    })
-    .catch(function (err) {
-      next();
-    });
+    //image upload
+    const body = {
+      title: req.body.title,
+      description: req.body.description,
+      summary: req.body.summary,
+      location: req.body.location,
+      status: req.body.status,
+      modBreak: req.body.modBreak,
+      thema: req.body.thema
+    }
+
+    const options = {
+       method: 'POST',
+        uri:  apiUrl + `/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
+        headers: {
+            'Accept': 'application/json',
+   //         "Authorization" : auth,
+        },
+        body: body,
+        json: true // Automatically parses the JSON string in the response
+    };
+
+    rp(options)
+      .then(function (response) {
+         const redirectTo = req.header('Referer')  || appUrl
+         res.redirect(redirectTo + '/#arg'+response.id);
+      })
+      .catch(function (err) {
+         res.redirect(req.header('Referer')  || appUrl);
+      });
   }
-});
+);
 
+app.post('/beheer/site/:siteId/idea',
+  ideaMw.oneForSite,
+  siteMw.withOne,
+  (req, res, next) => {
+    //image upload
+    const body = {
+      title: req.body.title,
+      description: req.body.description,
+      summary: req.body.summary,
+      location: req.body.location,
+      status: req.body.status,
+      modBreak: req.body.modBreak,
+      thema: req.body.thema
+    };
+
+    const options = {
+       method: 'POST',
+        uri:  apiUrl + `/api/site/${req.params.siteId}/idea`,
+        headers: {
+            'Accept': 'application/json',
+   //         "Authorization" : auth,
+        },
+        body: body,
+        json: true // Automatically parses the JSON string in the response
+    };
+
+    rp(options)
+      .then(function (response) {
+         req.flash('success', { msg: 'Opgeslagen!'});
+         const redirectTo = req.header('Referer')  || appUrl;
+         res.redirect(redirectTo + '/#arg'+response.id);
+      })
+      .catch(function (err) {
+        req.flash('error', { msg: 'Er gaat iets mis!'});
+        res.redirect(req.header('Referer')  || appUrl);
+      });
+  }
+);
+
+app.get('/beheer/site/:siteId',
+  siteMw.withOne,
+  (req, res) => {
+    res.render('site/main.html');
+  }
+);
 
 app.get('/beheer/site/:siteId/:page',
-  ideaMw.allForSite,
   siteMw.withOne,
   (req, res) => {
     res.render('site/'+ req.params.page + '.html');
   }
 );
 
-
-app.get('/beheer/idea/:ideaId',
+app.get('/beheer/site/:siteId/idea/:ideaId',
   ideaMw.oneForSite,
   siteMw.withOne,
   (req, res) => {
     res.render('site/'+ req.params.page + '.html');
   }
-});
+);
 
 app.get('/beheer/copy/:oldName/:newName', (req, res) => {
   copyDb(req.params.oldName, req.params.newName)
@@ -210,7 +286,6 @@ app.post('/site/:siteId/delete', (req, res) => {
       const stagingUrl = site.get('stagingUrl');
       const stagingUrlDB = stagingUrl.replace(/\./g, '');
 
-      console.log('stagingUrlDB', stagingUrlDB);
       deleteMongoDb(stagingUrlDB).then(() => {
         return site.destroy().then(() => {
           req.flash('success', { msg: 'Verwijdert!' });
@@ -221,6 +296,12 @@ app.post('/site/:siteId/delete', (req, res) => {
     .catch((e) => {
       res.status(500).json({ error: 'An error occured  ' + e.msg });
     });
+});
+
+app.get('/logout', (req, res, next) => {
+  req.session.destroy(() => {
+    res.redirect('/');
+  });
 });
 
 app.listen(process.env.PORT, function() {

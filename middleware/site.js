@@ -10,6 +10,7 @@ exports.withOne = (req, res, next) => {
     req.site = site;
     req.siteData = site.serialize();
     res.locals.site = req.siteData;
+    next();
   })
   .catch((err) => {
     next(err);
