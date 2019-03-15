@@ -20,13 +20,20 @@
         {% endif %}
       </h6>
       <div class="element-box">
-        <form method="POST" action="/site/{{site.id}}">
+        <form method="POST"
+        {% if idea %}
+          action="/beheer/site/{{site.id}}/idea/{{idea.id}}"
+        {% else %}
+          action="/beheer/site/{{site.id}}/idea"
+        {% endif %}
+
+        >
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">
                Titel
             </label>
             <div class="col-sm-8">
-              <input type="text" name="title" value="{{idea.title}}" />
+              <input type="text" name="title" value="{{idea.title}}" class="form-control" />
             </div>
           </div>
           <div class="form-group row">
@@ -34,9 +41,7 @@
                Samenvatting
             </label>
             <div class="col-sm-8">
-              Vertel iets meer over het plan.<br>
-              <textarea name="summary">{{idea.summary}}</textarea>
-              <div id="charsLeft">Je hebt nog <span>{{summaryMaxLength}}</span> tekens over.</div>
+              <textarea name="summary" class="form-control">{{idea.summary}}</textarea>
             </div>
           </div>
           <div class="form-group row">
@@ -44,7 +49,7 @@
               Beschrijving
             </label>
             <div class="col-sm-8">
-              <textarea name="description">{{idea.description}}</textarea>
+              <textarea name="description" class="form-control">{{idea.description}}</textarea>
             </div>
           </div>
           <div class="form-group row">
@@ -52,7 +57,6 @@
               Gebied
             </label>
             <div class="col-sm-8">
-              <div class="form-info">Selecteer het gebied waarop jouw plan betrekking heeft. Gaat het niet over een specifiek gebied? Kies dan voor West Algemeen.</div>
               <select id="gebied" value="{% if idea.extraData %}{{idea.extraData.gebied}}{% endif %}" class="form-control">
                 <option value="">Kies gebied</option>
                 <option value="Bos en Lommer" {% if (idea.extraData) and (idea.extraData.gebied == "Bos en Lommer") %}selected{% endif %}>Bos en Lommer</option>
@@ -69,8 +73,7 @@
               Thema
             </label>
             <div class="col-sm-8">
-              <div class="form-info">Selecteer het gebied waarop jouw plan betrekking heeft. Gaat het niet over een specifiek gebied? Kies dan voor West Algemeen.</div>
-              <select id="thema" value="{% if idea.extraData %}{{idea.extraData.thema}}{% endif %}">
+              <select id="thema" value="{% if idea.extraData %}{{idea.extraData.thema}}{% endif %}" class="form-control">
                 <option value="">Kies thema</option>
                 <option value="Groen" {% if (idea.extraData) and (idea.extraData.thema == "Groen") %}selected{% endif %}>Groen en Openbare ruimte</option>
                 <option value="Diversiteit & Inclusiviteit" {% if (idea.extraData) and (idea.extraData.thema == "Diversiteit & Inclusiviteit") %}selected{% endif %}>Diversiteit en Inclusiviteit</option>
@@ -82,10 +85,10 @@
           <fieldset>
             <legend><span>Locatie</span></legend>
             <div class="form-group row">
-              <label class="col-form-label col-sm-4" for="">
+          <!--    <label class="col-form-label col-sm-4" for="">
                 Locatie
-              </label>
-              <div class="col-sm-8">
+              </label> -->
+              <div class="col-sm-12">
                 <div id="location">
                   <input type="hidden" id="locationField" name="location" value='{{idea.location | dump | safe}}'>
                   <div id="mapcontainer">

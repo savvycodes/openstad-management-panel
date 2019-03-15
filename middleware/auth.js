@@ -44,10 +44,9 @@ const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated) {
     next();
   } else {
-    const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    const redirectUrl = `${apiUrl}/oauth/login?redirectUrl=${fullUrl}`;
+
 //    console.log('===>', redirectUrl);
-    res.redirect(redirectUrl);
+    res.redirect('/login');
   }
 };
 
@@ -57,18 +56,14 @@ const check = (req, res, next) => {
   if (req.query.jwt) {
     req.session.jwt = req.query.jwt;
     req.isAuthenticated = true;
-    const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    const redirectUrl = `${apiUrl}/oauth/login?redirectUrl=${fullUrl}`;
+
     req.session.save(() => {
-      console.log('saved');
       // redirect to remove JWT from url, otherwise browser history will save JWT, allowing people to login.
       res.redirect('/');
       return;
     })
 
   } else {
-    console.log('req.session.jwt', req.session.jwt);
-
     /**
      * Add user call to make sure it's an active JWT.
      */
