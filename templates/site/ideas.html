@@ -1,7 +1,7 @@
 {% extends 'user-layout.html' %}
 
 {% block quickLinks %}
-<a class="btn btn-white btn-sm" href="/beheer/site/{{site.id}}/idea">
+<a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}/idea">
   <i class="os-icon os-icon-window-content"></i>
   <span>Maak een idee aan</span>
 </a>
@@ -28,9 +28,9 @@
             {% for idea in ideas %}
             <tr>
                <td>{{ idea.title }}</td>
-               <td>{{ idea.description }}</td>
-               <td>{{ idea.created_at }}</td>
-               <td> <a href="/api/site/{{site.id}}/idea/{{idea.id}}" > Bewerken </a> </td>
+               <td>{{ idea.summary | truncate(20)}}</td>
+               <td>{{ idea.createdAt | date }}</td>
+               <td> <a href="/admin/site/{{site.id}}/idea/{{idea.id}}" > Bewerken </a> </td>
             </tr>
             {% endfor %}
          </tbody>

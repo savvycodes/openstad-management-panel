@@ -22,9 +22,9 @@
       <div class="element-box">
         <form method="POST"
         {% if idea %}
-          action="/beheer/site/{{site.id}}/idea/{{idea.id}}"
+          action="/admin/site/{{site.id}}/idea/{{idea.id}}"
         {% else %}
-          action="/beheer/site/{{site.id}}/idea"
+          action="/admin/site/{{site.id}}/idea"
         {% endif %}
 
         >
@@ -109,7 +109,7 @@
         </form>
       </div>
       <div class="element-box">
-        <form method="POST" action="/site/{{site.id}}/idea/{{idea.id}}/delete">
+        <form method="POST" action="/admin/site/{{site.id}}/idea/{{idea.id}}/delete">
             <button class="btn btn-danger" type="submit">Verwijder</button>
         </form>
       </div>

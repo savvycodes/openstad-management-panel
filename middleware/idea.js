@@ -11,9 +11,10 @@ exports.allForSite = (req, res, next) => {
       json: true // Automatically parses the JSON string in the response
   };
 
+  console.log('==> options', options);
+
   rp(options)
     .then(function (ideas) {
-    //   console.log('===> ideas', ideas);
        req.ideas = ideas;
        res.locals.ideas = ideas;
        next();

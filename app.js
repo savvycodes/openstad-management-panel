@@ -17,6 +17,13 @@ const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
 const authMw            = require('./middleware/auth');
 
+const dateFilter                  = require('./nunjucks/dateFilter');
+const currencyFilter              = require('./nunjucks/currency');
+const limitTo                     = require('./nunjucks/limitTo');
+const jsonFilter                  = require('./nunjucks/json');
+const timestampFilter             = require('./nunjucks/timestamp');
+const replaceIdeaVariablesFilter  = require('./nunjucks/replaceIdeaVariables');
+
 const cleanUrl = (url) => {
   return url.replace(['http://', 'https://'], '');
 }
@@ -37,6 +44,17 @@ const slugify = (text) => {
 const nunjucksEnv = nunjucks.configure('templates', {
   autoescape: true,
   express: app
+});
+
+app.use((req, res, next) => {
+  dateFilter.setDefaultFormat('DD-MM-YYYY HH:mm');
+  nunjucksEnv.addFilter('date', dateFilter);
+  nunjucksEnv.addFilter('currency', currencyFilter);
+  nunjucksEnv.addFilter('limitTo', limitTo);
+  nunjucksEnv.addFilter('json', jsonFilter);
+  nunjucksEnv.addFilter('timestamp', timestampFilter);
+  nunjucksEnv.addFilter('replaceIdeaVariables', replaceIdeaVariablesFilter);
+  next();
 });
 
 const copyDb = require('./services/mongo').copyMongoDb;
@@ -73,7 +91,7 @@ app.use(enrichMw.run);
 
 // redirect the index page to the admin section
 app.get('/', (req, res) => {
-  res.redirect('/beheer');
+  res.redirect('/admin');
 });
 
 app.use(
@@ -84,12 +102,12 @@ app.use(
 /**
  * Make sure user is isAuthenticated & has rights to access
  */
-app.use('/beheer',
+app.use('/admin',
   authMw.ensureAuthenticated,
   authMw.ensureRights
 );
 
-app.get('/beheer', (req, res) => {
+app.get('/admin', (req, res) => {
   Site
     .fetchAll()
     .then(function (resData) {
@@ -101,7 +119,7 @@ app.get('/beheer', (req, res) => {
   });
 });
 
-app.get('/beheer/site/:siteId/idea/:ideaId',
+app.get('/admin/site/:siteId/idea/:ideaId',
   ideaMw.oneForSite,
   siteMw.withOne,
   (req, res) => {
@@ -109,48 +127,44 @@ app.get('/beheer/site/:siteId/idea/:ideaId',
   }
 );
 
-app.get('/beheer/site/:siteId/idea',
+app.get('/admin/site/:siteId/idea',
   siteMw.withOne,
   (req, res) => {
     res.render('site/idea/form.html');
   }
 );
 
-app.post('/beheer/site/:siteId/idea/:ideaId',
+app.post('/admin/site/:siteId/idea/:ideaId',
   ideaMw.oneForSite,
   siteMw.withOne,
   (req, res, next) => {
-    let auth = ` Bearer ${req.session.jwt}`;
 
-    //image upload
     const body = {
       title: req.body.title,
       description: req.body.description,
       summary: req.body.summary,
       location: req.body.location,
-      status: req.body.status,
-      modBreak: req.body.modBreak,
+  //    status: req.body.status,
+  //    modBreak: req.body.modBreak,
       thema: req.body.thema
     }
 
     const options = {
-       method: 'POST',
+       method: 'PUT',
         uri:  apiUrl + `/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
         headers: {
             'Accept': 'application/json',
-            "Authorization" : auth,
+            "X-Authorization" : ` Bearer ${req.session.jwt}`,
         },
         body: body,
         json: true // Automatically parses the JSON string in the response
     };
 
-
-
     rp(options)
       .then(function (response) {
         console.log('===> response', response);
          const redirectTo = req.header('Referer')  || appUrl
-         res.redirect(redirectTo + '/#arg'+response.id);
+         res.redirect(redirectTo);
       })
       .catch(function (err) {
         console.log('===> err', err);
@@ -160,7 +174,28 @@ app.post('/beheer/site/:siteId/idea/:ideaId',
   }
 );
 
-app.post('/beheer/site/:siteId/idea',
+
+app.post('/admin/site/:siteId/idea/:ideaId/delete',
+  (req, res, next) => {
+    rp({
+       method: 'DELETE',
+        uri:  apiUrl + `/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
+        headers: {
+            'Accept': 'application/json',
+            "X-Authorization" : ` Bearer ${req.session.jwt}`,
+        },
+        json: true // Automatically parses the JSON string in the response
+    })
+      .then(function (response) {
+         res.redirect(`/admin/site/${req.params.siteId}/ideas`);
+      })
+      .catch(function (err) {
+         res.redirect(req.header('Referer'));
+      });
+  }
+);
+
+app.post('/admin/site/:siteId/idea',
   ideaMw.oneForSite,
   siteMw.withOne,
   (req, res, next) => {
@@ -172,16 +207,17 @@ app.post('/beheer/site/:siteId/idea',
       description: req.body.description,
       summary: req.body.summary,
       location: req.body.location,
-      status: req.body.status,
-      modBreak: req.body.modBreak,
+  //    status: req.body.status,
+  //    modBreak: req.body.modBreak,
       thema: req.body.thema
     };
 
     const options = {
         uri:  apiUrl + `/api/site/${req.params.siteId}/idea`,
+        method: 'POST',
         headers: {
             'Accept': 'application/json',
-            "Authorization" : auth,
+            "X-Authorization" : ` Bearer ${req.session.jwt}`,
         },
         body: body,
         json: true // Automatically parses the JSON string in the response
@@ -191,11 +227,9 @@ app.post('/beheer/site/:siteId/idea',
 
     rp(options)
       .then(function (response) {
-        console.log('===> response', response);
-
-         req.flash('success', { msg: 'Opgeslagen!'});
-         const redirectTo = req.header('Referer')  || appUrl;
-         res.redirect(redirectTo + '/#arg'+response.id);
+         req.flash('success', { msg: 'Aangemaakt!'});
+         res.redirect(`/admin/site/${req.params.siteId}/ideas`);
+         res.redirect(redirectTo);
       })
       .catch(function (err) {
         console.log('===> err', err);
@@ -206,21 +240,23 @@ app.post('/beheer/site/:siteId/idea',
   }
 );
 
-app.get('/beheer/site/:siteId',
+app.get('/admin/site/:siteId',
   siteMw.withOne,
   (req, res) => {
     res.render('site/main.html');
   }
 );
 
-app.get('/beheer/site/:siteId/:page',
+app.get('/admin/site/:siteId/:page',
+  ideaMw.allForSite,
   siteMw.withOne,
   (req, res) => {
+    console.log('Hit it');
     res.render('site/'+ req.params.page + '.html');
   }
 );
 
-app.get('/beheer/site/:siteId/idea/:ideaId',
+app.get('/admin/site/:siteId/idea/:ideaId',
   ideaMw.oneForSite,
   siteMw.withOne,
   (req, res) => {
@@ -228,7 +264,7 @@ app.get('/beheer/site/:siteId/idea/:ideaId',
   }
 );
 
-app.get('/beheer/copy/:oldName/:newName', (req, res) => {
+app.get('/admin/copy/:oldName/:newName', (req, res) => {
   copyDb(req.params.oldName, req.params.newName)
     .then(() => {
       res.status(200).json({ success: 'Copied DB'});
@@ -292,7 +328,7 @@ app.post('/site/:siteId', (req, res) => {
       site.set('fromName', req.body.fromName);
       return site.save().then(() => {
         req.flash('success', { msg: 'Opgeslagen' });
-        res.redirect('/beheer/site/' + site.id + '/settings');
+        res.redirect('/admin/site/' + site.id + '/settings');
       });
     })
     .catch((e) => {
@@ -324,7 +360,7 @@ app.get('/login', (req, res, next) => {
 });
 
 app.get('/oauth/login', (req, res, next) => {
-  const fullUrl = req.protocol + '://' + req.get('host') + '/beheer' //+ req.originalUrl;
+  const fullUrl = req.protocol + '://' + req.get('host') + '/admin' //+ req.originalUrl;
   const redirectUrl = `${apiUrl}/oauth/login?redirectUrl=${fullUrl}`;
   console.log('====>redirectUrl', redirectUrl);
   res.redirect(redirectUrl);
