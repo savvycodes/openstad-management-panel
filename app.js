@@ -73,10 +73,10 @@ app.use(expressSession({
   saveUninitialized : true,
   resave            : true,
   secret            : process.env.SESSION_SECRET,
-//  store             : new MemoryStore(),
-  store             : new FileStore({
+  store             : new MemoryStore(),
+/*  store             : new FileStore({
     ttl: 3600 * 24 * 31
-  }),
+  }),*/
   key               : 'authorization.sid',
   cookie            : {
   //  maxAge: config.session.maxAge,

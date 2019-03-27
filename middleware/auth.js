@@ -54,8 +54,12 @@ const check = (req, res, next) => {
   const jwt = req.query.jwt;
 
   if (req.query.jwt) {
+    console.log('====> set JWT', req.query.jwt);
+
     req.session.jwt = req.query.jwt;
     req.isAuthenticated = true;
+
+
 
     req.session.save(() => {
       // redirect to remove JWT from url, otherwise browser history will save JWT, allowing people to login.
@@ -64,6 +68,7 @@ const check = (req, res, next) => {
     })
 
   } else {
+    console.log('====> req.session', req.session);
     /**
      * Add user call to make sure it's an active JWT.
      */
