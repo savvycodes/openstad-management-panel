@@ -62,6 +62,8 @@ const check = (req, res, next) => {
 
 
     req.session.save(() => {
+      console.log('====> req.session', req.session);
+
       // redirect to remove JWT from url, otherwise browser history will save JWT, allowing people to login.
       res.redirect('/');
       return;
