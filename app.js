@@ -29,6 +29,7 @@ const cleanUrl = (url) => {
 }
 
 const apiUrl = process.env.API_URL;
+const appUrl = process.env.APP_URL
 
 const slugify = (text) => {
   return text.toString().toLowerCase()
@@ -360,7 +361,7 @@ app.get('/login', (req, res, next) => {
 });
 
 app.get('/oauth/login', (req, res, next) => {
-  const fullUrl = req.protocol + '://' + req.get('host') + '/admin' //+ req.originalUrl;
+  const fullUrl = appUrl + '/admin' //+ req.originalUrl;
   const redirectUrl = `${apiUrl}/oauth/login?redirectUrl=${fullUrl}`;
   console.log('====>redirectUrl', redirectUrl);
   res.redirect(redirectUrl);
