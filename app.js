@@ -68,6 +68,8 @@ app.use(express.static('public'));
 
 app.use(cookieParser());
 
+
+
 // Session Configuration
 app.use(expressSession({
   saveUninitialized : true,
@@ -79,10 +81,11 @@ app.use(expressSession({
   }),*/
   key               : 'authorization.sid',
   cookie            : {
-  //  maxAge: config.session.maxAge,
+    maxAge:  3600000 * 24 * 7 ,
     secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
     httpOnly: true,
-    sameSite: false
+    sameSite: false,
+    path: '/'
   },
 
 }));
