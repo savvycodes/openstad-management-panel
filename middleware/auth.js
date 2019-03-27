@@ -66,7 +66,6 @@ const check = (req, res, next) => {
 
       // redirect to remove JWT from url, otherwise browser history will save JWT, allowing people to login.
       res.redirect('/');
-      return;
     })
 
   } else {

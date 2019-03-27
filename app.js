@@ -66,8 +66,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
-app.use(cookieParser());
-
+app.use(cookieParser(process.env.COOKIE_SECRET, {
+  path: '/',
+  maxAge:  3600000 * 24 * 7 ,
+  secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
+  httpOnly: true,
+  sameSite: false
+}));
 
 
 // Session Configuration
@@ -87,6 +92,9 @@ app.use(expressSession({
     sameSite: false,
     path: '/'
   },
+  store: new FileStore({
+    ttl: 3600 * 24 * 31
+  }),
 
 }));
 app.use(flash());
