@@ -68,6 +68,8 @@
             </div>
           </div>
 
+
+
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">
               Thema
@@ -108,6 +110,40 @@
           </div>
         </form>
       </div>
+      <div class="element-box">
+        <form method="POST"
+        {% if idea %}
+          action="/admin/site/{{site.id}}/idea/{{idea.id}}"
+        {% else %}
+          action="/admin/site/{{site.id}}/idea"
+        {% endif %}
+
+        >
+        <div class="form-group row">
+          <label class="col-form-label col-sm-4" for="">
+            Status
+          </label>
+          <div class="col-sm-8">
+            <select id="status" value="{% if idea.status %}{{idea.status}}{% endif %}" name="status" class="form-control">
+              <option value="">Selecteer een status</option>
+              <option value="OPEN" {% if (idea.status === "OPEN") %}selected{% endif %}>Open</option>
+              <option value="CLOSED" {% if (idea.status === "CLOSED") %}selected{% endif %}>Gesloten</option>
+              <option value="ACCEPTED" {% if (idea.status === "ACCEPTED") %}selected{% endif %}>Geaccepteerd</option>
+              <option value="DENIED" {% if (idea.status === "DENIED") %}selected{% endif %}>Afgekeurd</option>
+              <option value="BUSY" {% if (idea.status === "BUSY") %}selected{% endif %}>Busy</option>
+              <option value="DONE" {% if (idea.status === "DONE") %}selected{% endif %}>Afgelopen</option>
+          </select>
+          </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </div>
+
+        </form>
+      </div>
+
+
+
       <div class="element-box">
         <form method="POST" action="/admin/site/{{site.id}}/idea/{{idea.id}}/delete">
             <button class="btn btn-danger" type="submit">Verwijder</button>

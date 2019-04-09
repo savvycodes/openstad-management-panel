@@ -151,15 +151,33 @@ app.post('/admin/site/:siteId/idea/:ideaId',
   siteMw.withOne,
   (req, res, next) => {
 
-    const body = {
-      title: req.body.title,
-      description: req.body.description,
-      summary: req.body.summary,
-      location: req.body.location,
-  //    status: req.body.status,
-  //    modBreak: req.body.modBreak,
-      thema: req.body.thema
+
+    const body = {};
+
+    if (req.body.title) {
+      body.title = req.body.title;
     }
+
+    if (req.body.description) {
+      body.description = req.body.description;
+    }
+
+    if (req.body.summary) {
+      body.summary = req.body.summary;
+    }
+
+    if (req.body.location) {
+      body.location = req.body.location;
+    }
+
+    if (req.body.thema) {
+      body.thema = req.body.thema;
+    }
+
+    if (req.body.status) {
+      body.status = req.body.status;
+    }
+
 
     const options = {
        method: 'PUT',
@@ -171,6 +189,10 @@ app.post('/admin/site/:siteId/idea/:ideaId',
         body: body,
         json: true // Automatically parses the JSON string in the response
     };
+
+    console.log('===> req.body', req.body);
+
+    console.log('===> options', options);
 
     rp(options)
       .then(function (response) {
