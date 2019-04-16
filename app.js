@@ -311,8 +311,14 @@ app.post('/site', (req, res) => {
 
   dbExists(dbToCopy)
     .then((exists) => {
+      console.log('urlToCopy', urlToCopy);
+
+      console.log('dbToCopy', dbToCopy);
       const dbName = exists ? dbToCopy : process.env.DEFAULT_DB;
       const stagingUrlDB = stagingUrl.replace(/\./g, '');
+      console.log('stagingUrlDB', stagingUrlDB);
+
+      console.log('dbName', dbName);
 
       /**
        * Create database for stagingUrl
