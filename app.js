@@ -314,6 +314,9 @@ app.post('/site', (req, res) => {
       console.log('urlToCopy', urlToCopy);
 
       console.log('dbToCopy', dbToCopy);
+
+      console.log('exists', exists);
+
       const dbName = exists ? dbToCopy : process.env.DEFAULT_DB;
       const stagingUrlDB = stagingUrl.replace(/\./g, '');
       console.log('stagingUrlDB', stagingUrlDB);
