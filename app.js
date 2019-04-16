@@ -150,8 +150,6 @@ app.post('/admin/site/:siteId/idea/:ideaId',
   ideaMw.oneForSite,
   siteMw.withOne,
   (req, res, next) => {
-
-
     const body = {};
 
     if (req.body.title) {
@@ -189,10 +187,6 @@ app.post('/admin/site/:siteId/idea/:ideaId',
         body: body,
         json: true // Automatically parses the JSON string in the response
     };
-
-    console.log('===> req.body', req.body);
-
-    console.log('===> options', options);
 
     rp(options)
       .then(function (response) {
@@ -309,13 +303,15 @@ app.get('/admin/copy/:oldName/:newName', (req, res) => {
 });
 
 app.post('/site', (req, res) => {
-  const type = req.body.type;
+  const urlToCopy = req.body.stagingUrl;
+  const dbToCopy = urlToCopy.replace(/\./g, '');
+
   const stagingUrl = slugify(req.body.stagingName) + '.' + process.env.WILDCARD_HOST;
   const productionUrl = cleanUrl(req.body.productionUrl);
 
-  dbExists(type)
+  dbExists(dbToCopy)
     .then((exists) => {
-      const dbName = exists ? type : process.env.DEFAULT_DB;
+      const dbName = exists ? dbToCopy : process.env.DEFAULT_DB;
       const stagingUrlDB = stagingUrl.replace(/\./g, '');
 
       /**

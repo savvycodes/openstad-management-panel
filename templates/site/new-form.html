@@ -70,6 +70,20 @@
         </div>
         <div class="onboarding-content with-gradient">
           <h4 class="onboarding-title">
+            Kopieer bestaande site
+          </h4>
+          <div class="onboarding-text">
+            Kies de standaard website of een andere bestaande site om te kopieren,
+            dit wordt het uitgangspunt van de nieuwe website.
+          </div>
+          <select name="stagingUrl" class="form-control">
+            <option value="">Standaard</option>
+            {% for site in sites %}
+            <option value="{{site.stagingUrl}}">{{site.name}}</option>
+            {% endfor %}
+          </select>
+
+          {#<h4 class="onboarding-title">
             Type website
           </h4>
           <div class="onboarding-text">
@@ -128,6 +142,7 @@
               </label>
             </div>
           </div>
+          #}
         </div>
       </div>
     </div>
