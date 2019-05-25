@@ -8,6 +8,7 @@ exports.run = (req, res, next) => {
   res.locals.productionServerIp = process.env.PRODUCTION_SERVER_IP;
   res.locals.wildcardHost = process.env.WILDCARD_HOST;
   res.locals.appUrl = process.env.APP_URL;
+  res.locals.apiUrl = process.env.API_URL;
   res.locals.emailAssetsUrl = process.env.EMAIL_ASSETS_URL;
   res.locals.config = {
     openStadMap: mapConfig
