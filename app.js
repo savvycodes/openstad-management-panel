@@ -402,6 +402,9 @@ app.get('/login', (req, res, next) => {
 app.get('/oauth/login', (req, res, next) => {
   const fullUrl = appUrl + '/admin' //+ req.originalUrl;
   const redirectUrl = `${apiUrl}/oauth/site/${siteId}/login?redirectUrl=${fullUrl}`;
+
+  console.log('====>>>> redirectUrl', redirectUrl);
+
   res.redirect(redirectUrl);
 });
 
