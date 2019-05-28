@@ -1,34 +1,42 @@
 const apiUrl = process.env.API_URL;
 const rp = require('request-promise');
 
-
 const fetchUserData = (req, res, next) => {
-  const demoUser = {
-    email: 'demo@demo.nl',
-    firstName: 'Tosh',
-    lastName: 'Koevoets',
-    role: 'admin'
-  };
+  const jwt = req.query.jwt;
 
-  req.user = demoUser
-  res.locals.user = demoUser;
-  next();
-
-  /*
   rp({
-    method: 'POST',
-    uri: `${apiUrl}/api/user/me`
+      uri: `${apiUrl}/oauth/me`,
+      headers: {
+          'Accept': 'application/json',
+          "X-Authorization" : `Bearer ${jwt}`,
+          "Cache-Control": "no-cache"
+      },
+      json: true // Automatically parses the JSON string in the response
   })
-  .then((user) => {
-    req.user = user;
-    res.locals.user = user;
-    next();
-  })
-  .catch((e) => {
-    console.log('===> e', e);
-    res.redirect('/');
-  });
-  */
+    .then(function (user) {
+      if (user) {
+        req.user = user
+        res.locals.user = user;
+        next();
+      } else {
+        // if not valid clear the JWT and redirect
+        req.session.jwt = '';
+        req.session.save(() => {
+          res.redirect('/');
+          return;
+        })
+      }
+
+    })
+    .catch((e) => {
+      // if not valid clear the JWT and redirect
+      req.session.jwt = '';
+      req.session.save(() => {
+        res.redirect('/');
+        return;
+      })
+    });
+
 }
 
 const ensureRights = (req, res, next) => {
@@ -58,7 +66,6 @@ const check = (req, res, next) => {
     req.isAuthenticated = true;
 
     req.session.save(() => {
-
       // redirect to remove JWT from url, otherwise browser history will save JWT, allowing people to login.
       res.redirect('/');
     })
