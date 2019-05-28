@@ -312,18 +312,9 @@ app.post('/site', (req, res) => {
 
   dbExists(dbToCopy)
     .then((exists) => {
-      console.log('urlToCopy', urlToCopy);
-
-      console.log('dbToCopy', dbToCopy);
-
-      console.log('exists', exists);
-
       const dbName = exists ? dbToCopy : process.env.DEFAULT_DB;
       const stagingUrlDB = stagingUrl.replace(/\./g, '');
-      console.log('stagingUrlDB', stagingUrlDB);
-
-      console.log('dbName', dbName);
-
+      
       /**
        * Create database for stagingUrl
        */
@@ -402,8 +393,6 @@ app.get('/login', (req, res, next) => {
 app.get('/oauth/login', (req, res, next) => {
   const fullUrl = appUrl + '/admin' //+ req.originalUrl;
   const redirectUrl = `${apiUrl}/oauth/site/${siteId}/login?redirectUrl=${fullUrl}`;
-
-  console.log('====>>>> redirectUrl', redirectUrl);
 
   res.redirect(redirectUrl);
 });
