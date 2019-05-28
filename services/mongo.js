@@ -1,8 +1,9 @@
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
+const host = process.env.MONGO_DB_HOST || 'localhost';
 const port = 27017;
-const MongoServer = new mongodb.Server("127.0.0.1", port);
-const url = 'mongodb://localhost:' + port;
+const MongoServer = new mongodb.Server(host, port);
+const url = 'mongodb://' + host + ':' + port;
 
 exports.copyMongoDb = (oldDbName, newDbName) => {
   return new Promise((resolve, reject) => {
@@ -33,7 +34,6 @@ exports.copyMongoDb = (oldDbName, newDbName) => {
 }
 
 exports.dbExists = (dbName) => {
-  var url = 'mongodb://localhost:27017';
 
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, (err, db) => {
@@ -57,7 +57,6 @@ exports.dbExists = (dbName) => {
 }
 
 exports.deleteDb = (dbName) => {
-  var url = 'mongodb://localhost:27017';
 
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, (err, db) => {
