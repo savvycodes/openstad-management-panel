@@ -29,7 +29,8 @@ const cleanUrl = (url) => {
 }
 
 const apiUrl = process.env.API_URL;
-const appUrl = process.env.APP_URL
+const appUrl = process.env.APP_URL;
+const siteId = process.env.SITE_ID;
 
 const slugify = (text) => {
   return text.toString().toLowerCase()
@@ -400,7 +401,7 @@ app.get('/login', (req, res, next) => {
 
 app.get('/oauth/login', (req, res, next) => {
   const fullUrl = appUrl + '/admin' //+ req.originalUrl;
-  const redirectUrl = `${apiUrl}/oauth/login?redirectUrl=${fullUrl}`;
+  const redirectUrl = `${apiUrl}/oauth/site/${siteId}/login?redirectUrl=${fullUrl}`;
   res.redirect(redirectUrl);
 });
 
