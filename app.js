@@ -17,6 +17,9 @@ const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
 const authMw            = require('./middleware/auth');
 
+const userClientApi     = require('./services/userClientApi');
+const siteApi           = require('./services/siteApi');
+
 const dateFilter                  = require('./nunjucks/dateFilter');
 const currencyFilter              = require('./nunjucks/currency');
 const limitTo                     = require('./nunjucks/limitTo');
@@ -26,6 +29,15 @@ const replaceIdeaVariablesFilter  = require('./nunjucks/replaceIdeaVariables');
 
 const cleanUrl = (url) => {
   return url.replace(['http://', 'https://'], '');
+}
+
+const ensureUrlHasProtocol = (url) {
+  if (!url.startsWith('http://') || !url.startsWith('https://')) {
+    // if no protocol, assume https
+    url = 'https://' + url;
+  }
+
+  return url;
 }
 
 const apiUrl = process.env.API_URL;
@@ -120,15 +132,11 @@ app.use('/admin',
   authMw.ensureRights
 );
 
-app.get('/admin', (req, res) => {
-  Site
-    .fetchAll()
-    .then(function (resData) {
-      const sites = resData.serialize();
-
-      res.render('overview.html', {
-        sites: sites
-      });
+app.get('/admin',
+  siteMw.withAll,
+  (req, res) => {
+  res.render('overview.html', {
+    sites: req.sites
   });
 });
 
@@ -203,7 +211,6 @@ app.post('/admin/site/:siteId/idea/:ideaId',
   }
 );
 
-
 app.post('/admin/site/:siteId/idea/:ideaId/delete',
   (req, res, next) => {
     rp({
@@ -252,8 +259,6 @@ app.post('/admin/site/:siteId/idea',
         json: true // Automatically parses the JSON string in the response
     };
 
-    console.log('====> options', options);
-
     rp(options)
       .then(function (response) {
          req.flash('success', { msg: 'Aangemaakt!'});
@@ -262,7 +267,6 @@ app.post('/admin/site/:siteId/idea',
       })
       .catch(function (err) {
         console.log('===> err', err);
-
         req.flash('error', { msg: 'Er gaat iets mis!'});
         res.redirect(req.header('Referer')  || appUrl);
       });
@@ -303,42 +307,82 @@ app.get('/admin/copy/:oldName/:newName', (req, res) => {
     });
 });
 
-app.post('/site', (req, res) => {
-  const urlToCopy = req.body.stagingUrl;
-  const dbToCopy = urlToCopy.replace(/\./g, '');
+app.post('/site',
+  siteMw.all,
+  (req, res) => {
+  /**
+   * Create Site in API
+   */
+   const domain = cleanUrl(req.body.productionUrl);
+   const apiDomain = cleanUrl(apiUrl);
+   const domainWithProtocol = ensureUrlHasProtocol(req.body.productionUrl);
+   const siteName = req.body.name;
+   // add time to make the name unique
+   const dbName = time() + '-' + domain.replace(/\./g, '');
+   const siteToCopy = req.sites.find(site => req.body.siteIdToCopy);
+   const authApiConfigCopy = req.authClients.find(site => req.body.siteIdToCopy);
+   let dbToCopy = siteToCopy && siteToCopy.cms ? siteToCopy.cms.dbName : false;
+   let siteId;
 
-  const stagingUrl = slugify(req.body.stagingName) + '.' + process.env.WILDCARD_HOST;
-  const productionUrl = cleanUrl(req.body.productionUrl);
-
-  dbExists(dbToCopy)
-    .then((exists) => {
-      const dbName = exists ? dbToCopy : process.env.DEFAULT_DB;
-      const stagingUrlDB = stagingUrl.replace(/\./g, '');
-      
-      /**
-       * Create database for stagingUrl
-       */
-      copyDb(dbName, stagingUrlDB)
-        .then((response) => {
-          new Site({
-            'name': req.body.siteName,
-            'productionUrl': productionUrl,
-            'stagingUrl': stagingUrl,
-            'stagingName': req.body.stagingName,
-            'fromEmail': req.body.fromEmail,
-            'fromName': req.body.fromName,
-          })
-          .save()
-          .then((site) => { res.redirect('https://' + stagingUrl); });
-        })
-        .catch((e) => {
-          res.status(500).json({ error: 'An error occured copying the DB: ' + e.msg });
-        });
-    })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).json({ error: 'An error occured checking if the DB exists: ' + e.msg });
-    })
+   userClientApi.create(token, {
+     name: siteName,
+     siteUrl: domainWithProtocol,
+     redirectUrl: domainWithProtocol,
+     description: '',
+     authTypes: ['Url'],
+     requiredUserFields: ["firstName", "lastName", "email"],
+     allowedDomains: [domain, apiDomain],
+     config: {
+       "backUrl": domainWithProtocol,
+       'fromEmail': req.body.fromEmail,
+       'fromName': req.body.fromName,
+    }
+  })
+  .then((client) => {
+   return siteApi
+     .create(token, {
+        domain: domain,
+        name: req.body.name,
+        title: req.body.name,
+        config: {
+          allowedDomains: [domain],
+          basicAuth: {
+            active: req.body.basicAuthActive === 'yes',
+            user: req.body.basicAuthUser,
+            password: req.body.basicAuthPassword,
+          },
+          cms: {
+            dbName: dbName,
+            url: domainWithProtocol,
+            hostname: domain,
+          },
+          oauth: {
+            "auth-client-id": client.clientId,
+            "auth-client-secret":  client.clietId,
+          },
+          email: {
+  					siteaddress: req.body.fromEmail,
+  					thankyoumail: {
+							from: req.body.fromEmail,
+  					}
+    			},
+        }
+     })
+   })
+     .then((site) => {
+       return dbExists(dbToCopy);
+     })
+     .then((exists) => {
+       /**
+        * Copy mongodb database for CMS from chosen site, or if empty default
+        */
+       dbToCopy = exists ? dbToCopy : process.env.DEFAULT_DB;
+       return copyDb(dbToCopy, dbName);
+     })
+     .catch((e) => {
+       console.log(e);
+       res.status(500).json({ error: 'An error occured: ' + e.msg });
+     });
 });
 
 app.post('/site/:siteId', (req, res) => {
