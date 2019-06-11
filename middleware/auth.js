@@ -78,7 +78,6 @@ const check = (req, res, next) => {
      * Add user call to make sure it's an active JWT.
      */
     req.isAuthenticated = !!req.session.jwt;
-    req.isAuthenticated = true;
     next();
   }
 };

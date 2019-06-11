@@ -1,10 +1,10 @@
 const rp = require('request-promise');
 const apiUrl = process.env.USER_API;
 
-const fetch = (token, userId) => {
+exports.fetch = (token, userId) => {
   return rp({
     method: 'GET',
-    uri: `${apiUrl}/users`,
+    uri: `${apiUrl}/user/${userId}`,
     headers: {
         'Accept': 'application/json',
         'X-Authorization' : `Bearer ${token}`,
@@ -14,10 +14,11 @@ const fetch = (token, userId) => {
   .then(response => response.json());
 }
 
-const fetchAll = (token) => {
+exports.fetchAll = (token) => {
+
   return rp({
     method: 'GET',
-    uri: `${apiUrl}/users`,
+    uri: `${apiUrl}/user`,
     headers: {
         'Accept': 'application/json',
         'X-Authorization' : `Bearer ${token}`,
@@ -27,7 +28,7 @@ const fetchAll = (token) => {
   .then(response => response.json());
 }
 
-const create = (token) => {
+exports.create = (token) => {
   return rp({
       method: 'POST',
       uri: `${apiUrl}/user`,
@@ -41,7 +42,7 @@ const create = (token) => {
   .then(response => response.json());
 }
 
-const update = (token, userId, data) => {
+exports.update = (token, userId, data) => {
   return rp({
     method: 'PUT',
     uri: `${apiUrl}/user/${userId}`,
@@ -55,19 +56,11 @@ const update = (token, userId, data) => {
   .then(response => response.json());
 }
 
-const delete = (token, userId, data) => {
+exports.delete = (token, userId, data) => {
   return rp({
     method: 'DELETE',
     uri: `${apiUrl}/user/${userId}`,
     json: true // Automatically parses the JSON string in the response
   })
   .then(response => response.json());
-}
-
-exports = {
-  fetch,
-  fetchAll,
-  create,
-  update,
-  delete
 }

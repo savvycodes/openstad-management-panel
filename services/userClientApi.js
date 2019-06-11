@@ -1,7 +1,7 @@
 const rp = require('request-promise');
 const apiUrl = process.env.USER_API;
 
-const create = (token) => {
+const create = (token, data) => {
   return rp({
         method: 'POST',
         uri: `${apiUrl}/client`,
@@ -29,10 +29,14 @@ const update = (token, clientId, data) => {
   .then(response => response.json());
 }
 
-const delete = (token, userId, data) => {
+const deleteClient = (token, clientId) => {
   return rp({
     method: 'DELETE',
-    uri: `${apiUrl}/user/${userId}`,
+    uri: `${apiUrl}/client/${clientId}`,
+    headers: {
+        'Accept': 'application/json',
+        'X-Authorization' : `Bearer ${token}`,
+    },
     json: true // Automatically parses the JSON string in the response
   })
   .then(response => response.json());
@@ -41,5 +45,5 @@ const delete = (token, userId, data) => {
 exports = {
   create,
   update,
-  delete
+  delete: deleteClient
 }

@@ -2,7 +2,7 @@ const userApiService = require('../services/userApi');
 
 exports.withOne = (req, res, next) => {
   userApiService
-    .fetch(req.params.userId)
+    .fetch(req.session.jwt, req.params.userId)
     .then((user) => {
       req.editUser = user;
       res.locals.editUser = req.editUser;
@@ -16,7 +16,7 @@ exports.withOne = (req, res, next) => {
 
 exports.withAll = (req, res, next) => {
   userApiService
-    .fetchAll()
+    .fetchAll(req.session.jwt)
     .then((users) => {
       req.users = users;
       res.locals.users = req.users;

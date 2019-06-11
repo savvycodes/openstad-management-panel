@@ -1,10 +1,38 @@
 const rp = require('request-promise');
-const apiUrl = process.env.USER_API;
+const apiUrl = process.env.API_URL + '/api';
 
-const fetch = (token, userId) => {
+exports.fetch = (token, siteId) => {
   return rp({
     method: 'GET',
-    uri: `${apiUrl}/users`,
+    uri: `${apiUrl}/site/${siteId}`,
+    headers: {
+        'Accept': 'application/json',
+        'X-Authorization' : `Bearer ${token}`,
+    },
+    json: true // Automatically parses the JSON string in the response
+  })
+//.then(response => response.json());
+}
+
+exports.fetchAll = (token) => {
+  console.log('token', token);
+
+  return rp({
+    method: 'GET',
+    uri: `${apiUrl}/site`,
+    headers: {
+        'Accept': 'application/json',
+        'X-Authorization' : `Bearer ${token}`,
+    },
+    json: true // Automatically parses the JSON string in the response
+  })
+//  .then(response => response.json());
+}
+
+exports.deleteSite = (token, siteId) => {
+  return rp({
+    method: 'DELETE',
+    uri: `${apiUrl}/site/${siteId}`,
     headers: {
         'Accept': 'application/json',
         'X-Authorization' : `Bearer ${token}`,
@@ -14,39 +42,10 @@ const fetch = (token, userId) => {
   .then(response => response.json());
 }
 
-const fetchAll = (token) => {
-  return rp({
-    method: 'GET',
-    uri: `${apiUrl}/users`,
-    headers: {
-        'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
-    },
-    json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
-}
-
-const post = (token) => {
-  return rp({
-    {
-        method: 'POST',
-        uri: `${apiUrl}/user`,
-        headers: {
-            'Accept': 'application/json',
-            'X-Authorization' : `Bearer ${token}`,
-        },
-        body: data,
-        json: true // Automatically parses the JSON string in the response
-    }
-  })
-  .then(response => response.json());
-}
-
-const update = (token, userId, data) => {
+exports.update = (token, siteId, data) => {
   return rp({
     method: 'PUT',
-    uri: `${apiUrl}/user/${userId}`,
+    uri: `${apiUrl}/site/${siteId}`,
     headers: {
         'Accept': 'application/json',
         'X-Authorization' : `Bearer ${token}`,
@@ -55,21 +54,4 @@ const update = (token, userId, data) => {
     json: true // Automatically parses the JSON string in the response
   })
   .then(response => response.json());
-}
-
-const delete = (token, userId, data) => {
-  return rp({
-    method: 'DELETE',
-    uri: `${apiUrl}/user/${userId}`,
-    json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
-}
-
-exports = {
-  fetch,
-  fetchAll,
-  post,
-  update,
-  delete
 }

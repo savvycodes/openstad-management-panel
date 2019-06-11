@@ -31,7 +31,7 @@ const cleanUrl = (url) => {
   return url.replace(['http://', 'https://'], '');
 }
 
-const ensureUrlHasProtocol = (url) {
+const ensureUrlHasProtocol = (url) => {
   if (!url.startsWith('http://') || !url.startsWith('https://')) {
     // if no protocol, assume https
     url = 'https://' + url;
@@ -119,6 +119,8 @@ app.get('/', (req, res) => {
   res.redirect('/admin');
 });
 
+require('./routes/user')(app);
+
 app.use(
   authMw.check,
   authMw.fetchUserData
@@ -184,7 +186,6 @@ app.post('/admin/site/:siteId/idea/:ideaId',
     if (req.body.status) {
       body.status = req.body.status;
     }
-
 
     const options = {
        method: 'PUT',
@@ -308,7 +309,7 @@ app.get('/admin/copy/:oldName/:newName', (req, res) => {
 });
 
 app.post('/site',
-  siteMw.all,
+  siteMw.withAll,
   (req, res) => {
   /**
    * Create Site in API

@@ -32,6 +32,6 @@ app.post('/admin/site/:siteId/user-api-client',
          },
          "clientDisclaimerUrl": "https://westbegroot.staging.openstadsdeel.nl/disclaimer"
        }
-      });
+    });
   }
 );
