@@ -1,7 +1,6 @@
 const Site = require('../models').Site;
 const siteApiService = require('../services/siteApi');
 
-console.log('----> siteApiService', siteApiService);
 
 exports.withOne = (req, res, next) => {
   siteApiService

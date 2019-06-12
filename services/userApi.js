@@ -1,66 +1,73 @@
 const rp = require('request-promise');
 const apiUrl = process.env.USER_API;
+const clientId = process.env.USER_API_CLIENT_ID;
+const clientSecret = process.env.USER_API_CLIENT_SECRET;
+const apiCredentials = {
+    client_id: clientId,
+    client_secret: clientSecret,
+}
 
-exports.fetch = (token, userId) => {
-  return rp({
+exports.fetch = (userId) => {
+  const options = {
     method: 'GET',
     uri: `${apiUrl}/user/${userId}`,
     headers: {
-        'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
+        'Accept': 'application/json'
     },
+    body: apiCredentials,
     json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
+  }
+  console.log('==> options', options);
+  return rp(options);
+//  .then(response => response.json());
 }
 
-exports.fetchAll = (token) => {
-
-  return rp({
+exports.fetchAll = () => {
+  const options = {
     method: 'GET',
-    uri: `${apiUrl}/user`,
+    uri: `${apiUrl}/users`,
     headers: {
-        'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
+        'Accept': 'application/json'
     },
+    body: apiCredentials,
     json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
+  }
+
+  console.log('===> options', options);
+  return rp(options);
+//  .then(response => response.json());
 }
 
-exports.create = (token) => {
+exports.create = (data) => {
   return rp({
       method: 'POST',
       uri: `${apiUrl}/user`,
       headers: {
-          'Accept': 'application/json',
-          'X-Authorization' : `Bearer ${token}`,
+          'Accept': 'application/json'
       },
-      body: data,
+      body: Object.assign(data, apiCredentials),
       json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
+  });
 }
 
 exports.update = (token, userId, data) => {
   return rp({
-    method: 'PUT',
+    method: 'POST',
     uri: `${apiUrl}/user/${userId}`,
     headers: {
         'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
+        'Authorization' : `Bearer ${token}`,
     },
-    body: data,
+    body: Object.assign(data, apiCredentials),
     json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
+  });
 }
 
 exports.delete = (token, userId, data) => {
   return rp({
-    method: 'DELETE',
-    uri: `${apiUrl}/user/${userId}`,
-    json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
+    method: 'POST',
+    uri: `${apiUrl}/user/${userId}/delete`,
+    json: true, // Automatically parses the JSON string in the response
+    body: Object.assign(data, apiCredentials),
+  });
 }

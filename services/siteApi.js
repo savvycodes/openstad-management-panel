@@ -7,7 +7,7 @@ exports.fetch = (token, siteId) => {
     uri: `${apiUrl}/site/${siteId}`,
     headers: {
         'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
+        'Authorization' : `Bearer ${token}`,
     },
     json: true // Automatically parses the JSON string in the response
   })
@@ -22,7 +22,7 @@ exports.fetchAll = (token) => {
     uri: `${apiUrl}/site`,
     headers: {
         'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
+        'Authorization' : `Bearer ${token}`,
     },
     json: true // Automatically parses the JSON string in the response
   })
@@ -35,7 +35,7 @@ exports.deleteSite = (token, siteId) => {
     uri: `${apiUrl}/site/${siteId}`,
     headers: {
         'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
+        'Authorization' : `Bearer ${token}`,
     },
     json: true // Automatically parses the JSON string in the response
   })
@@ -48,7 +48,7 @@ exports.update = (token, siteId, data) => {
     uri: `${apiUrl}/site/${siteId}`,
     headers: {
         'Accept': 'application/json',
-        'X-Authorization' : `Bearer ${token}`,
+        'Authorization' : `Bearer ${token}`,
     },
     body: data,
     json: true // Automatically parses the JSON string in the response
