@@ -45,7 +45,7 @@ const fetchUserData = (req, res, next) => {
 
 const ensureRights = (req, res, next) => {
    //if (req.user && req.user.role === 'admin') {
-  if (req.isAuthenticated) {
+  if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {
     res.status(500).json({ error: 'Huidige account heeft geen rechten' });
