@@ -2,7 +2,7 @@ const apiUrl = process.env.API_URL;
 const rp = require('request-promise');
 
 const fetchUserData = (req, res, next) => {
-  const jwt = req.query.jwt;
+  const jwt = req.query.jwt ? req.query.jwt : req.session.jwt;
 
   if (!jwt) {
     next();
@@ -17,6 +17,7 @@ const fetchUserData = (req, res, next) => {
         json: true // Automatically parses the JSON string in the response
     })
       .then(function (user) {
+
         if (user) {
           req.user = user
           res.locals.user = user;

@@ -1,10 +1,8 @@
-
-
 const userClientApi = require('../services/userClientApi');
 
 exports.withOne = (req, res, next) => {
   userClientApi
-    .fetch(req.session.jwt, req.params.clientId)
+    .fetch(req.params.clientId)
     .then((client) => {
       req.userApiClient = client;
       res.locals.userApiClient = req.client;
@@ -17,10 +15,10 @@ exports.withOne = (req, res, next) => {
 
 exports.withAll = (req, res, next) => {
   userClientApi
-    .fetchAll(req.session.jwt)
+    .fetchAll()
     .then((clients) => {
       req.userApiClients = clients;
-      res.locals.userApiClients = req.clients;
+      res.locals.userApiClients = req.userApiClients;
       next();
     })
     .catch((err) => {

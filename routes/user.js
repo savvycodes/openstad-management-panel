@@ -1,4 +1,6 @@
 const userMw = require('../middleware/user');
+const clientMw = require('../middleware/userClient');
+const roleMw = require('../middleware/role');
 const userApiService = require('../services/userApi');
 
 module.exports = function(app){
@@ -10,22 +12,36 @@ module.exports = function(app){
   );
 
   app.get('/admin/user',
+    clientMw.withAll,
+    roleMw.withAll,
     (req, res) => {
+
       res.render('users/form.html');
     }
   );
 
   app.get('/admin/user/:userId',
+    clientMw.withAll,
+    roleMw.withAll,
     userMw.withOne,
     (req, res) => {
-      res.render('users/form.html');
+      const userRoles = req.editUser.roles;
+
+      const userApiClients = req.userApiClients.map((client) => {
+        client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
+        return client;
+      });
+
+      res.render('users/form.html', {
+        userApiClients: userApiClients
+      });
     }
   );
 
   app.post('/admin/user',
     (req, res) => {
       userApiService
-        .create(req.session.jwt, req.body)
+        .create(req.body)
         .then((response) => {
           req.flash('success', { msg: 'Created user!' });
           res.redirect('/admin/users');
@@ -39,9 +55,11 @@ module.exports = function(app){
   );
 
   app.post('/admin/user/:userId',
+    clientMw.withAll,
+    roleMw.withAll,
     (req, res) => {
       userApiService
-        .update(req.session.jwt, req.params.userId, req.body)
+        .update(req.params.userId, req.body)
         .then((response) => {
           req.flash('success', { msg: 'Updated user!' });
           res.redirect('/admin/user/' + req.params.userId);
@@ -57,7 +75,7 @@ module.exports = function(app){
   app.post('/admin/user/:userId/delete',
     (req, res) => {
       userApiService
-        .delete(req.session.jwt, req.params.userId)
+        .delete(req.params.userId)
         .then((response) => {
           req.flash('success', { msg: 'Updated user!' });
           res.redirect('/admin/users');
@@ -69,6 +87,4 @@ module.exports = function(app){
         })
     }
   );
-
-
 }

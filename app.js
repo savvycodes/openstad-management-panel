@@ -74,8 +74,9 @@ const copyDb = require('./services/mongo').copyMongoDb;
 const dbExists = require('./services/mongo').dbExists;
 const deleteMongoDb =  require('./services/mongo').deleteDb;
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(express.static('public'));
 
 app.use(cookieParser(process.env.COOKIE_SECRET, {

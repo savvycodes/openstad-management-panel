@@ -1,10 +1,8 @@
 const rp = require('request-promise');
 const apiUrl = process.env.USER_API;
-const clientId = process.env.USER_API_CLIENT_ID;
-const clientSecret = process.env.USER_API_CLIENT_SECRET;
 const apiCredentials = {
-    client_id: clientId,
-    client_secret: clientSecret,
+    client_id:  process.env.USER_API_CLIENT_ID,
+    client_secret: process.env.USER_API_CLIENT_SECRET,
 }
 
 exports.fetch = (userId) => {
@@ -17,7 +15,7 @@ exports.fetch = (userId) => {
     body: apiCredentials,
     json: true // Automatically parses the JSON string in the response
   }
-  console.log('==> options', options);
+
   return rp(options);
 //  .then(response => response.json());
 }
@@ -39,31 +37,34 @@ exports.fetchAll = () => {
 }
 
 exports.create = (data) => {
+  let body = Object.assign(data, apiCredentials);
+  console.log('===>>> body', body);
   return rp({
       method: 'POST',
       uri: `${apiUrl}/user`,
       headers: {
           'Accept': 'application/json'
       },
-      body: Object.assign(data, apiCredentials),
+      body: body,
       json: true // Automatically parses the JSON string in the response
   });
 }
 
-exports.update = (token, userId, data) => {
+exports.update = (userId, data) => {
+  console.log('===>>> body', data);
+
   return rp({
     method: 'POST',
     uri: `${apiUrl}/user/${userId}`,
     headers: {
         'Accept': 'application/json',
-        'Authorization' : `Bearer ${token}`,
     },
     body: Object.assign(data, apiCredentials),
     json: true // Automatically parses the JSON string in the response
   });
 }
 
-exports.delete = (token, userId, data) => {
+exports.delete = (userId, data) => {
   return rp({
     method: 'POST',
     uri: `${apiUrl}/user/${userId}/delete`,
