@@ -15,7 +15,6 @@ module.exports = function(app){
     clientMw.withAll,
     roleMw.withAll,
     (req, res) => {
-
       res.render('users/form.html');
     }
   );
@@ -26,7 +25,8 @@ module.exports = function(app){
     userMw.withOne,
     (req, res) => {
       const userRoles = req.editUser.roles;
-
+      
+      // set user clients to role
       const userApiClients = req.userApiClients.map((client) => {
         client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
         return client;

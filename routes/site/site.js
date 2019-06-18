@@ -25,6 +25,13 @@ module.exports = function(app){
     }
   );
 
+  app.get('/admin/site/:siteId/idea/import',
+    siteMw.withOne,
+    (req, res) => {
+      res.render('site/idea/import.html');
+    }
+  );
+
   app.post('/admin/site/:siteId/idea/:ideaId',
     ideaMw.oneForSite,
     siteMw.withOne,
@@ -68,7 +75,6 @@ module.exports = function(app){
 
       rp(options)
         .then(function (response) {
-          console.log('===> response', response);
            const redirectTo = req.header('Referer')  || appUrl
            res.redirect(redirectTo);
         })

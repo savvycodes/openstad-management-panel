@@ -14,31 +14,41 @@ exports.fetch = (token, siteId) => {
 //.then(response => response.json());
 }
 
-exports.fetchAll = (token) => {
-
+exports.create = (token, siteId, body) => {
   return rp({
-    method: 'GET',
-    uri: `${apiUrl}/site`,
-    headers: {
-        'Accept': 'application/json',
-        'Authorization' : `Bearer ${token}`,
-    },
-    json: true // Automatically parses the JSON string in the response
-  })
-//  .then(response => response.json());
+      uri:  `${apiUrl}/api/site/${siteId}/idea`,
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          "X-Authorization" : ` Bearer ${token}`,
+      },
+      body: body,
+      json: true // Automatically parses the JSON string in the response
+  });
 }
 
-exports.deleteSite = (token, siteId) => {
+exports.fetchAll = (token, siteId) => {
   return rp({
-    method: 'DELETE',
-    uri: `${apiUrl}/site/${siteId}`,
+    method: 'GET',
+    uri:  `${apiUrl}/api/site/${siteId}/idea`,
     headers: {
         'Accept': 'application/json',
         'Authorization' : `Bearer ${token}`,
     },
     json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
+  });
+}
+
+exports.delete = (token, siteId, ideaId) => {
+  return rp({
+     method: 'DELETE',
+      uri:  apiUrl + `/api/site/${siteId}/idea/${ideaId}`,
+      headers: {
+          'Accept': 'application/json',
+          "X-Authorization" : ` Bearer ${token}`,
+      },
+      json: true // Automatically parses the JSON string in the response
+  });
 }
 
 exports.update = (token, siteId, data) => {
@@ -51,6 +61,5 @@ exports.update = (token, siteId, data) => {
     },
     body: data,
     json: true // Automatically parses the JSON string in the response
-  })
-  .then(response => response.json());
+  });
 }
