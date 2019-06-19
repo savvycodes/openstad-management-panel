@@ -3,7 +3,7 @@
 {% block quickLinks %}
 <a class="btn btn-white btn-sm" href="#">
   <i class="os-icon os-icon-window-content"></i>
-  <span>Maak een idee aan</span>
+  <span>Create unique codes</span>
 </a>
 {% endblock %}
 
@@ -12,30 +12,27 @@
   <div class="col-sm-12 col-xxxl-9">
     <div class="element-wrapper">
       <h6 class="element-header">
-        Import ideas
+         Create new unique codes
       </h6>
       <div class="element-box">
         <form
           method="POST"
-          action="/admin/site/{{site.id}}/idea/import"
+          action="/admin/site/{{site.id}}/idea/unique-codes"
           enctype="multipart/form-data"
         >
           <div class="form-group row">
-
             <label class="col-form-label col-sm-4" for="">
-              {{ __("File") }} ({{ __("format .csv") }})
+               {{ __("File") }} ({{ __("format .csv") }})
                <br />
-
-                 Use the following headers in the CSV:
-                 title
-                 summary
-                 description
-                 area
-                 theme
-                 location_lat
-                 location_long
-                 images (comma seperated)
-
+               {{ __("Use the following headers in the CSV:") }}
+               title
+               summary
+               description
+               area
+               theme
+               location_lat
+               location_long
+               images (comma seperated)
             </label>
 
             <div class="col-sm-8">
@@ -43,7 +40,7 @@
             </div>
           </div>
           <div class="form-buttons-w">
-            <button class="btn btn-primary" type="submit">Import</button>
+            <button class="btn btn-primary" type="submit">{{ __("Import") }}</button>
           </div>
         </form>
       </div>

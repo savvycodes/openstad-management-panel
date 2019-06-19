@@ -2,6 +2,7 @@
 var dotenv = require('dotenv');
 dotenv.load();
 const express           = require('express');
+const i18n              = require("i18n");
 const isDev             = process.env.ENVIRONMENT === 'development';
 const Site              = require('./models').Site;
 const bodyParser        = require('body-parser');
@@ -70,9 +71,9 @@ app.use((req, res, next) => {
   next();
 });
 
-const copyDb = require('./services/mongo').copyMongoDb;
-const dbExists = require('./services/mongo').dbExists;
-const deleteMongoDb =  require('./services/mongo').deleteDb;
+const copyDb          = require('./services/mongo').copyMongoDb;
+const dbExists        = require('./services/mongo').dbExists;
+const deleteMongoDb   = require('./services/mongo').deleteDb;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -101,13 +102,16 @@ app.use(expressSession({
     sameSite: false,
     path: '/'
   },
-  store: new FileStore({
-    ttl: 3600 * 24 * 31
-  }),
-
+  store: new FileStore({ ttl: 3600 * 24 * 31 }),
 }));
-app.use(flash());
 
+i18n.configure({
+    locales:['nl', 'en'],
+    directory: __dirname + '/locales'
+});
+
+app.use(i18n.init);
+app.use(flash());
 app.use(enrichMw.run);
 
 // redirect the index page to the admin section

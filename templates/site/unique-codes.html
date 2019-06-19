@@ -1,0 +1,44 @@
+{% extends 'user-layout.html' %}
+
+{% block quickLinks %}
+<a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}/unique-codes">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Create unique codes</span>
+</a>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        Unique codes for voting
+      </h6>
+      <div class="element-box">
+        <table id="dataTable1" width="100%" class="table table-striped table-lightfont">
+         <thead>
+            <tr>
+               <th>{{ __('Code') }}</th>
+               <th>{{ __('Used') }}</th>
+               <th>{{ __('Created at') }}</th>
+               <th> </th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for uniqueCode in uniqueCodes %}
+            <tr>
+               <td>{{ uniqueCode.code }}</td>
+               <td>{% if uniqueCode.userId %} {{ __('yes') }} {% else %} {{ __('no') }} {% endif %}</td>
+               <td>{{ uniqueCode.createdAt | date }}</td>
+               <td>
+                 <a href="/admin/site/{{site.id}}/unique-code/delete/{{uniqueCode.id}}" > {{ __('delete') }} </a> 
+               </td>
+            </tr>
+            {% endfor %}
+         </tbody>
+       </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

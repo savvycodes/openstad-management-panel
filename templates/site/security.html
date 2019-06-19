@@ -5,11 +5,157 @@
   <div class="col-sm-12 col-xxxl-9">
     <div class="element-wrapper">
       <h6 class="element-header">
-        Beveiliging & authenticatie
+        {{ __('Security & authentication') }}
       </h6>
       <div class="element-box">
+        <form method="POST" action="/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span>Authentication settings</span></legend>
 
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">{{ _('Available authentication') }}</label>
+              <div class="col-sm-8">
+                <div class="row">
+                {% for authType in authTypes %}
+                  <div class="col-sm-6">
+                    <label for="checkbox-auth-{{authType.key}}">
+                      {{authType.label}}
+                    </label>
+                    <input
+                      id="checkbox-auth-{{authType.key}}"
+                      type="checkbox"
+                      name="authType[]"
+                      value="{{authType.key}}"
+                      {% if authType.key in userClientApi.authType %}checked{%%}
+                    />
+                  </div>
+                {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">{{ _('Required fields') }}</label>
+              <div class="col-sm-8">
+                {% for requiredField in authRequiredFields %}
+                  <div class="col-sm-6">
+                    <label for="checkbox-auth-{{authType.key}}">
+                      {{requiredField.label}}
+                    </label>
+                    <input
+                      id="checkbox-auth-{{requiredField.key}}"
+                      type="checkbox"
+                      name="requiredField[]"
+                      value="{{requiredField.key}}"
+                    />
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="form-buttons-w">
+              <button class="btn btn-primary" type="submit">
+                {{ _('Save') }}
+              </button>
+            </div>
+          </fieldset>
+        </form>
       </div>
+      {% endfor %}
+
+      {% for authType in authTypes %}
+      <div
+        id="config-{{authType.key}}"
+        class="element-box auth-type-form {% if authType.key in userClientApi.authType %}active{% endif %}"
+      >
+        <form method="POST" action="/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span> Configure {{authType.label}} </span></legend>
+
+            {% for field in authType.fields %}
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">{{field.label}}</label>
+              <div class="col-sm-8">
+                {% if field.type === 'text' %}
+                <input
+                  class="form-control"
+                  type="{{field.type}}"
+                  name="{{field.key}}"
+                  value="{{userClientApi.config[authType.key][field.key]}}"
+                />
+                {% else if field.type === 'textarea' %}
+                <textarea name="{{field.key}}" rows="8" cols="80">{{userClientApi.config[authType.key][field.key]}}</textarea>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </fieldset>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">{{}}</button>
+          </div>
+        </form>
+      </div>
+      {% endfor %}
+
+      <div class="element-box">
+        <form method="POST" action="/site/{{site.id}}">
+          <fieldset>
+            <legend><span>{{ __('Password protect website') }}</span></legend>
+
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">
+                {{ _('Active') }}
+              </label>
+              <div class="col-sm-8">
+                <label>
+                  {{ __('On') }}
+                </label>
+                <input type="radio" name="basicAuth['active']" value="on" {% if site.config.basicAuth.active %} checked {% endif %}">
+                <br />
+                <label>
+                  {{ __('Off') }}
+                </label>
+                <input type="radio" name="basicAuth['active']" value="off" {% if !site.config.basicAuth.active %} checked {% endif %}">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">
+                {{ _('Username') }}
+              </label>
+              <div class="col-sm-8">
+                <input
+                  class="form-control"
+                  placeholder=""
+                  type="text"
+                  name="basicAuth['user']"
+                  value="{{site.config.basicAuth.user}}"
+                />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">
+                {{ _('Password') }}
+              </label>
+              <div class="col-sm-8">
+                <input
+                  class="form-control"
+                  placeholder=""
+                  type="text"
+                  name="basicAuth['password']"
+                  value="{{site.config.basicAuth.password}}"
+                />
+              </div>
+            </div>
+            <div class="form-buttons-w">
+              <button class="btn btn-primary" type="submit">
+                {{ _('Save') }}
+              </button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
     </div>
   </div>
 </div>

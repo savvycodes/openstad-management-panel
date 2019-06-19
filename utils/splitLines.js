@@ -1,1 +1,1 @@
-exports.splitLines(t) { return t.split(/\r\n|\r|\n/); }
+module.exports = (t) => { return t.split(/\r\n|\r|\n/); }

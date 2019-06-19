@@ -61,7 +61,7 @@
           <select name="stagingUrl" class="form-control">
             <option value="">Standaard</option>
             {% for site in sites %}
-            <option value="{{site.stagingUrl}}">{{site.name}}</option>
+            <option value="{{site.id}}">{{site.name}}</option>
             {% endfor %}
           </select>
 
@@ -135,19 +135,14 @@
         </div>
         <div class="onboarding-content with-gradient">
           <h4 class="onboarding-title">
-            Mailingsinstellingen
+            E-mail instellingen
           </h4>
           <div class="onboarding-text">
             Stel in welke email de afzender van de standaardemails moet krijgen.
             Dit zijn e-mails die automatisch door de site verzonden worden zoals:
             wachtwoord vergeten, reacties op reacties, status wijzigingen etc.
-            Zorg dat DNS instellingen goed staan zodat email niet in spam terecht komt:
-            <a href="#" target="_blank">
-              Lees hier meer over mailing DNS records
-            </a>
+            Zorg dat DNS instellingen goed staan zodat email niet in spam terecht komt.
           </div>
-
-
           <div class="col-sm-12">
             <div class="form-group">
               <label for="">E-mail</label>

@@ -13,6 +13,22 @@ exports.withOne = (req, res, next) => {
     });
 }
 
+exports.withOneForSite = (req, res, next) => {
+  const site = req.site;
+  const authClientId = req.site.config.oauth["auth-client-id"];
+
+  userClientApi
+    .fetch(authClientId)
+    .then((client) => {
+      req.userApiClient = client;
+      res.locals.userApiClient = req.client;
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 exports.withAll = (req, res, next) => {
   userClientApi
     .fetchAll()

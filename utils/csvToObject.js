@@ -1,6 +1,6 @@
 const splitLines = require('./splitLines');
 
-exports.csvToObject = (string) => {
+module.exports = (string) => {
   let arr = splitLines(string);
   const jsonObj = [];
   const headers = arr[0].split(',');

@@ -3,10 +3,13 @@ const siteMw            = require('../middleware/site');
 
 const userClientApi     = require('../services/userClientApi');
 const siteApi           = require('../services/siteApi');
+const slugify           = require();
+
 
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;
 const siteId = process.env.SITE_ID;
+
 
 
 module.exports = function(app){
@@ -15,136 +18,6 @@ module.exports = function(app){
     siteMw.withOne,
     (req, res) => {
       res.render('site/idea/form.html');
-    }
-  );
-
-  app.get('/admin/site/:siteId/idea',
-    siteMw.withOne,
-    (req, res) => {
-      res.render('site/idea/form.html');
-    }
-  );
-
-  app.get('/admin/site/:siteId/idea/import',
-    siteMw.withOne,
-    (req, res) => {
-      res.render('site/idea/import.html');
-    }
-  );
-
-  app.post('/admin/site/:siteId/idea/:ideaId',
-    ideaMw.oneForSite,
-    siteMw.withOne,
-    (req, res, next) => {
-      const body = {};
-
-      if (req.body.title) {
-        body.title = req.body.title;
-      }
-
-      if (req.body.description) {
-        body.description = req.body.description;
-      }
-
-      if (req.body.summary) {
-        body.summary = req.body.summary;
-      }
-
-      if (req.body.location) {
-        body.location = req.body.location;
-      }
-
-      if (req.body.thema) {
-        body.thema = req.body.thema;
-      }
-
-      if (req.body.status) {
-        body.status = req.body.status;
-      }
-
-      const options = {
-         method: 'PUT',
-          uri:  apiUrl + `/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
-          headers: {
-              'Accept': 'application/json',
-              "X-Authorization" : ` Bearer ${req.session.jwt}`,
-          },
-          body: body,
-          json: true // Automatically parses the JSON string in the response
-      };
-
-      rp(options)
-        .then(function (response) {
-           const redirectTo = req.header('Referer')  || appUrl
-           res.redirect(redirectTo);
-        })
-        .catch(function (err) {
-          console.log('===> err', err);
-
-           res.redirect(req.header('Referer')  || appUrl);
-        });
-    }
-  );
-
-  app.post('/admin/site/:siteId/idea/:ideaId/delete',
-    (req, res, next) => {
-      rp({
-         method: 'DELETE',
-          uri:  apiUrl + `/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
-          headers: {
-              'Accept': 'application/json',
-              "X-Authorization" : ` Bearer ${req.session.jwt}`,
-          },
-          json: true // Automatically parses the JSON string in the response
-      })
-        .then(function (response) {
-           res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-        })
-        .catch(function (err) {
-           res.redirect(req.header('Referer'));
-        });
-    }
-  );
-
-  app.post('/admin/site/:siteId/idea',
-    ideaMw.oneForSite,
-    siteMw.withOne,
-    (req, res, next) => {
-      let auth = `Bearer ${req.session.jwt}`;
-
-      //image upload
-      const body = {
-        title: req.body.title,
-        description: req.body.description,
-        summary: req.body.summary,
-        location: req.body.location,
-    //    status: req.body.status,
-    //    modBreak: req.body.modBreak,
-        thema: req.body.thema
-      };
-
-      const options = {
-          uri:  apiUrl + `/api/site/${req.params.siteId}/idea`,
-          method: 'POST',
-          headers: {
-              'Accept': 'application/json',
-              "X-Authorization" : ` Bearer ${req.session.jwt}`,
-          },
-          body: body,
-          json: true // Automatically parses the JSON string in the response
-      };
-
-      rp(options)
-        .then(function (response) {
-           req.flash('success', { msg: 'Aangemaakt!'});
-           res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-           res.redirect(redirectTo);
-        })
-        .catch(function (err) {
-          console.log('===> err', err);
-          req.flash('error', { msg: 'Er gaat iets mis!'});
-          res.redirect(req.header('Referer')  || appUrl);
-        });
     }
   );
 
@@ -159,15 +32,6 @@ module.exports = function(app){
     ideaMw.allForSite,
     siteMw.withOne,
     (req, res) => {
-      console.log('Hit it');
-      res.render('site/'+ req.params.page + '.html');
-    }
-  );
-
-  app.get('/admin/site/:siteId/idea/:ideaId',
-    ideaMw.oneForSite,
-    siteMw.withOne,
-    (req, res) => {
       res.render('site/'+ req.params.page + '.html');
     }
   );
@@ -176,7 +40,7 @@ module.exports = function(app){
     siteMw.withAll,
     (req, res) => {
     /**
-     * Create Site in API
+     * Create client in mijnopenstad oAuth API
      */
      const domain = cleanUrl(req.body.productionUrl);
      const apiDomain = cleanUrl(apiUrl);
@@ -204,6 +68,9 @@ module.exports = function(app){
       }
     })
     .then((client) => {
+    /**
+     * Create Site in openstad API
+     */
      return siteApi
        .create(token, {
           domain: domain,
@@ -250,17 +117,14 @@ module.exports = function(app){
        });
   });
 
-  app.post('/site/:siteId', (req, res) => {
-    const siteId = req.params.siteId;
-    const type = req.body.type;
-    //const stagingUrl = slugify(req.body.stagingName) + '.' + process.env.WILDCARD_HOST;
+  app.post('/site/:siteId',
+    siteMw.withOne,
+    (req, res) => {
     const productionUrl = cleanUrl(req.body.productionUrl);
 
     new Site({ id: req.params.siteId })
       .fetch()
       .then((site) => {
-
-
         site.set('productionUrl', productionUrl);
     //    site.set('stagingUrl', stagingUrl);
     //    site.set('stagingName', req.body.stagingName);
