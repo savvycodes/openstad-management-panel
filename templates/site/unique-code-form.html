@@ -17,30 +17,25 @@
       <div class="element-box">
         <form
           method="POST"
-          action="/admin/site/{{site.id}}/idea/unique-codes"
+          action="/admin/site/{{site.id}}/unique-codes/bulk"
           enctype="multipart/form-data"
         >
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">
-               {{ __("File") }} ({{ __("format .csv") }})
-               <br />
-               {{ __("Use the following headers in the CSV:") }}
-               title
-               summary
-               description
-               area
-               theme
-               location_lat
-               location_long
-               images (comma seperated)
+               {{ __("Amount of codes") }}
             </label>
 
             <div class="col-sm-8">
-              <input type="file" name="import_file" class="form-control" />
+              {% set codeAmountOptions = [1, 2, 3, 4, 5, 10, 20, 50, 100, 200, 500, 1000]; %}
+              <select name="amountOfCodes">
+                {% for codeAmountOption in codeAmountOptions %}
+                <option value="{{codeAmountOption}}">{{codeAmountOption}}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
           <div class="form-buttons-w">
-            <button class="btn btn-primary" type="submit">{{ __("Import") }}</button>
+            <button class="btn btn-primary" type="submit">{{ __("Create codes") }}</button>
           </div>
         </form>
       </div>

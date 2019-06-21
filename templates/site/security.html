@@ -24,7 +24,7 @@
                     <input
                       id="checkbox-auth-{{authType.key}}"
                       type="checkbox"
-                      name="authType[]"
+                      name="authTypes[]"
                       value="{{authType.key}}"
                       {% if authType.key in userClientApi.authType %}checked{%%}
                     />
@@ -45,7 +45,7 @@
                     <input
                       id="checkbox-auth-{{requiredField.key}}"
                       type="checkbox"
-                      name="requiredField[]"
+                      name="requiredUserFields[]"
                       value="{{requiredField.key}}"
                     />
                   </div>

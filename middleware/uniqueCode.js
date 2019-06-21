@@ -26,3 +26,16 @@ exports.withAll = (req, res, next) => {
       next(err);
     });
 }
+
+exports.withAllForClient = (req, res, next) => {
+  uniqueCodeApiService
+    .fetchAll({clientId: req.authClientId})
+    .then((uniqueCodes) => {
+      req.uniqueCodes = uniqueCodes;
+      res.locals.uniqueCodes = req.uniqueCodes;
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
+}

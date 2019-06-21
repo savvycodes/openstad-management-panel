@@ -1,5 +1,6 @@
 const Promise           = require("bluebird");
-
+const multer            = require('multer');
+const upload            = multer();
 const ideaMw            = require('../middleware/idea');
 const siteMw            = require('../middleware/site');
 const ideaApi           = require('../services/ideaApi');
@@ -35,6 +36,7 @@ module.exports = function(app){
 
   app.post('/admin/site/:siteId/idea/import',
     siteMw.withOne,
+    upload.single('file'),
     (req, res) => {
       const csvString = req.file.buffer.toString('utf8');
       const lines = csvToObject(csvString);

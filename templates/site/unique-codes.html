@@ -5,6 +5,10 @@
   <i class="os-icon os-icon-window-content"></i>
   <span>Create unique codes</span>
 </a>
+<a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}/unique-codes/export" target="_blank">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Export unique codes</span>
+</a>
 {% endblock %}
 
 {% block body %}
@@ -31,7 +35,7 @@
                <td>{% if uniqueCode.userId %} {{ __('yes') }} {% else %} {{ __('no') }} {% endif %}</td>
                <td>{{ uniqueCode.createdAt | date }}</td>
                <td>
-                 <a href="/admin/site/{{site.id}}/unique-code/delete/{{uniqueCode.id}}" > {{ __('delete') }} </a> 
+                 <a href="/admin/site/{{site.id}}/unique-code/delete/{{uniqueCode.id}}" class="btn btn btn-outline-danger"> {{ __('delete') }} </a>
                </td>
             </tr>
             {% endfor %}
