@@ -1,5 +1,6 @@
 const mapConfig = require('../config/map').default;
 const authTypes = require('../config/auth').types;
+const authUserFields = require('../config/auth').userFields;
 
 exports.run = (req, res, next) => {
   res.locals.assetsUrl            = process.env.API_URL + '/upload';
@@ -12,6 +13,7 @@ exports.run = (req, res, next) => {
   res.locals.apiUrl               = process.env.API_URL;
   res.locals.emailAssetsUrl       = process.env.EMAIL_ASSETS_URL;
   res.locals.authTypes            = authTypes;
+  res.locals.authUserFields       = authUserFields;
   res.locals.config               = { openStadMap: mapConfig }
   next();
 }

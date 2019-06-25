@@ -1,11 +1,11 @@
 const Promise           = require("bluebird");
 const multer            = require('multer');
 const upload            = multer();
-const ideaMw            = require('../middleware/idea');
-const siteMw            = require('../middleware/site');
-const ideaApi           = require('../services/ideaApi');
-const csvToObject       = require('../utils/csvToObject');
-const pick              = require('../utils/pick');
+const ideaMw            = require('../../middleware/idea');
+const siteMw            = require('../../middleware/site');
+const ideaApi           = require('../../services/ideaApi');
+const csvToObject       = require('../../utils/csvToObject');
+const pick              = require('../../utils/pick');
 const ideaFields        = [{key: 'title'}, {key: 'description'}, {key: 'summary'}, {key: 'location'}, {key: 'thema', extraData: true}, {key: 'area', extraData: true}, {key: 'images', extraData: true}, {key: 'status'}];
 
 const apiUrl = process.env.API_URL;

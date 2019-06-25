@@ -14,14 +14,15 @@ exports.withOne = (req, res, next) => {
 }
 
 exports.withOneForSite = (req, res, next) => {
-  const site = req.site;
-  const authClientId = req.site.config.oauth["auth-client-id"];
+  const site          = req.site;
+  const authClientId  = req.site.config.oauth["auth-client-id"];
 
   userClientApi
     .fetch(authClientId)
     .then((client) => {
       req.userApiClient = client;
-      res.locals.userApiClient = req.client;
+      res.locals.userApiClient = req.userApiClient;
+      res.locals.userApiClient.requiredUserFields = res.locals.userApiClient.requiredUserFields ? res.locals.userApiClient.requiredUserFields : [];
       next();
     })
     .catch((err) => {

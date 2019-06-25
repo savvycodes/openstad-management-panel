@@ -1,5 +1,7 @@
 const rp = require('request-promise');
 const apiUrl = process.env.USER_API;
+const nestedObjectAssign = require('nested-object-assign');
+
 const apiCredentials = {
     client_id:  process.env.USER_API_CLIENT_ID,
     client_secret: process.env.USER_API_CLIENT_SECRET,
@@ -37,7 +39,7 @@ exports.fetchAll = () => {
 }
 
 exports.create = (data) => {
-  let body = Object.assign(data, apiCredentials);
+  let body = nestedObjectAssign(data, apiCredentials);
   console.log('===>>> body', body);
   return rp({
       method: 'POST',
@@ -59,7 +61,7 @@ exports.update = (userId, data) => {
     headers: {
         'Accept': 'application/json',
     },
-    body: Object.assign(data, apiCredentials),
+    body: nestedObjectAssign(data, apiCredentials),
     json: true // Automatically parses the JSON string in the response
   });
 }
@@ -69,6 +71,6 @@ exports.delete = (userId, data) => {
     method: 'POST',
     uri: `${apiUrl}/user/${userId}/delete`,
     json: true, // Automatically parses the JSON string in the response
-    body: Object.assign(data, apiCredentials),
+    body: nestedObjectAssign(data, apiCredentials),
   });
 }

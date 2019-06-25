@@ -13,9 +13,13 @@
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">Title</label>
             <div class="col-sm-8">
-              <input class="form-control" placeholder="" type="text" name="name" value="{{site.title}}">
+              <input class="form-control" placeholder="" type="text" name="title" value="{{site.title}}">
             </div>
           </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </form>
       </div>
 
       <div class="element-box">
@@ -26,6 +30,11 @@
               <input class="form-control" placeholder="" type="text" name="productionUrl" value="{{site.domain}}">
             </div>
           </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </form>
+
       </div>
 
       <div class="element-box">
@@ -49,7 +58,8 @@
             <button class="btn btn-primary" type="submit">Opslaan</button>
           </div>
         </form>
-
+      </div>
+      <div class="element-box">
         <form method="POST" action="/admin/site/{{site.id}}/user-api">
           <fieldset>
             <legend><span>E-mail settings for auth </span></legend>
@@ -71,7 +81,7 @@
           </div>
         </form>
 
-        </div>
+      </div>
 
       <div class="element-box">
         <form method="POST" action="/site/{{site.id}}/delete">

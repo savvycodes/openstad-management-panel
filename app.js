@@ -16,9 +16,11 @@ const ideaMw            = require('./middleware/idea');
 const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
 const authMw            = require('./middleware/auth');
+const bodyMw            = require('./middleware/body');
 
 const userClientApi     = require('./services/userClientApi');
 const siteApi           = require('./services/siteApi');
+
 
 const dateFilter                  = require('./nunjucks/dateFilter');
 const currencyFilter              = require('./nunjucks/currency');
@@ -77,6 +79,8 @@ const deleteMongoDb   = require('./services/mongo').deleteDb;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyMw.parseBoolean);
+
 
 app.use(express.static('public'));
 

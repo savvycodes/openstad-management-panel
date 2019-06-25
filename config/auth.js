@@ -71,9 +71,49 @@ const types = [
   }
 ];
 
+const userFields = [
+  {
+    key: 'firstName',
+    label: 'First name',
+  },
+  {
+    key: 'lastName',
+    label: 'Last name',
+  },
+  {
+    key: 'email',
+    label: 'Email address',
+  },
+  {
+    key: 'phoneNumber',
+    label: 'Phone number',
+  },
+  {
+    key: 'streetName',
+    label: 'Street name',
+  },
+  {
+    key: 'houseNumber',
+    label: 'House name',
+  },
+  {
+    key: 'city',
+    label: 'City',
+  },
+  {
+    key: 'suffix',
+    label: 'Suffix',
+  },
+  {
+    key: 'postcode',
+    label: 'Postcode',
+  }
+];
+
 const get = (key) => {
   return types.find(type => type.key === key);
 }
 
+exports.userFields = userFields;
 exports.types = types;
 exports.get = get;
