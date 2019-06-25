@@ -18,17 +18,20 @@ const siteFields        = [{key: 'title'}];
 const siteConfigFields  = [{key: 'basicAuth'}];
 const authFields        = [{key: 'name'}, {key: 'config'}, {key: 'requiredUserFields'}, {key: 'authTypes'}];
 const deleteMongoDb     = require('../../services/mongo').deleteDb;
+const dbExists          = require('../../services/mongo').dbExists;
+const copyDb            = require('../../services/mongo').copyMongoDb;
 
+const cleanUrl = (url) => {
+  return url.replace(['http://', 'https://'], '');
+}
 
-function nestedassign(target, source) {
-  Object.keys(source).forEach(sourcekey=>{
-    if (Object.keys(source).find(targetkey=>targetkey===sourcekey) !== undefined && typeof source[sourcekey] === "object") {
-      target[sourcekey]=nestedassign(target[sourcekey],source[sourcekey]);
-    } else {
-      target[sourcekey]=source[sourcekey];
-    }
-  });
-  return target;
+const ensureUrlHasProtocol = (url) => {
+  if (!url.startsWith('http://') || !url.startsWith('https://')) {
+    // if no protocol, assume https
+    url = 'https://' + url;
+  }
+
+  return url;
 }
 
 
@@ -59,6 +62,7 @@ module.exports = function(app){
 
   app.post('/admin/site',
     siteMw.withAll,
+    userClientMw.withAll,
     (req, res, next) => {
     /**
      * Create client in mijnopenstad oAuth API
@@ -66,26 +70,29 @@ module.exports = function(app){
      const domain = cleanUrl(req.body.productionUrl);
      const apiDomain = cleanUrl(apiUrl);
      const domainWithProtocol = ensureUrlHasProtocol(req.body.productionUrl);
-     const siteName = req.body.name;
+     const siteName = req.body.siteName;
      // add time to make the name unique
-     const dbName = time() + '-' + domain.replace(/\./g, '');
-     const siteToCopy = req.sites.find(site => req.body.siteIdToCopy);
-     const authApiConfigCopy = req.authClients.find(site => req.body.siteIdToCopy);
+     const dbName = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '');
+     const siteToCopy = req.sites.find(site => parseInt(req.body.siteIdToCopy, 10) === site.id);
+     const authClientId = siteToCopy.config.oauth.authClientId;
+     const authApiConfigCopy = req.userApiClients.find(client => client.clientId === authClientId);
+
      let dbToCopy = siteToCopy && siteToCopy.cms ? siteToCopy.cms.dbName : false;
      let siteId;
 
-     userClientApi.create(token, {
+     userClientApi.create({
        name: siteName,
        siteUrl: domainWithProtocol,
        redirectUrl: domainWithProtocol,
-       description: '',
-       authTypes: ['Url'],
-       requiredUserFields: ["firstName", "lastName", "email"],
+       description: authApiConfigCopy ? authApiConfigCopy.description : '',
+       authTypes: authApiConfigCopy ? authApiConfigCopy.authTypes : ['Url'],
+       requiredUserFields: authApiConfigCopy ? authApiConfigCopy.requiredUserFields : ["firstName", "lastName", "email"],
        allowedDomains: [domain, apiDomain],
        config: {
          "backUrl": domainWithProtocol,
          'fromEmail': req.body.fromEmail,
          'fromName': req.body.fromName,
+         'authTypes' : authApiConfigCopy && authApiConfigCopy.config && authApiConfigCopy.config.authTypes ? authApiConfigCopy.config.authTypes : ["firstName", "lastName", "email"],
       }
     })
     .then((client) => {
@@ -95,7 +102,7 @@ module.exports = function(app){
      return siteApi
          .create(req.session.jwt, {
             domain: domain,
-            name: `${slugify(req.body.name)}-${new Date().getTime()}`,
+            name: `${slugify(req.body.siteName)}-${new Date().getTime()}`,
             title: req.body.name,
             config: {
               allowedDomains: [domain],
@@ -131,6 +138,10 @@ module.exports = function(app){
           */
          dbToCopy = exists ? dbToCopy : process.env.DEFAULT_DB;
          return copyDb(dbToCopy, dbName);
+       })
+       .then(() => {
+         req.flash('success', { msg: 'Aangemaakt!'});
+         res.redirect(req.header('Referer')  || appUrl);
        })
        .catch((e) => {
          console.log(e);
@@ -201,8 +212,6 @@ module.exports = function(app){
     siteMw.withOne,
     userClientMw.withOneForSite,
     (req, res, next) => {
-      console.log('==>>>>> req.params.siteId', req.params.siteId);
-
       if (req.userApiClient.config && req.userApiClient.config.authTypes && req.body.config && req.body.config.authTypes) {
         const siteConfig = req.userApiClient.config;
         req.userApiClient.config.authTypes = Object.assign(req.userApiClient.config.authTypes, req.body.config.authTypes);
@@ -210,7 +219,6 @@ module.exports = function(app){
       }
 
       let data = pick(req.body, authFields.map(field => field.key));
-      console.log('data.config 2', data.config);
       data = Object.assign(req.userApiClient, data);
 
       userClientApi

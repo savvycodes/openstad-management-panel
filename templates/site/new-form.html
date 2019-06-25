@@ -1,4 +1,4 @@
-<form method="POST" action="/site">
+<form method="POST" action="/admin/site">
   <div class="onboarding-slider-w">
     <div class="onboarding-slide">
       <div class="onboarding-side-by-side">
@@ -58,7 +58,7 @@
             Kies de standaard website of een andere bestaande site om te kopieren,
             dit wordt het uitgangspunt van de nieuwe website.
           </div>
-          <select name="stagingUrl" class="form-control">
+          <select name="siteIdToCopy" class="form-control">
             <option value="">Standaard</option>
             {% for site in sites %}
             <option value="{{site.id}}">{{site.name}}</option>

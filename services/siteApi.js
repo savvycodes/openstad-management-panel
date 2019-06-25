@@ -53,3 +53,21 @@ exports.update = (token, siteId, data) => {
 
   return rp(options);
 }
+
+
+exports.create = (token, data) => {
+  //data = JSON.stringify(data);
+
+  const options = {
+    method: 'POST',
+    uri: `${apiUrl}/site`,
+    headers: {
+        'Accept': 'application/json',
+        'X-Authorization' : `Bearer ${token}`,
+    },
+    body: data,
+    json: true // Automatically parses the JSON string in the response
+  };
+
+  return rp(options);
+}
