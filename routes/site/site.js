@@ -28,7 +28,7 @@ const cleanUrl = (url) => {
 }
 
 const ensureUrlHasProtocol = (url) => {
-  if (!url.startsWith('http://') || !url.startsWith('https://')) {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
     // if no protocol, assume https
     url = 'https://' + url;
   }
