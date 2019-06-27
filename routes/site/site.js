@@ -1,5 +1,7 @@
-const slugify           = require('slugify');
-const nestedObjectAssign = require('nested-object-assign');
+const slugify             = require('slugify');
+const nestedObjectAssign  = require('nested-object-assign');
+const Promise             = require("bluebird");
+
 //middleware
 const ideaMw            = require('../../middleware/idea');
 const siteMw            = require('../../middleware/site');
@@ -103,7 +105,7 @@ module.exports = function(app){
          .create(req.session.jwt, {
             domain: domain,
             name: `${slugify(req.body.siteName)}-${new Date().getTime()}`,
-            title: req.body.name,
+            title: req.body.siteName,
             config: {
               allowedDomains: [domain],
               basicAuth: {
@@ -234,18 +236,29 @@ module.exports = function(app){
 
   app.post('/admin/site/:siteId/delete',
     siteMw.withOne,
+    siteMw.addAuthClientId,
     (req, res, next) => {
 
-      Promises.all([
-        siteApi.delete(req.session.jwt, req.params.siteId),
-        userClientApi.delete(token, req.params.siteId),
-        deleteMongoDb(req.site.config.cms.dbName),
-      ])
+      const deleteActions = [
+  //      siteApi.delete(req.session.jwt, req.params.siteId),
+        userClientApi.delete(req.authClientId),
+      ];
+
+      if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
+        deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
+      }
+
+      Promise.all(deleteActions)
         .then((response) => {
           req.flash('success', { msg: 'Aangepast!'});
           res.redirect('/admin');
         })
-        .catch((err) => { next(err) });
+        .catch((err) => {
+          console.log( 'Error, admin/site/:siteId/delete: ', err);
+          req.flash('error', { msg: 'Ging iets mis!'});
+          res.redirect('/admin');
+      //     next(err)
+        });
     }
   );
 }

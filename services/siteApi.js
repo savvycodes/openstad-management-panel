@@ -25,7 +25,10 @@ exports.fetchAll = (token) => {
   });
 }
 
-exports.deleteSite = (token, siteId) => {
+exports.delete = (token, siteId) => {
+  console.log();
+
+  
   return rp({
     method: 'DELETE',
     uri: `${apiUrl}/site/${siteId}`,

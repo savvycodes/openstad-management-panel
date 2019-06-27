@@ -61,11 +61,11 @@ exports.update = (clientId, data) => {
   });
 }
 
-exports.delete = (clientId, data) => {
+exports.delete = (clientId) => {
   return rp({
     method: 'POST',
     uri: `${apiUrl}/client/${clientId}/delete`,
     json: true, // Automatically parses the JSON string in the response
-    body: nestedObjectAssign(data, apiCredentials),
+    body: apiCredentials,
   });
 }

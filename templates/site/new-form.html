@@ -59,9 +59,9 @@
             dit wordt het uitgangspunt van de nieuwe website.
           </div>
           <select name="siteIdToCopy" class="form-control">
-            <option value="">Standaard</option>
+          <!--<option value="">Standaard</option>!-->
             {% for site in sites %}
-            <option value="{{site.id}}">{{site.name}}</option>
+            <option value="{{site.id}}">{{site.title}}</option>
             {% endfor %}
           </select>
 

@@ -19,6 +19,7 @@ exports.withOne = (req, res, next) => {
 exports.addAuthClientId = (req, res, next) => {
   req.authClientId = req.site.config.oauth["auth-client-id"];
   res.locals.authClientId = req.site.config.oauth["auth-client-id"];
+  next();
 }
 
 exports.withAll = (req, res, next) => {
