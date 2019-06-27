@@ -24,7 +24,7 @@ const dbExists          = require('../../services/mongo').dbExists;
 const copyDb            = require('../../services/mongo').copyMongoDb;
 
 const cleanUrl = (url) => {
-  return url.replace(['http://', 'https://'], '');
+  return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
 }
 
 const ensureUrlHasProtocol = (url) => {
@@ -71,7 +71,7 @@ module.exports = function(app){
      */
      const domain = cleanUrl(req.body.productionUrl);
      const apiDomain = cleanUrl(apiUrl);
-     const domainWithProtocol = ensureUrlHasProtocol(req.body.productionUrl);
+     const domainWithProtocol = ensureUrlHasProtocol(domain);
      const siteName = req.body.siteName;
      // add time to make the name unique
      const dbName = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '');
