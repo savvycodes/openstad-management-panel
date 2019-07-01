@@ -20,5 +20,7 @@
 	"On": "On",
 	"Off": "Off",
 	"Username": "Username",
-	"Password": "Password"
+	"Password": "Password",
+	"Overview": "Overview",
+	"Actions": "Actions"
 }

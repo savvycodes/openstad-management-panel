@@ -1,4 +1,8 @@
-{% extends 'user-layout.html' %}
+{% extends 'layout.html' %}
+
+{% block sideMenu %}
+{% include 'partials/overview-menu.html' %}
+{% endblock %}
 
 {% block quickLinks %}
 <a class="btn btn-white btn-sm" href="/admin/user">

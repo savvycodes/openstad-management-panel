@@ -36,7 +36,6 @@ const ensureUrlHasProtocol = (url) => {
   return url;
 }
 
-
 module.exports = function(app){
   app.get('/admin/site/:siteId/idea/:ideaId',
     ideaMw.oneForSite,
@@ -175,6 +174,7 @@ module.exports = function(app){
     siteMw.withOne,
     userClientMw.withOneForSite,
     (req, res, next) => {
+
       const siteData = req.site;
       const domain = cleanUrl(req.body.productionUrl);
       const apiDomain = cleanUrl(apiUrl);
@@ -183,26 +183,35 @@ module.exports = function(app){
 
       // set domain to site api
       siteData.domain = domain;
-      siteData.config.cms.url = [domain];
-      siteData.config.allowedDomains = [domain];
+    ///  siteData.config.cms.url = siteData.config.cms.url ? [domain] : [];
+      siteData.config.allowedDomains = siteData.config.allowedDomains ? [domain] : [];
+
+
       promises.push(siteApi.update(req.session.jwt, req.params.siteId, siteData));
 
-      const clientData = req.userApiClient;
-      clientData.allowedDomains = [domain, apiDomain];
-      clientData.siteUrl = domainWithProtocol;
-      clientData.redirectUrl = domainWithProtocol;
-      clientData.config.backUrl = domainWithProtocol;
-      promises.push(siteApi.update(req.session.jwt, req.params.siteId, siteData));
+      if (req.userApiClient)  {
+        const clientData = req.userApiClient;
+        clientData.allowedDomains = [domain, apiDomain];
+        clientData.siteUrl = domainWithProtocol;
+        clientData.redirectUrl = domainWithProtocol;
+        clientData.config.backUrl = domainWithProtocol;
+        console.log('req.userApiClient.clientId', req.userApiClient.clientId);
+        promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
+      }
+
 
       /**
        * Import all promises
        */
       Promise.all(promises)
         .then(function (response) {
+          console.log('==>>>> > > > > response', response);
           req.flash('success', { msg: 'Url aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch(function (err) {
+          console.log('==>>>> > > > > errerr', err);
+
           req.flash('error', { msg: 'Er gaat iets mis!'});
           res.redirect(req.header('Referer')  || appUrl);
         });

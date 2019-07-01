@@ -17,6 +17,8 @@ exports.withOneForSite = (req, res, next) => {
   const site          = req.site;
   const authClientId  = req.site.config.oauth["auth-client-id"];
 
+  console.log('-->>>> authClientId', authClientId);
+
   userClientApi
     .fetch(authClientId)
     .then((client) => {
@@ -26,7 +28,8 @@ exports.withOneForSite = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      next(err);
+      console.log('==>> err', err);
+      next();
     });
 }
 

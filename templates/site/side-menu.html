@@ -18,6 +18,7 @@
       <span> {{ __('Settings') }} </span>
     </a>
   </li>
+  {% if site.config.oauth['auth-client-id'] %}
   <li class="">
     <a href="/admin/site/{{site.id}}/security">
       <div class="icon-w">
@@ -34,6 +35,8 @@
       <span> {{ __('Voting codes') }} </span>
     </a>
   </li>
+  {% endif %}
+  {% if site.config.cms.dbName %}
   <li class="">
     <a href="https://{{site.domain}}" target="_blank">
       <div class="icon-w">
@@ -42,6 +45,7 @@
       <span> {{ __('Edit site') }} ↗</span>
     </a>
   </li>
+  {% endif %}
   <li class="">
     <a href="/admin/site/{{site.id}}/ideas">
       <div class="icon-w">
