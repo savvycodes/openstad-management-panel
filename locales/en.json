@@ -22,5 +22,10 @@
 	"Username": "Username",
 	"Password": "Password",
 	"Overview": "Overview",
-	"Actions": "Actions"
+	"Actions": "Actions",
+	"yes": "yes",
+	"delete": "delete",
+	"no": "no",
+	"Amount of codes": "Amount of codes",
+	"Create codes": "Create codes"
 }

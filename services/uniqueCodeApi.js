@@ -39,24 +39,25 @@ exports.fetchAll = (params) => {
 //  .then(response => response.json());
 }
 
-exports.create = (data) => {
-  let body = Object.assign(data, apiCredentials);
+exports.create =  (params) => {
+  const query = httpBuildQuery(params);
+
   return rp({
       method: 'POST',
-      uri: `${apiUrl}/unique-code`,
+      uri: `${apiUrl}/unique-code?${query}`,
       headers: {
           'Accept': 'application/json'
       },
-      body: body,
+      body: apiCredentials,
       json: true // Automatically parses the JSON string in the response
   });
 }
 
-exports.delete = (uniqueCodeId, data) => {
+exports.delete = (uniqueCodeId) => {
   return rp({
     method: 'POST',
     uri: `${apiUrl}/unique-code/${uniqueCodeId}/delete`,
     json: true, // Automatically parses the JSON string in the response
-    body: Object.assign(data, apiCredentials),
+    body: Object.assign(apiCredentials),
   });
 }

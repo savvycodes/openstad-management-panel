@@ -186,7 +186,6 @@ module.exports = function(app){
     ///  siteData.config.cms.url = siteData.config.cms.url ? [domain] : [];
       siteData.config.allowedDomains = siteData.config.allowedDomains ? [domain] : [];
 
-
       promises.push(siteApi.update(req.session.jwt, req.params.siteId, siteData));
 
       if (req.userApiClient)  {
