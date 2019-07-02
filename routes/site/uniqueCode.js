@@ -41,7 +41,7 @@ module.exports = function(app){
         .then(function (response) {
           console.log('response', response);
           req.flash('success', { msg: 'Codes aangemakt!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          res.redirect('/admin/site/:siteId/unique-codes'  || appUrl);
         })
         .catch(function (err) {
           req.flash('error', { msg: 'Er gaat iets mis!'});
@@ -64,8 +64,7 @@ module.exports = function(app){
       res.setHeader(`Content-disposition`, `attachment; filename=${filename}`);
       res.set('Content-Type', 'text/csv');
       res.status(200).send(csvString);
-    })
-    ;
+  });
 
   app.get('/admin/site/:siteId/unique-code/delete/:uniqueCodeId',
     siteMw.withOne,

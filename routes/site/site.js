@@ -1,6 +1,7 @@
 const slugify             = require('slugify');
 const nestedObjectAssign  = require('nested-object-assign');
 const Promise             = require("bluebird");
+const { Parser }          = require('json2csv');
 
 //middleware
 const ideaMw            = require('../../middleware/idea');
@@ -37,13 +38,6 @@ const ensureUrlHasProtocol = (url) => {
 }
 
 module.exports = function(app){
-  app.get('/admin/site/:siteId/idea/:ideaId',
-    ideaMw.oneForSite,
-    siteMw.withOne,
-    (req, res, next) => {
-      res.render('site/idea/form.html');
-    }
-  );
 
   app.get('/admin/site/:siteId',
     siteMw.withOne,

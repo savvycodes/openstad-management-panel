@@ -1,6 +1,8 @@
 const Promise           = require("bluebird");
 const multer            = require('multer');
 const upload            = multer();
+const { Parser }          = require('json2csv');
+
 const ideaMw            = require('../../middleware/idea');
 const siteMw            = require('../../middleware/site');
 const ideaApi           = require('../../services/ideaApi');
@@ -14,6 +16,30 @@ const siteId = process.env.SITE_ID;
 
 module.exports = function(app){
   /**
+   * Display Ideas import form
+   */
+  app.get('/admin/site/:siteId/idea/import',
+    siteMw.withOne,
+    (req, res) => {
+      res.render('site/idea/import.html');
+    }
+  );
+
+  app.get('/admin/site/:siteId/idea/export',
+    siteMw.withOne,
+    ideaMw.allForSite,
+    (req, res, next) => {
+      const json2csvParser = new Parser(Object.keys(req.ideas[0]));
+      const csvString = json2csvParser.parse(req.ideas);
+
+    //  const csvString = csvParser(req.uniqueCodes);
+      const filename = `ideas-${req.params.siteId}-${new Date().getTime()}.csv`;
+      res.setHeader(`Content-disposition`, `attachment; filename=${filename}`);
+      res.set('Content-Type', 'text/csv');
+      res.status(200).send(csvString);
+  });
+
+  /**
    * Display Idea edit form
    */
   app.get('/admin/site/:siteId/idea/:ideaId',
@@ -24,23 +50,15 @@ module.exports = function(app){
     }
   );
 
-  /**
-   * Display Ideas import form
-   */
-  app.get('/admin/site/:siteId/idea/import',
-    siteMw.withOne,
-    (req, res) => {
-      res.render('site/idea/import.html');
-    }
-  );
 
   app.post('/admin/site/:siteId/idea/import',
     siteMw.withOne,
-    upload.single('file'),
+    upload.single('import_file'),
     (req, res) => {
       const csvString = req.file.buffer.toString('utf8');
       const lines = csvToObject(csvString);
       const promises = [];
+      console.log('->>>> lines', lines);
 
       /**
        * Create a promise to create an idea
@@ -51,11 +69,12 @@ module.exports = function(app){
         //format location from 2 strings to 1 object
         //
         if (line.location_lat && line.location_long) {
-          line.location = {"type":"Point","coordinates":[line.location_lat, line.location_long]};
+          line.location = JSON.stringify({"type":"Point","coordinates":[line.location_lat, line.location_long]});
         }
 
         const data = pick(line, ideaFields.filter(field => !field.extraData).map(field => field.key));
         data.extraData = pick(line, ideaFields.filter(field => field.extraData).map(field => field.key));
+
         promises.push(ideaApi.create(req.session.jwt, req.params.siteId, data));
       });
 
@@ -66,9 +85,10 @@ module.exports = function(app){
         .then(function (response) {
           req.flash('success', { msg: 'Geimporteerd!'});
           res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-          res.redirect(redirectTo);
+    //      res.redirect(redirectTo);
         })
         .catch(function (err) {
+          console.log('->>>> err import', err);
           req.flash('error', { msg: 'Er gaat iets mis!'});
           res.redirect(req.header('Referer')  || appUrl);
         });
@@ -114,7 +134,7 @@ module.exports = function(app){
       data.extraData = pick(req.body, ideaFields.filter(field => field.extraData).map(field => field.key));
 
       ideaApi
-        .create(req.session.jwt, data)
+        .create(req.session.jwt, req.params.siteId, data)
         .then(function (response) {
            req.flash('success', { msg: 'Aangemaakt!'});
            res.redirect(`/admin/site/${req.params.siteId}/ideas`);

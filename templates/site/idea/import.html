@@ -25,17 +25,22 @@
             <label class="col-form-label col-sm-4" for="">
               {{ __("File") }} ({{ __("format .csv") }})
                <br />
+               <br />
 
-                 Use the following headers in the CSV:
-                 title
-                 summary
-                 description
-                 area
-                 theme
-                 location_lat
-                 location_long
-                 images (comma seperated)
-
+               <small>
+                Use the following headers in the CSV:
+                <ul>
+                 <li>title*</li>
+                 <li>summary*</li>
+                 <li>description*</li>
+                 <li>area</li>
+                 <li>thema</li>
+                 <li>location_lat</li>
+                 <li>location_long</li>
+                 <li>images (comma seperated)</li>
+                 <li>status (OPEN, CLOSED, ACCEPTED, DENIED, BUSY, DONE)</li>
+                </ul>
+              </small>
             </label>
 
             <div class="col-sm-8">

@@ -27,5 +27,7 @@
 	"delete": "delete",
 	"no": "no",
 	"Amount of codes": "Amount of codes",
-	"Create codes": "Create codes"
+	"Create codes": "Create codes",
+	"File": "File",
+	"format .csv": "format .csv"
 }

@@ -1,5 +1,5 @@
 const rp = require('request-promise');
-const apiUrl = process.env.API_URL + '/api';
+const apiUrl = process.env.API_URL;
 
 exports.fetch = (token, siteId) => {
   return rp({
@@ -15,16 +15,20 @@ exports.fetch = (token, siteId) => {
 }
 
 exports.create = (token, siteId, body) => {
-  return rp({
+  const options = {
       uri:  `${apiUrl}/api/site/${siteId}/idea`,
       method: 'POST',
       headers: {
           'Accept': 'application/json',
           "X-Authorization" : ` Bearer ${token}`,
       },
-      body: body,
+      body: body, //JSON.stringify(body),
       json: true // Automatically parses the JSON string in the response
-  });
+  };
+
+  console.log('options', options);
+
+  return rp(options);
 }
 
 exports.fetchAll = (token, siteId) => {
@@ -54,7 +58,7 @@ exports.delete = (token, siteId, ideaId) => {
 exports.update = (token, siteId, data) => {
   return rp({
     method: 'PUT',
-    uri: `${apiUrl}/site/${siteId}`,
+    uri: `${apiUrl}/site/${siteId}/idea/${data.id}`,
     headers: {
         'Accept': 'application/json',
         'Authorization' : `Bearer ${token}`,
