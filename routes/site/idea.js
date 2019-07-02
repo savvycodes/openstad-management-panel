@@ -58,7 +58,6 @@ module.exports = function(app){
       const csvString = req.file.buffer.toString('utf8');
       const lines = csvToObject(csvString);
       const promises = [];
-      console.log('->>>> lines', lines);
 
       /**
        * Create a promise to create an idea

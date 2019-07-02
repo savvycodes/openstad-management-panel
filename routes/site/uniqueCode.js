@@ -1,4 +1,4 @@
-const { Parser }     = require('json2csv');
+const { Parser }        = require('json2csv');
 const siteMw            = require('../../middleware/site');
 const uniqueCodeMw      = require('../../middleware/uniqueCode');
 const uniqueCodeApi     = require('../../services/uniqueCodeApi');
