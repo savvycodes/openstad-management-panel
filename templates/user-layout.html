@@ -113,7 +113,7 @@
               </div>
             </div>
           </div>
-          {% include 'partials/side-menu.html' %}
+          {% include 'site/side-menu.html' %}
         </div>
         <!--------------------
         END - Main Menu
@@ -145,20 +145,6 @@
                   </div>
 
 
-                  <ul>
-                    <li>
-                      <a href="/users_profile_small.html"><i class="os-icon os-icon-ui-49"></i><span>Profile Settings</span></a>
-                    </li>
-                    <li>
-                      <a href="/users_profile_small.html"><i class="os-icon os-icon-grid-10"></i><span>Billing Info</span></a>
-                    </li>
-                    <li>
-                      <a href="/users_profile_small.html"><i class="os-icon os-icon-ui-44"></i><span>My Invoices</span></a>
-                    </li>
-                    <li>
-                      <a href="/users_profile_small.html"><i class="os-icon os-icon-ui-15"></i><span>Cancel Account</span></a>
-                    </li>
-                  </ul>
 
                 </div>
               </div>
@@ -217,6 +203,7 @@
             <div class="content-panel-toggler">
               <i class="os-icon os-icon-grid-squares-22"></i><span>Sidebar</span>
             </div>
+
             <div class="content-i">
               <div class="content-box">
                 {% block body %}{% endblock %}
@@ -230,7 +217,7 @@
                 </div>
                 <div class="element-wrapper">
                   <h6 class="element-header">
-                    Snelle Links
+                    {{ __('Actions') }}
                   </h6>
                   <div class="element-box-tp">
                      <div class="el-buttons-list full-width">
@@ -247,6 +234,7 @@
               END - Sidebar
               -------------------->
             </div>
+
           </div>
 
         </div>

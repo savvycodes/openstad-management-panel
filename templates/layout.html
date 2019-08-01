@@ -143,10 +143,6 @@
                   <div class="icon-w">
                     <i class="os-icon os-icon-ui-46"></i>
                   </div>
-
-
-        
-
                 </div>
               </div>
               <!--------------------
@@ -199,7 +195,37 @@
             <i class="os-icon os-icon-grid-squares-22"></i><span>Sidebar</span>
           </div>
 
-          {% block body %}{% endblock %}
+          <div class="content-i">
+            <div class="content-box">
+              {% block body %}{% endblock %}
+            </div>
+            <!--------------------
+            START - Sidebar
+            -------------------->
+            <div class="content-panel">
+              <div class="content-panel-close">
+                <i class="os-icon os-icon-close"></i>
+              </div>
+              <div class="element-wrapper">
+                <h6 class="element-header">
+                  Snelle Links
+                </h6>
+                <div class="element-box-tp">
+                   <div class="el-buttons-list full-width">
+                     {% block quickLinks %}{% endblock %}
+                  </div>
+                </div>
+              </div>
+              <!--------------------
+              START - Recent Activity
+              -------------------->
+
+            </div>
+            <!--------------------
+            END - Sidebar
+            -------------------->
+          </div>
+
 
         </div>
       </div>
@@ -213,8 +239,6 @@
                 <span class="os-icon os-icon-close"></span>
               </button>
               {% include "site/new-form.html" %}
-
-
             </div>
           </div>
         </div>

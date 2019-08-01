@@ -1,0 +1,59 @@
+{% extends 'user-layout.html' %}
+
+{% block quickLinks %}
+<a class="btn btn-white btn-sm" href="#">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Maak een idee aan</span>
+</a>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        Import ideas
+      </h6>
+      <div class="element-box">
+        <form
+          method="POST"
+          action="/admin/site/{{site.id}}/idea/import"
+          enctype="multipart/form-data"
+        >
+          <div class="form-group row">
+
+            <label class="col-form-label col-sm-4" for="">
+              {{ __("File") }} ({{ __("format .csv") }})
+               <br />
+               <br />
+
+               <small>
+                Use the following headers in the CSV:
+                <ul>
+                 <li>title*</li>
+                 <li>summary*</li>
+                 <li>description*</li>
+                 <li>area</li>
+                 <li>thema</li>
+                 <li>location_lat</li>
+                 <li>location_long</li>
+                 <li>images (comma seperated)</li>
+                 <li>status (OPEN, CLOSED, ACCEPTED, DENIED, BUSY, DONE)</li>
+                </ul>
+              </small>
+            </label>
+
+            <div class="col-sm-8">
+              <input type="file" name="import_file" class="form-control" />
+            </div>
+          </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Import</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

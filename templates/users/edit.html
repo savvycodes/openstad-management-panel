@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block sideMenu %}
+{% include 'partials/overview-menu.html' %}
+{% endblock %}
+
+{% block body %}
+<div class="card">
+  <div class="card-body">
+    <h3> Edit user </h3>
+    {% include 'admin/user/form.html' %}
+  </div>
+</div>
+{% endblock %}

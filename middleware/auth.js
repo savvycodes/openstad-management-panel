@@ -2,46 +2,51 @@ const apiUrl = process.env.API_URL;
 const rp = require('request-promise');
 
 const fetchUserData = (req, res, next) => {
-  const jwt = req.query.jwt;
+  const jwt = req.query.jwt ? req.query.jwt : req.session.jwt;
 
-  rp({
-      uri: `${apiUrl}/oauth/me`,
-      headers: {
-          'Accept': 'application/json',
-          "X-Authorization" : `Bearer ${jwt}`,
-          "Cache-Control": "no-cache"
-      },
-      json: true // Automatically parses the JSON string in the response
-  })
-    .then(function (user) {
-      if (user) {
-        req.user = user
-        res.locals.user = user;
-        next();
-      } else {
+  if (!jwt) {
+    next();
+  } else {
+    rp({
+        uri: `${apiUrl}/oauth/me`,
+        headers: {
+            'Accept': 'application/json',
+            "X-Authorization" : `Bearer ${jwt}`,
+            "Cache-Control": "no-cache"
+        },
+        json: true // Automatically parses the JSON string in the response
+    })
+      .then(function (user) {
+
+        if (user) {
+          req.user = user
+          res.locals.user = user;
+          next();
+        } else {
+          // if not valid clear the JWT and redirect
+          req.session.jwt = '';
+
+          req.session.save(() => {
+            res.redirect('/');
+            return;
+          })
+        }
+      })
+      .catch((e) => {
         // if not valid clear the JWT and redirect
         req.session.jwt = '';
+
         req.session.save(() => {
           res.redirect('/');
           return;
         })
-      }
-
-    })
-    .catch((e) => {
-      // if not valid clear the JWT and redirect
-      req.session.jwt = '';
-      req.session.save(() => {
-        res.redirect('/');
-        return;
-      })
-    });
-
+      });
+  }
 }
 
 const ensureRights = (req, res, next) => {
-   if (req.user && req.user.role === 'admin') {
-///  if (req.isAuthenticated) {
+   //if (req.user && req.user.role === 'admin') {
+  if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {
     res.status(500).json({ error: 'Huidige account heeft geen rechten' });
@@ -52,8 +57,7 @@ const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated) {
     next();
   } else {
-
-//    console.log('===>', redirectUrl);
+  //  console.log('login redirected', redirectUrl);
     res.redirect('/login');
   }
 };

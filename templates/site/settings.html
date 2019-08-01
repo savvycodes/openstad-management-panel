@@ -7,27 +7,41 @@
       <h6 class="element-header">
         Configureer
       </h6>
-      <div class="element-box">
-        <form method="POST" action="/site/{{site.id}}">
-          <div class="form-group row">
-            <label class="col-form-label col-sm-4" for="">Productie URL</label>
-            <div class="col-sm-8">
-              <input class="form-control" placeholder="" type="text" name="productionUrl" value="{{site.productionUrl}}">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-form-label col-sm-4" for="">Staging URL</label>
-            <div class="col-sm-3">
-              <input class="form-control" placeholder="" type="text"  value="{{site.stagingName}}" disabled />
-            </div>
-            <div class="col-sm-5">
-              <input class="form-control" placeholder="" type="text" value="{{wildcardHost}}" disabled>
-            </div>
-          </div>
 
+      <div class="element-box">
+        <form method="POST" action="/admin/site/{{site.id}}">
+          <div class="form-group row">
+            <label class="col-form-label col-sm-4" for="">Title</label>
+            <div class="col-sm-8">
+              <input class="form-control" placeholder="" type="text" name="title" value="{{site.title}}">
+            </div>
+          </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="element-box">
+        <form method="POST" action="/admin/site/{{site.id}}/url">
+          <div class="form-group row">
+            <label class="col-form-label col-sm-4" for="">URL</label>
+            <div class="col-sm-8">
+              <input class="form-control" placeholder="" type="text" name="productionUrl" value="{{site.domain}}">
+            </div>
+          </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </form>
+
+      </div>
+
+      <div class="element-box">
+        <form method="POST" action="/admin/site/{{site.id}}">
           <fieldset>
-            <legend><span>E-mail settings</span></legend>
-            <div class="form-group row">
+            <legend><span>E-mail settings for ideas & cms </span></legend>
+          <!--  <div class="form-group row">
               <label class="col-form-label col-sm-4" for="">From e-mail</label>
               <div class="col-sm-8">
                 <input class="form-control" placeholder="info@..." type="email" name="fromEmail" value="{{site.fromEmail}}">
@@ -38,7 +52,7 @@
               <div class="col-sm-8">
                 <input class="form-control" placeholder="" type="text" name="fromName" value="{{site.fromName}}">
               </div>
-            </div>
+            </div> !-->
           </fieldset>
           <div class="form-buttons-w">
             <button class="btn btn-primary" type="submit">Opslaan</button>
@@ -46,7 +60,53 @@
         </form>
       </div>
       <div class="element-box">
-        <form method="POST" action="/site/{{site.id}}/delete">
+        <form method="POST" action="/admin/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span>E-mail settings for auth </span></legend>
+        <!--        <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">From e-mail</label>
+              <div class="col-sm-8">
+                <input class="form-control" placeholder="info@..." type="email" name="fromEmail" value="{{site.fromEmail}}">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">From name</label>
+              <div class="col-sm-8">
+                <input class="form-control" placeholder="" type="text" name="fromName" value="{{site.fromName}}">
+              </div>
+            </div> !-->
+          </fieldset>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="element-box">
+        <form method="POST" action="/admin/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span>E-mail notications </span></legend>
+        <!--        <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">From e-mail</label>
+              <div class="col-sm-8">
+                <input class="form-control" placeholder="info@..." type="email" name="fromEmail" value="{{site.fromEmail}}">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">From name</label>
+              <div class="col-sm-8">
+                <input class="form-control" placeholder="" type="text" name="fromName" value="{{site.fromName}}">
+              </div>
+            </div> !-->
+          </fieldset>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="element-box">
+        <form method="POST" action="/admin/site/{{site.id}}/delete">
             <button class="btn btn-danger" type="submit">Verwijder</button>
         </form>
       </div>

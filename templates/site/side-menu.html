@@ -1,0 +1,74 @@
+<ul class="main-menu">
+  <li class="sub-header">
+    <span>{{ __('SITE') }} {{site.name}}</span>
+  </li>
+  <li class="">
+    <a href="/admin/site/{{site.id}}">
+      <div class="icon-w">
+        <div class="os-icon os-icon-layers"></div>
+      </div>
+      <span> {{ __('Dashboard') }} </span>
+    </a>
+  </li>
+  <li class="">
+    <a href="/admin/site/{{site.id}}/settings">
+      <div class="icon-w">
+        <div class="os-icon os-icon-ui-46"></div>
+      </div>
+      <span> {{ __('Settings') }} </span>
+    </a>
+  </li>
+  {% if site.config.oauth['auth-client-id'] %}
+  <li class="">
+    <a href="/admin/site/{{site.id}}/security">
+      <div class="icon-w">
+        <div class="os-icon os-icon-users"></div>
+      </div>
+      <span> {{ __('Authentication & security') }} </span>
+    </a>
+  </li>
+  <li class="">
+    <a href="/admin/site/{{site.id}}/unique-codes">
+      <div class="icon-w">
+        <div class="os-icon os-icon-users"></div>
+      </div>
+      <span> {{ __('Voting codes') }} </span>
+    </a>
+  </li>
+  {% endif %}
+  {% if site.config.cms.dbName %}
+  <li class="">
+    <a href="https://{{site.domain}}" target="_blank">
+      <div class="icon-w">
+        <div class="os-icon os-icon-layers"></div>
+      </div>
+      <span> {{ __('Edit site') }} ↗</span>
+    </a>
+  </li>
+  {% endif %}
+  <li class="">
+    <a href="/admin/site/{{site.id}}/ideas">
+      <div class="icon-w">
+        <div class="os-icon os-icon-layers"></div>
+      </div>
+      <span> {{ __('Ideas') }} </span>
+    </a>
+  </li>
+  <li class="">
+    <a href="/admin/site/{{site.id}}/submissions">
+      <div class="icon-w">
+        <div class="os-icon os-icon-layers"></div>
+      </div>
+      <span> {{ __('Submissions') }} </span>
+    </a>
+  </li>
+  <li class="">
+    <a href="/admin/site/{{site.id}}/arguments">
+      <div class="icon-w">
+        <div class="os-icon os-icon-layers"></div>
+      </div>
+      <span> {{ __('Arguments') }}  </span>
+    </a>
+  </li>
+
+</ul>

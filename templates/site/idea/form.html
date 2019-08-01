@@ -4,7 +4,7 @@
 {% block quickLinks %}
 <a class="btn btn-white btn-sm" href="#">
   <i class="os-icon os-icon-window-content"></i>
-  <span>Maak een idee aan</span>
+  <span>Create an idea</span>
 </a>
 {% endblock %}
 
@@ -21,12 +21,11 @@
       </h6>
       <div class="element-box">
         <form method="POST"
-        {% if idea %}
+          {% if idea %}
           action="/admin/site/{{site.id}}/idea/{{idea.id}}"
-        {% else %}
+          {% else %}
           action="/admin/site/{{site.id}}/idea"
-        {% endif %}
-
+          {% endif %}
         >
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">
@@ -67,9 +66,6 @@
               </select>
             </div>
           </div>
-
-
-
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">
               Thema

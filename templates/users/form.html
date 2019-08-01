@@ -1,0 +1,133 @@
+{% extends 'layout.html' %}
+
+{% block sideMenu %}
+{% include 'partials/overview-menu.html' %}
+{% endblock %}
+
+{% block quickLinks %}
+<a class="btn btn-white btn-sm" href="/admin/user">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Nieuwe gebruiker</span>
+</a>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        {% if editUser %}
+          Bewerk gebruiker
+        {% else %}
+          Maak een nieuwe gebruiker aan
+        {% endif %}
+      </h6>
+      <div class="element-box">
+        <form
+          method="post"
+          {% if editUser %}
+          action="/admin/user/{{editUser.id}}"
+          {% else %}
+          action="/admin/user"
+          {% endif %}
+        >
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+          <div class="form-group row">
+            <label class="col-form-label col-sm-4" for=""> First name </label>
+            <div class="col-sm-8">
+              <input
+                type="text"
+                name="firstName"
+                class="form-input form-control"
+                maxlength="60"
+                {% if editUser %} value="{{editUser.firstName}}" {% endif %}
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+              <label class="col-form-label col-sm-4" for=""> Last name </label>
+              <div class="col-sm-8">
+                <input
+                  type="text"
+                  name="lastName"
+                  maxlength="60"
+                  class="form-input form-control"
+                  {% if editUser %} value="{{editUser.lastName}}" {% endif %}
+                />
+              </div>
+          </div>
+          <div class="form-group row">
+              <label class="col-form-label col-sm-4" for=""> E-mail* </label>
+              <div class="col-sm-8">
+                <input
+                  type="text"
+                  required
+                  name="email"
+                  maxlength="60"
+                  class="form-input form-control"
+                  {% if editUser %} value="{{editUser.email}}" {% endif %}
+                />
+              </div>
+          </div>
+          <fieldset>
+              <legend><span>Address</span></legend>
+              {% include 'users/address-form.html' %}
+          </fieldset>
+
+          <fieldset>
+              <legend><span>Roles </span></legend>
+              <table class="table">
+              {% for client in userApiClients %}
+                  <tr>
+                    <td>
+                      <b> {{client.name}} </b>
+                    </td>
+                    {% for role in roles %}
+                    <td>
+                      <label class="col-form-label col-sm-4" for="">
+                        <input
+                          type="radio"
+                          name="roles['{{client.id}}']"
+                          value="{{role.id}}"
+                          {% if role.id === client.userRole.roleId %} checked {% endif %}
+                        />
+                        {{role.name}}
+                      </label>
+                    </td>
+                    {% endfor %}
+                  </tr>
+              {% endfor %}
+              </table>
+          </fieldset>
+
+          <fieldset>
+              <legend><span>Security</span></legend>
+              <div class="form-group row">
+                  <label class="col-form-label col-sm-4" for="">Password </label>
+                  <div class="col-sm-8">
+                    <input
+                      type="password"
+                      name="password"
+                      class="form-input form-control"
+                      minlength="8"
+                      maxlength="60"
+                    />
+                  </div>
+              </div>
+          </fieldset>
+
+            <button type="submit" class="btn btn-primary">
+              {% if editUser %}
+              Save changes
+              {% else %}
+              Create user
+              {% endif %}
+            </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -2,6 +2,7 @@
 var dotenv = require('dotenv');
 dotenv.load();
 const express           = require('express');
+const i18n              = require("i18n");
 const isDev             = process.env.ENVIRONMENT === 'development';
 const Site              = require('./models').Site;
 const bodyParser        = require('body-parser');
@@ -11,11 +12,15 @@ const nunjucks          = require('nunjucks');
 const flash             = require('express-flash');
 const app               = express();
 const FileStore         = require('session-file-store')(expressSession);
-const rp                = require('request-promise');
 const ideaMw            = require('./middleware/idea');
 const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
 const authMw            = require('./middleware/auth');
+const bodyMw            = require('./middleware/body');
+
+const userClientApi     = require('./services/userClientApi');
+const siteApi           = require('./services/siteApi');
+
 
 const dateFilter                  = require('./nunjucks/dateFilter');
 const currencyFilter              = require('./nunjucks/currency');
@@ -26,6 +31,15 @@ const replaceIdeaVariablesFilter  = require('./nunjucks/replaceIdeaVariables');
 
 const cleanUrl = (url) => {
   return url.replace(['http://', 'https://'], '');
+}
+
+const ensureUrlHasProtocol = (url) => {
+  if (!url.startsWith('http://') || !url.startsWith('https://')) {
+    // if no protocol, assume https
+    url = 'https://' + url;
+  }
+
+  return url;
 }
 
 const apiUrl = process.env.API_URL;
@@ -59,12 +73,15 @@ app.use((req, res, next) => {
   next();
 });
 
-const copyDb = require('./services/mongo').copyMongoDb;
-const dbExists = require('./services/mongo').dbExists;
-const deleteMongoDb =  require('./services/mongo').deleteDb;
+const copyDb          = require('./services/mongo').copyMongoDb;
+const dbExists        = require('./services/mongo').dbExists;
+const deleteMongoDb   = require('./services/mongo').deleteDb;
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyMw.parseBoolean);
+
+
 app.use(express.static('public'));
 
 app.use(cookieParser(process.env.COOKIE_SECRET, {
@@ -75,16 +92,12 @@ app.use(cookieParser(process.env.COOKIE_SECRET, {
   sameSite: false
 }));
 
-
 // Session Configuration
 app.use(expressSession({
   saveUninitialized : true,
   resave            : true,
   secret            : process.env.SESSION_SECRET,
   //store             : new MemoryStore(),
-/*  store             : new FileStore({
-    ttl: 3600 * 24 * 31
-  }),*/
   key               : 'authorization.sid',
   cookie            : {
     maxAge:  3600000 * 24 * 7 ,
@@ -93,13 +106,16 @@ app.use(expressSession({
     sameSite: false,
     path: '/'
   },
-  store: new FileStore({
-    ttl: 3600 * 24 * 31
-  }),
-
+  store: new FileStore({ ttl: 3600 * 24 * 31 }),
 }));
-app.use(flash());
 
+i18n.configure({
+    locales:['nl', 'en'],
+    directory: __dirname + '/locales'
+});
+
+app.use(i18n.init);
+app.use(flash());
 app.use(enrichMw.run);
 
 // redirect the index page to the admin section
@@ -107,6 +123,9 @@ app.get('/', (req, res) => {
   res.redirect('/admin');
 });
 
+/**
+ * Check if user is isAuthenticated and fetch data
+ */
 app.use(
   authMw.check,
   authMw.fetchUserData
@@ -120,179 +139,32 @@ app.use('/admin',
   authMw.ensureRights
 );
 
-app.get('/admin', (req, res) => {
-  Site
-    .fetchAll()
-    .then(function (resData) {
-      const sites = resData.serialize();
 
-      res.render('overview.html', {
-        sites: sites
-      });
+/**
+ * Display admin start page
+ */
+app.get('/admin',
+  siteMw.withAll,
+  (req, res) => {
+    console.log('aaaa');
+  res.render('overview.html', {
+    sites: req.sites
   });
 });
 
-app.get('/admin/site/:siteId/idea/:ideaId',
-  ideaMw.oneForSite,
-  siteMw.withOne,
-  (req, res) => {
-    res.render('site/idea/form.html');
-  }
-);
+/**
+ * Required main routes.
+ */
+require('./routes/site/idea')(app);
+require('./routes/site/uniqueCode')(app);
+require('./routes/site/site')(app);
 
-app.get('/admin/site/:siteId/idea',
-  siteMw.withOne,
-  (req, res) => {
-    res.render('site/idea/form.html');
-  }
-);
+require('./routes/user')(app);
+require('./routes/auth')(app);
 
-app.post('/admin/site/:siteId/idea/:ideaId',
-  ideaMw.oneForSite,
-  siteMw.withOne,
-  (req, res, next) => {
-    const body = {};
-
-    if (req.body.title) {
-      body.title = req.body.title;
-    }
-
-    if (req.body.description) {
-      body.description = req.body.description;
-    }
-
-    if (req.body.summary) {
-      body.summary = req.body.summary;
-    }
-
-    if (req.body.location) {
-      body.location = req.body.location;
-    }
-
-    if (req.body.thema) {
-      body.thema = req.body.thema;
-    }
-
-    if (req.body.status) {
-      body.status = req.body.status;
-    }
-
-
-    const options = {
-       method: 'PUT',
-        uri:  apiUrl + `/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
-        headers: {
-            'Accept': 'application/json',
-            "X-Authorization" : ` Bearer ${req.session.jwt}`,
-        },
-        body: body,
-        json: true // Automatically parses the JSON string in the response
-    };
-
-    rp(options)
-      .then(function (response) {
-        console.log('===> response', response);
-         const redirectTo = req.header('Referer')  || appUrl
-         res.redirect(redirectTo);
-      })
-      .catch(function (err) {
-        console.log('===> err', err);
-
-         res.redirect(req.header('Referer')  || appUrl);
-      });
-  }
-);
-
-
-app.post('/admin/site/:siteId/idea/:ideaId/delete',
-  (req, res, next) => {
-    rp({
-       method: 'DELETE',
-        uri:  apiUrl + `/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
-        headers: {
-            'Accept': 'application/json',
-            "X-Authorization" : ` Bearer ${req.session.jwt}`,
-        },
-        json: true // Automatically parses the JSON string in the response
-    })
-      .then(function (response) {
-         res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-      })
-      .catch(function (err) {
-         res.redirect(req.header('Referer'));
-      });
-  }
-);
-
-app.post('/admin/site/:siteId/idea',
-  ideaMw.oneForSite,
-  siteMw.withOne,
-  (req, res, next) => {
-    let auth = `Bearer ${req.session.jwt}`;
-
-    //image upload
-    const body = {
-      title: req.body.title,
-      description: req.body.description,
-      summary: req.body.summary,
-      location: req.body.location,
-  //    status: req.body.status,
-  //    modBreak: req.body.modBreak,
-      thema: req.body.thema
-    };
-
-    const options = {
-        uri:  apiUrl + `/api/site/${req.params.siteId}/idea`,
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            "X-Authorization" : ` Bearer ${req.session.jwt}`,
-        },
-        body: body,
-        json: true // Automatically parses the JSON string in the response
-    };
-
-    console.log('====> options', options);
-
-    rp(options)
-      .then(function (response) {
-         req.flash('success', { msg: 'Aangemaakt!'});
-         res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-         res.redirect(redirectTo);
-      })
-      .catch(function (err) {
-        console.log('===> err', err);
-
-        req.flash('error', { msg: 'Er gaat iets mis!'});
-        res.redirect(req.header('Referer')  || appUrl);
-      });
-  }
-);
-
-app.get('/admin/site/:siteId',
-  siteMw.withOne,
-  (req, res) => {
-    res.render('site/main.html');
-  }
-);
-
-app.get('/admin/site/:siteId/:page',
-  ideaMw.allForSite,
-  siteMw.withOne,
-  (req, res) => {
-    console.log('Hit it');
-    res.render('site/'+ req.params.page + '.html');
-  }
-);
-
-app.get('/admin/site/:siteId/idea/:ideaId',
-  ideaMw.oneForSite,
-  siteMw.withOne,
-  (req, res) => {
-    res.render('site/'+ req.params.page + '.html');
-  }
-);
-
+/**
+ * Helper url
+ */
 app.get('/admin/copy/:oldName/:newName', (req, res) => {
   copyDb(req.params.oldName, req.params.newName)
     .then(() => {
@@ -301,114 +173,6 @@ app.get('/admin/copy/:oldName/:newName', (req, res) => {
     .catch((e) => {
       res.status(500).json({ error: 'An error occured: ' + e });
     });
-});
-
-app.post('/site', (req, res) => {
-  const urlToCopy = req.body.stagingUrl;
-  const dbToCopy = urlToCopy.replace(/\./g, '');
-
-  const stagingUrl = slugify(req.body.stagingName) + '.' + process.env.WILDCARD_HOST;
-  const productionUrl = cleanUrl(req.body.productionUrl);
-
-  dbExists(dbToCopy)
-    .then((exists) => {
-      console.log('urlToCopy', urlToCopy);
-
-      console.log('dbToCopy', dbToCopy);
-
-      console.log('exists', exists);
-
-      const dbName = exists ? dbToCopy : process.env.DEFAULT_DB;
-      const stagingUrlDB = stagingUrl.replace(/\./g, '');
-      console.log('stagingUrlDB', stagingUrlDB);
-
-      console.log('dbName', dbName);
-
-      /**
-       * Create database for stagingUrl
-       */
-      copyDb(dbName, stagingUrlDB)
-        .then((response) => {
-          new Site({
-            'name': req.body.siteName,
-            'productionUrl': productionUrl,
-            'stagingUrl': stagingUrl,
-            'stagingName': req.body.stagingName,
-            'fromEmail': req.body.fromEmail,
-            'fromName': req.body.fromName,
-          })
-          .save()
-          .then((site) => { res.redirect('https://' + stagingUrl); });
-        })
-        .catch((e) => {
-          res.status(500).json({ error: 'An error occured copying the DB: ' + e.msg });
-        });
-    })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).json({ error: 'An error occured checking if the DB exists: ' + e.msg });
-    })
-});
-
-app.post('/site/:siteId', (req, res) => {
-  const siteId = req.params.siteId;
-  const type = req.body.type;
-  //const stagingUrl = slugify(req.body.stagingName) + '.' + process.env.WILDCARD_HOST;
-  const productionUrl = cleanUrl(req.body.productionUrl);
-
-  new Site({ id: req.params.siteId })
-    .fetch()
-    .then((site) => {
-
-
-      site.set('productionUrl', productionUrl);
-  //    site.set('stagingUrl', stagingUrl);
-  //    site.set('stagingName', req.body.stagingName);
-      site.set('fromEmail', req.body.fromEmail);
-      site.set('fromName', req.body.fromName);
-      return site.save().then(() => {
-        req.flash('success', { msg: 'Opgeslagen' });
-        res.redirect('/admin/site/' + site.id + '/settings');
-      });
-    })
-    .catch((e) => {
-      res.status(500).json({ error: 'An error occured ' + e.msg });
-    });
-});
-
-app.post('/site/:siteId/delete', (req, res) => {
-  new Site({ id: req.params.siteId })
-    .fetch()
-    .then((site) => {
-      const stagingUrl = site.get('stagingUrl');
-      const stagingUrlDB = stagingUrl.replace(/\./g, '');
-
-      deleteMongoDb(stagingUrlDB).then(() => {
-        return site.destroy().then(() => {
-          req.flash('success', { msg: 'Verwijdert!' });
-          res.redirect('/');
-        });
-      });
-    })
-    .catch((e) => {
-      res.status(500).json({ error: 'An error occured  ' + e.msg });
-    });
-});
-
-app.get('/login', (req, res, next) => {
-  res.render('login.html');
-});
-
-app.get('/oauth/login', (req, res, next) => {
-  const fullUrl = appUrl + '/admin' //+ req.originalUrl;
-  const redirectUrl = `${apiUrl}/oauth/site/${siteId}/login?redirectUrl=${fullUrl}`;
-  res.redirect(redirectUrl);
-});
-
-app.get('/logout', (req, res, next) => {
-  req.session.destroy(() => {
-    res.redirect('/');
-  });
 });
 
 app.listen(process.env.PORT, function() {

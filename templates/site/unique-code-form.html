@@ -1,0 +1,46 @@
+{% extends 'user-layout.html' %}
+
+{% block quickLinks %}
+<a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}/unique-codes/export" target="_blank">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Export unique codes</span>
+</a>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+         Create new unique codes
+      </h6>
+      <div class="element-box">
+        <form
+          method="POST"
+          action="/admin/site/{{site.id}}/unique-codes/bulk"
+        >
+          <div class="form-group row">
+            <label class="col-form-label col-sm-4" for="">
+               {{ __("Amount of codes") }}
+            </label>
+
+            <div class="col-sm-8">
+              {% set codeAmountOptions = [1, 2, 3, 4, 5, 10, 20, 50, 100, 200, 500, 1000] %}
+
+              <select name="amountOfCodes">
+                {% for codeAmountOption in codeAmountOptions %}
+                <option value="{{codeAmountOption}}">{{codeAmountOption}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">{{ __("Create codes") }}</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
