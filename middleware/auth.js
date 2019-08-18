@@ -1,4 +1,5 @@
 const apiUrl = process.env.API_URL;
+const siteId = process.env.SITE_ID;
 const rp = require('request-promise');
 
 const fetchUserData = (req, res, next) => {
@@ -8,7 +9,7 @@ const fetchUserData = (req, res, next) => {
     next();
   } else {
     rp({
-        uri: `${apiUrl}/oauth/me`,
+        uri: `${apiUrl}/oauth/site/${siteId}/me`,
         headers: {
             'Accept': 'application/json',
             "X-Authorization" : `Bearer ${jwt}`,
