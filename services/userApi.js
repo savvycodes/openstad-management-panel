@@ -40,7 +40,7 @@ exports.fetchAll = () => {
 
 exports.create = (data) => {
   let body = nestedObjectAssign(data, apiCredentials);
-  console.log('===>>> body', body);
+
   return rp({
       method: 'POST',
       uri: `${apiUrl}/user`,
@@ -53,7 +53,6 @@ exports.create = (data) => {
 }
 
 exports.update = (userId, data) => {
-  console.log('===>>> body', data);
 
   return rp({
     method: 'POST',

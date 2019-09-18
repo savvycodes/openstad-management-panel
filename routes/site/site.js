@@ -71,7 +71,8 @@ module.exports = function(app){
      const authClientId = siteToCopy.config.oauth.authClientId;
      const authApiConfigCopy = req.userApiClients.find(client => client.clientId === authClientId);
 
-     let dbToCopy = siteToCopy && siteToCopy.cms ? siteToCopy.cms.dbName : false;
+     let dbToCopy = siteToCopy &&  siteToCopy.config &&  siteToCopy.config.cms ? siteToCopy.config.cms.dbName : false;
+
      let siteId;
 
      userClientApi.create({
@@ -127,10 +128,16 @@ module.exports = function(app){
          return dbExists(dbToCopy);
        })
        .then((exists) => {
+         console.log('exists', exists);
+
          /**
           * Copy mongodb database for CMS from chosen site, or if empty default
           */
          dbToCopy = exists ? dbToCopy : process.env.DEFAULT_DB;
+
+
+         console.log('dbToCopy final', dbToCopy);
+
          return copyDb(dbToCopy, dbName);
        })
        .then(() => {

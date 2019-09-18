@@ -166,12 +166,22 @@ require('./routes/auth')(app);
  * Helper url
  */
 app.get('/admin/copy/:oldName/:newName', (req, res) => {
-  copyDb(req.params.oldName, req.params.newName)
-    .then(() => {
-      res.status(200).json({ success: 'Copied DB'});
+  dbExists(req.params.newName)
+    .then((exists) => {
+      if (exists) {
+        res.status(500).json({ error: 'DB already exists'});
+      } else {
+        copyDb(req.params.oldName, req.params.newName)
+          .then(() => {
+            res.status(200).json({ success: 'Copied DB'});
+          })
+          .catch((e) => {
+            res.status(500).json({ error: 'An error occured: ' + e });
+          });
+      }
     })
-    .catch((e) => {
-      res.status(500).json({ error: 'An error occured: ' + e });
+    .catch((e) =>{
+      res.status(500).json({ error: 'An error occured during testing: ' + e });
     });
 });
 

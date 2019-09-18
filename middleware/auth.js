@@ -1,6 +1,6 @@
-const apiUrl = process.env.API_URL;
-const siteId = process.env.SITE_ID;
-const rp = require('request-promise');
+const apiUrl  = process.env.API_URL;
+const siteId  = process.env.SITE_ID;
+const rp      = require('request-promise');
 
 const fetchUserData = (req, res, next) => {
   const jwt = req.query.jwt ? req.query.jwt : req.session.jwt;
@@ -8,8 +8,13 @@ const fetchUserData = (req, res, next) => {
   if (!jwt) {
     next();
   } else {
+    const thisHost = req.headers['x-forwarded-host'] || req.get('host');
+    const fullUrl = req.protocol + '://' + thisHost;
+
+    console.log('fullUrl', fullUrl);
+
     rp({
-        uri: `${apiUrl}/oauth/site/${siteId}/me`,
+        uri: `${apiUrl}/oauth/site/${siteId}/me?redirectUrl=${fullUrl}`,
         headers: {
             'Accept': 'application/json',
             "X-Authorization" : `Bearer ${jwt}`,
