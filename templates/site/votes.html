@@ -1,0 +1,55 @@
+{% extends 'user-layout.html' %}
+
+{% block quickLinks %}
+{#
+<a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}/unique-code">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Create unique codes</span>
+</a>
+<a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}/unique-codes/export" target="_blank">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Export unique codes</span>
+</a>
+#}
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        Votes for ideas
+      </h6>
+      <div class="element-box">
+        <table id="dataTable1" width="100%" class="table table-striped table-lightfont">
+         <thead>
+            <tr>
+               <th>{{ __('Idea ID') }}</th>
+               <th>{{ __('Idea Title') }}</th>
+               <th>{{ __('For votes') }}</th>
+               <th>{{ __('Against votes') }}</th>
+               <th>{{ __('Budget') }}</th>
+               <th>{{ __('Theme') }}</th>
+               <th>{{ __('Area') }}</th>
+
+            </tr>
+         </thead>
+         <tbody>
+            {% for idea in ideas %}
+            <tr>
+               <td>{{ idea.id }}</td>
+               <td>{{ idea.title }}</td>
+               <td>{{ idea.voteCountFor }}</td>
+               <td>{{ idea.voteCountAgainst }}</td>
+               <td>{{ idea.budget }}</td>
+               <td>{{ idea.extraData.theme }}</td>
+               <td>{{ idea.extraData.area }}</td>
+            </tr>
+            {% endfor %}
+         </tbody>
+       </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,6 +5,7 @@ const Promise             = require("bluebird");
 //middleware
 const ideaMw            = require('../../middleware/idea');
 const siteMw            = require('../../middleware/site');
+const voteMw            = require('../../middleware/vote');
 const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
@@ -45,9 +46,19 @@ module.exports = function(app){
     }
   );
 
-  app.get('/admin/site/:siteId/:page',
+  app.get('/admin/site/:siteId/votes',
     ideaMw.allForSite,
     siteMw.withOne,
+    voteMw.allForSite,
+    userClientMw.withOneForSite,
+    (req, res, next) => {
+      res.render(`site/votes.html`);
+    }
+  );
+
+  app.get('/admin/site/:siteId/:page',
+    siteMw.withOne,
+    ideaMw.allForSite,
     userClientMw.withOneForSite,
     (req, res, next) => {
       res.render(`site/${req.params.page}.html`);

@@ -15,9 +15,8 @@ exports.withOne = (req, res, next) => {
 
 exports.withOneForSite = (req, res, next) => {
   const site          = req.site;
-  const authClientId  = req.site.config.oauth["auth-client-id"];
-
-  console.log('-->>>> authClientId', authClientId);
+  const authClientIdDefault = req.site.config && req.site.config.oauth && req.site.config.oauth.default ? req.site.config.oauth.default["auth-client-id"]  : false;
+  const authClientId  = authClientIdDefault ? authClientIdDefault : (req.site.config && req.site.config.oauth ? req.site.config.oauth["auth-client-id"] : false);
 
   userClientApi
     .fetch(authClientId)
@@ -28,7 +27,7 @@ exports.withOneForSite = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      console.log('==>> err', err);
+//      console.log('==>> err', err);
       next();
     });
 }

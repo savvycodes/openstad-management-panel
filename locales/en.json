@@ -29,5 +29,13 @@
 	"Amount of codes": "Amount of codes",
 	"Create codes": "Create codes",
 	"File": "File",
-	"format .csv": "format .csv"
+	"format .csv": "format .csv",
+	"Votes": "Votes",
+	"Idea ID": "Idea ID",
+	"Idea Title": "Idea Title",
+	"For votes": "For votes",
+	"Against votes": "Against votes",
+	"Budget": "Budget",
+	"Theme": "Theme",
+	"Area": "Area"
 }
