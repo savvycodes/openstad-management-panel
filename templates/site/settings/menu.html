@@ -1,0 +1,10 @@
+<div class="ae-side-menu">
+  <ul class="ae-main-menu">
+    <li {% if pageName === 'settings'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings">{{ __('General') }}</a> </li>
+    <li {% if pageName === 'ideas'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/ideas">{{ __('Ideas') }}</a> </li>
+    <li {% if pageName === 'voting'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/voting">{{ __('Voting') }}</a> </li>
+    <li {% if pageName === 'basic-auth'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/basic-auth">{{ __('Password protection') }}</a> </li>
+  {#  <li {% if pageName === 'admin-notifications'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/admin-notifications">{{ __('Admin notifications') }}</a> </li>#}
+    <li {% if pageName === 'newsletter'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/newsletter">{{ __('Newsletter') }}</a> </li>
+  </ul>
+</div>

@@ -40,18 +40,23 @@
               {% for site in sites %}
               <tr>
                 <td class="nowrap">
-                  {{site.title}}
+                  {{site.title}} 
                 </td>
                 <td class="text-center">
+                  {% if site.config.cms.dbName %}
                   <div class="badge badge-pill badge-success" data-title="CMS" data-toggle="tooltip">
                     CMS
                   </div>
+                  {% endif %}
                 </td>
                 <td class="text-right">
+                  {% if site.config.cms.dbName %}
                   <a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}">
                     <span>beheer</span>
                   </a>
+                  {% endif %}
                 </td>
+
               </tr>
               {% endfor %}
             </tbody>

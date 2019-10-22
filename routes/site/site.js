@@ -24,6 +24,8 @@ const deleteMongoDb     = require('../../services/mongo').deleteDb;
 const dbExists          = require('../../services/mongo').dbExists;
 const copyDb            = require('../../services/mongo').copyMongoDb;
 
+const siteConfigSchema  = require('../../config/site').configSchema;
+
 const cleanUrl = (url) => {
   return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
 }
@@ -61,7 +63,26 @@ module.exports = function(app){
     ideaMw.allForSite,
     userClientMw.withOneForSite,
     (req, res, next) => {
-      res.render(`site/${req.params.page}.html`);
+
+      res.render(`site/${req.params.page}.html`,  {
+        siteConfigSchema: siteConfigSchema,
+        pageName: req.params.page
+      });
+    }
+  );
+
+  app.get('/admin/site/:siteId/settings/:page',
+    siteMw.withOne,
+    ideaMw.allForSite,
+    userClientMw.withOneForSite,
+    (req, res, next) => {
+      console.log(' siteConfigSchema.ideas',  siteConfigSchema.ideas);
+
+      res.render(`site/settings/${req.params.page}.html`, {
+        siteConfigSchema: siteConfigSchema,
+        ideaFields: siteConfigSchema.ideas,
+        pageName: req.params.page
+      });
     }
   );
 

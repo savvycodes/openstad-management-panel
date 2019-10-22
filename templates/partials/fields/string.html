@@ -1,0 +1,5 @@
+{% if field.textarea %}
+<textarea class="form-control" name="{{ fieldName }}" rows="8" cols="80">{{fieldValue}}</textarea>
+{% else %}
+<input class="form-control" placeholder="" type="text" name="{{ fieldName }}" value="{{fieldValue}}">
+{% endif %}

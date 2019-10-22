@@ -1,0 +1,45 @@
+{% set fullWidthLayout = true %}
+
+{% extends 'user-layout.html' %}
+
+{% block body %}
+<div class="element-wrapper">
+  {% from 'partials/fields.html' import renderFields %}
+
+<div class="row">
+  <div class="col-sm-12">
+    <h6 class="element-header">
+      {{ __('Site settings') }}
+    </h6>
+  </div>
+  <div class="col-sm-3">
+    {% include 'site/settings/menu.html' %}
+  </div>
+  <div class="col-sm-9">
+    <div class="element-wrapper">
+      <div class="element-box">
+        <form method="POST" action="/admin/site/{{site.id}}">
+          {{ renderFields(ideaFields, site.config.ideas, 'config[ideas]') }}
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+          </div>
+        </form>
+      </div>
+      <div class="element-box">
+
+        <form method="POST" action="/admin/site/{{site.id}}">
+          <fieldset>
+              <legend><span>{{ __('Thank you e-mail ') }}</span></legend>
+              {{ renderFields(siteConfigSchema.feedbackEmail, site.config.feedbackEmail, 'config[feedbackEmail]') }}
+              <div class="form-buttons-w">
+              <button class="btn btn-primary" type="submit">Opslaan</button>
+              </div>
+            </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}

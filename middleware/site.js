@@ -8,7 +8,7 @@ exports.withOne = (req, res, next) => {
     .then((site) => {
       req.site = site;
       req.siteData = site;
-  //    console.log('req.siteData', req.siteData);
+     console.log('req.siteData', req.siteData.config);
       res.locals.site = req.siteData;
       next();
     })

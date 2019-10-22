@@ -55,7 +55,8 @@ const ensureRights = (req, res, next) => {
   if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {
-    res.status(500).json({ error: 'Huidige account heeft geen rechten' });
+    req.flash('error', { msg: 'Huidige account heeft geen rechten'});
+    res.redirect('/login');
   }
 }
 

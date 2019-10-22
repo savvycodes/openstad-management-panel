@@ -1,4 +1,3 @@
-
 const formatLoginUrl = (slug) => {
   return `/auth/${slug}/login`;
 }

@@ -208,6 +208,8 @@
               <div class="content-box">
                 {% block body %}{% endblock %}
               </div>
+
+              {% if not fullWidthLayout %}
               <!--------------------
               START - Sidebar
               -------------------->
@@ -233,6 +235,7 @@
               <!--------------------
               END - Sidebar
               -------------------->
+              {% endif %}
             </div>
 
           </div>

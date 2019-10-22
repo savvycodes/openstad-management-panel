@@ -8,12 +8,20 @@
 <div class="row">
   <div class="col-sm-12">
     <h6 class="element-header">
-      {{ __('Site settings') }}           
-
+      {{ __('Site settings') }}
     </h6>
   </div>
   <div class="col-sm-3">
-    {% include 'site/settings/menu.html' %}
+    <div class="ae-side-menu">
+      <ul class="ae-main-menu">
+        <li> <a href="/admin/site/{{site.id}}/settings">{{ __('General') }}</a> </li>
+        <li> <a href="/admin/site/{{site.id}}/settings/ideas">{{ __('Ideas') }}</a> </li>
+        <li> <a href="/admin/site/{{site.id}}/settings/voting">{{ __('Voting') }}</a> </li>
+        <li> <a href="/admin/site/{{site.id}}/settings/basic-auth">{{ __('Password protection') }}</a> </li>
+        <li> <a href="/admin/site/{{site.id}}/settings/admin-notifications">{{ __('Admin notifications') }}</a> </li>
+        <li> <a href="/admin/site/{{site.id}}/settings/newsletter">{{ __('Newsletter') }}</a> </li>
+      </ul>
+    </div>
   </div>
   <div class="col-sm-9">
     <div class="element-wrapper">
@@ -83,18 +91,6 @@
         <form method="POST" action="/admin/site/{{site.id}}/user-api">
           <fieldset>
             <legend><span>E-mail notications </span></legend>
-        <!--        <div class="form-group row">
-              <label class="col-form-label col-sm-4" for="">From e-mail</label>
-              <div class="col-sm-8">
-                <input class="form-control" placeholder="info@..." type="email" name="fromEmail" value="{{site.fromEmail}}">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-form-label col-sm-4" for="">From name</label>
-              <div class="col-sm-8">
-                <input class="form-control" placeholder="" type="text" name="fromName" value="{{site.fromName}}">
-              </div>
-            </div> !-->
           </fieldset>
           <div class="form-buttons-w">
             <button class="btn btn-primary" type="submit">Opslaan</button>
