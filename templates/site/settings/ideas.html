@@ -30,7 +30,7 @@
         <form method="POST" action="/admin/site/{{site.id}}">
           <fieldset>
               <legend><span>{{ __('Thank you e-mail ') }}</span></legend>
-              {{ renderFields(siteConfigSchema.feedbackEmail, site.config.feedbackEmail, 'config[feedbackEmail]') }}
+              {{ renderFields(siteConfigSchema.feedbackEmail, site.config.ideas.feedbackEmail, 'config[feedbackEmail]') }}
               <div class="form-buttons-w">
               <button class="btn btn-primary" type="submit">Opslaan</button>
               </div>

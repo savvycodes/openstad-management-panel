@@ -1,4 +1,7 @@
+{% set fullWidthLayout = true %}
+
 {% extends 'user-layout.html' %}
+{% from 'partials/fields.html' import renderFields %}
 
 {% block body %}
 <div class="row">
@@ -19,6 +22,7 @@
               <div class="col-sm-8">
                 <div class="row">
                 {% for authType in authTypes %}
+                  {% if authType.isAuthMethod %}
                   <div class="col-sm-6">
                     <input
                       id="checkbox-auth-{{authType.key}}"
@@ -33,6 +37,7 @@
                       {{authType.label}}
                     </label>
                   </div>
+                  {% endif %}
                 {% endfor %}
                 </div>
               </div>
@@ -70,6 +75,39 @@
           </fieldset>
         </form>
       </div>
+      <div
+        id="config-general-settings"
+        class="element-box auth-type-form "
+      >
+        <form method="POST" action="/admin/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span>{{ __('General settings') }}</span></legend>
+          {{ renderFields(userApiSettingFields, userApiClient.config, 'config') }}
+
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">{{ __('Save') }}</button>
+          </div>
+          </fieldset>
+
+        </form>
+      </div>
+
+      <div
+        id="config-"
+        class="element-box auth-type-form "
+      >
+        <form method="POST" action="/admin/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span>{{ __('Required field text') }}</span></legend>
+          {{ renderFields(userApiRequiredFields, userApiClient.config.requiredFields, 'config[requiredFields]') }}
+
+          <div class="form-buttons-w">
+            <button class="btn btn-primary" type="submit">{{ __('Save') }}</button>
+          </div>
+          </fieldset>
+
+        </form>
+      </div>
 
       {% for authType in authTypes %}
       <div
@@ -81,6 +119,7 @@
             <legend><span> Configure {{authType.label}} </span></legend>
 
             {% for field in authType.fields %}
+
             <div class="form-group row">
               <label class="col-form-label col-sm-4" for="">{{field.label}}</label>
               <div class="col-sm-8">

@@ -1,5 +1,4 @@
 {% macro renderField(field, data, prefixName) %}
-{{data.cms.dbName}}
 
   {% if prefixName %}
   {% set fieldName = prefixName + '['+field.key+']' %}

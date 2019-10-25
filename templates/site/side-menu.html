@@ -18,7 +18,7 @@
       <span> {{ __('Settings') }} </span>
     </a>
   </li>
-  {% if site.config.oauth['auth-client-id'] %}
+  {% if userApiClient %}
   <li class="">
     <a href="/admin/site/{{site.id}}/security">
       <div class="icon-w">

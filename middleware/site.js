@@ -8,7 +8,6 @@ exports.withOne = (req, res, next) => {
     .then((site) => {
       req.site = site;
       req.siteData = site;
-     console.log('req.siteData', req.siteData.config);
       res.locals.site = req.siteData;
       next();
     })
@@ -18,8 +17,9 @@ exports.withOne = (req, res, next) => {
 }
 
 exports.addAuthClientId = (req, res, next) => {
-  req.authClientId = req.site.config.oauth["auth-client-id"];
-  res.locals.authClientId = req.site.config.oauth["auth-client-id"];
+  let defaultClient = req.site.config.oauth.default ? req.site.config.oauth.default : req.site.config.oauth;
+  req.authClientId = defaultClient["auth-client-id"];
+  res.locals.authClientId = defaultClient["auth-client-id"];
   next();
 }
 

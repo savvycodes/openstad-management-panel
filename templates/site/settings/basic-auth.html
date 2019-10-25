@@ -23,6 +23,9 @@
               <fieldset>
                 <legend><span>{{ __('Password protect website') }}</span></legend>
 
+                {{ renderFields(siteConfigSchema.basicAuth, site.config.basicAuth, 'config[basicAuth]') }}
+
+{#
                 <div class="form-group row">
                   <label class="col-form-label col-sm-4" for="">
                     {{__('Active') }}
@@ -31,12 +34,12 @@
                     <label>
                       {{ __('On') }}
                     </label>
-                    <input type="radio" name="basicAuth[active]" value="true" {% if site.config.basicAuth.active %} checked {% endif %}">
+                    <input type="radio" name="config[basicAuth][active]" value="true" {% if site.config.basicAuth.active %} checked {% endif %}">
                     <br />
                     <label>
                       {{ __('Off') }}
                     </label>
-                    <input type="radio" name="basicAuth[active]" value="false" {% if not site.config.basicAuth.active %} checked {% endif %}">
+                    <input type="radio" name="config[basicAuth][active]" value="false" {% if not site.config.basicAuth.active %} checked {% endif %}">
                   </div>
                 </div>
 
@@ -49,7 +52,7 @@
                       class="form-control"
                       placeholder=""
                       type="text"
-                      name="basicAuth[user]"
+                      name="config[basicAuth][user]"
                       value="{{site.config.basicAuth.user}}"
                     />
                   </div>
@@ -63,11 +66,13 @@
                       class="form-control"
                       placeholder=""
                       type="text"
-                      name="basicAuth[password]"
+                      name="config[basicAuth][password]"
                       value="{{site.config.basicAuth.password}}"
                     />
                   </div>
                 </div>
+
+                #}
                 <div class="form-buttons-w">
                   <button class="btn btn-primary" type="submit">
                     {{__('Save') }}

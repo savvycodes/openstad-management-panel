@@ -10,6 +10,7 @@ const types = [
   {
     key: 'UniqueCode',
     label: 'Unieke code',
+    isAuthMethod: true,
     fields : [
       {
         label: 'Title',
@@ -46,6 +47,7 @@ const types = [
   {
     key: 'Local',
     label: 'Inlog via Wachtwoord',
+    isAuthMethod: true,
     fields : [
       {
         label: 'Title',
@@ -58,16 +60,54 @@ const types = [
   {
     key: 'Url',
     label: 'E-mail een inloglink',
+    isAuthMethod: true,
     loginUrl: formatLoginUrl('url'),
     fields : [
       {
         label: 'Title',
         key: 'title',
-        default: 'Inloggen',
+        default: 'Registreren of inloggen',
         type: 'text'
       },
-    ],
-  }
+      {
+        label: 'Description',
+        key: 'description',
+        default: 'Om verder te gaan vul je hieronder je emailadres in. Je ontvangt dan per email een link waarmee je kunt inloggen of je registratie voltooien.',
+        type: 'textarea'
+      },
+      {
+        label: 'Label',
+        key: 'label',
+        default: 'E-mailadres',
+        type: 'text'
+      },
+      {
+        label: 'Button text',
+        key: 'buttonText',
+        default: 'Stuur link',
+        type: 'text'
+      },
+      {
+        label: 'Help text',
+        key: 'helpText',
+        default: 'Stuur link',
+        type: 'textarea'
+      },
+      {
+        label: 'E-mail subject ',
+        key: 'emailSubject',
+        default: 'Login via deze e-mail',
+        type: 'text'
+      },
+      {
+        label: 'E-mail Template ',
+        key: 'emailTemplate',
+        default: '',
+        type: 'textarea'
+      },
+    ]
+  },
+
 ];
 
 const userFields = [
@@ -109,6 +149,70 @@ const userFields = [
   }
 ];
 
+const userApiSettingFields = [
+  {
+    key: 'backUrl',
+    type: 'string',
+    default: '',
+    label: "Where should back url point to?"
+  },
+  {
+    key: 'fromEmail',
+    type: 'string',
+    default: '',
+    label: "Email address for outgoing emails"
+  },
+  {
+    key: 'fromName',
+    type: 'string',
+    default: '',
+    label: "Email sender name  for outgoing emails"
+  },
+  {
+    key: 'contactEmail',
+    type: 'string',
+    default: '2',
+    label: "E-mail address for users to contact"
+  },
+  {
+    key: 'defaultRoleId',
+    type: 'number',
+    default: '2',
+    label: "Default Role Id"
+  },
+];
+
+const userApiRequiredFields = [
+  {
+    label: 'Title',
+    key: 'title',
+    default: 'Aanvullende gegevens',
+    type: 'string'
+  },
+  {
+    label: 'Description',
+    key: 'description',
+    default: 'Om verder te gaan hebben we nog wat extra gegevens nodig. ',
+    type: 'string',
+    textarea: true
+  },
+  {
+    label: 'Button Text',
+    key: 'buttonText',
+    default: 'Ga verder',
+    type: 'string'
+  },
+  {
+    label: 'Help text',
+    key: 'info',
+    default: '',
+    type: 'string',
+    textarea: true
+  }
+];
+
+
+
 const get = (key) => {
   return types.find(type => type.key === key);
 }
@@ -116,3 +220,5 @@ const get = (key) => {
 exports.userFields = userFields;
 exports.types = types;
 exports.get = get;
+exports.userApiSettingFields = userApiSettingFields;
+exports.userApiRequiredFields =userApiRequiredFields;

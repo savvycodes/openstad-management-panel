@@ -19,10 +19,16 @@ const siteId            = process.env.SITE_ID;
 
 const siteFields        = [{key: 'title'}];
 const siteConfigFields  = [{key: 'basicAuth'}];
-const authFields        = [{key: 'name'}, {key: 'config'}, {key: 'requiredUserFields'}, {key: 'authTypes'}];
-const deleteMongoDb     = require('../../services/mongo').deleteDb;
-const dbExists          = require('../../services/mongo').dbExists;
-const copyDb            = require('../../services/mongo').copyMongoDb;
+
+const authFields            = [{key: 'name'}, {key: 'requiredUserFields'}, {key: 'authTypes'}];
+const deleteMongoDb         = require('../../services/mongo').deleteDb;
+const dbExists              = require('../../services/mongo').dbExists;
+const copyDb                = require('../../services/mongo').copyMongoDb;
+const userApiSettingFields  = require('../../config/auth').userApiSettingFields;
+const userApiRequiredFields  = require('../../config/auth').userApiRequiredFields;
+
+
+
 
 const siteConfigSchema  = require('../../config/site').configSchema;
 
@@ -43,6 +49,7 @@ module.exports = function(app){
 
   app.get('/admin/site/:siteId',
     siteMw.withOne,
+    userClientMw.withOneForSite,
     (req, res, next) => {
       res.render('site/main.html');
     }
@@ -64,9 +71,13 @@ module.exports = function(app){
     userClientMw.withOneForSite,
     (req, res, next) => {
 
+      console.log('userApiClient', req.userApiClient);
+
       res.render(`site/${req.params.page}.html`,  {
         siteConfigSchema: siteConfigSchema,
-        pageName: req.params.page
+        pageName: req.params.page,
+        userApiSettingFields: userApiSettingFields,
+        userApiRequiredFields: userApiRequiredFields
       });
     }
   );
@@ -76,8 +87,6 @@ module.exports = function(app){
     ideaMw.allForSite,
     userClientMw.withOneForSite,
     (req, res, next) => {
-      console.log(' siteConfigSchema.ideas',  siteConfigSchema.ideas);
-
       res.render(`site/settings/${req.params.page}.html`, {
         siteConfigSchema: siteConfigSchema,
         ideaFields: siteConfigSchema.ideas,
@@ -167,9 +176,6 @@ module.exports = function(app){
           */
          dbToCopy = exists ? dbToCopy : process.env.DEFAULT_DB;
 
-
-         console.log('dbToCopy final', dbToCopy);
-
          return copyDb(dbToCopy, dbName);
        })
        .then(() => {
@@ -186,12 +192,49 @@ module.exports = function(app){
     siteMw.withOne,
     (req, res, next) => {
       delete req.body.url;
+      const siteConfigFields = Object.keys(siteConfigSchema);
+      const siteData = req.site;
 
-      let data = pick(req.body, siteFields.map(field => field.key));
-      data.config = pick(req.body, siteConfigFields.map(field => field.key));
+
+      if (siteFields) {
+        siteFields.forEach((siteField) => {
+          if (req.body[siteField]) {
+            siteData[siteField] = req.body[siteField];
+          }
+        });
+      }
+
+      if (siteConfigFields && req.body.config) {
+        siteConfigFields.forEach((siteConfigField) => {
+          let fields = siteConfigSchema[siteConfigField];
+          fields.forEach((field) => {
+            if (req.body.config[siteConfigField]) {
+              let value = req.body.config[siteConfigField][field.key];
+
+              //check if not set (can be false in case of boolean)
+              if (value || value === false) {
+                if (field.type === 'number') {
+                  value = parseInt(value, 10);
+                }
+
+                if (field.parentKey) {
+
+                  if (!siteData.config[field.parentKey][siteConfigField]) {
+                    siteData.config[field.parentKey][siteConfigField] = {};
+                  }
+                  siteData.config[field.parentKey][siteConfigField][field.key] = value;
+                } else {
+                  siteData.config[siteConfigField][field.key] = value;
+                }
+
+              }
+            }
+          });
+        })
+      }
 
       siteApi
-        .update(req.session.jwt, req.params.siteId, nestedObjectAssign(req.site, data))
+        .update(req.session.jwt, req.params.siteId, siteData)
         .then((site) => {
           req.flash('success', { msg: 'Aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
@@ -226,7 +269,7 @@ module.exports = function(app){
         clientData.siteUrl = domainWithProtocol;
         clientData.redirectUrl = domainWithProtocol;
         clientData.config.backUrl = domainWithProtocol;
-        console.log('req.userApiClient.clientId', req.userApiClient.clientId);
+
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
 
@@ -241,8 +284,6 @@ module.exports = function(app){
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch(function (err) {
-          console.log('==>>>> > > > > errerr', err);
-
           req.flash('error', { msg: 'Er gaat iets mis!'});
           res.redirect(req.header('Referer')  || appUrl);
         });
@@ -255,9 +296,25 @@ module.exports = function(app){
     userClientMw.withOneForSite,
     (req, res, next) => {
       if (req.userApiClient.config && req.userApiClient.config.authTypes && req.body.config && req.body.config.authTypes) {
+        console.log(121212);
+
         const siteConfig = req.userApiClient.config;
-        req.userApiClient.config.authTypes = Object.assign(req.userApiClient.config.authTypes, req.body.config.authTypes);
+        req.userApiClient.config.authTypes = nestedObjectAssign(req.userApiClient.config.authTypes, req.body.config.authTypes);
         req.body.config = req.userApiClient.config;
+      } else if (req.userApiClient.config &&  req.body.config.requiredFields ) {
+
+        req.userApiClient.config.requiredFields = req.body.config.requiredFields;
+
+      } else if (req.userApiClient.config &&  req.body.config ) {
+
+        userApiSettingFields.forEach((field) => {
+          if (req.body.config[field.key]) {
+            var value = req.body.config[field.key];
+            req.userApiClient.config[field.key] = value;
+          }
+        });
+
+
       }
 
       let data = pick(req.body, authFields.map(field => field.key));

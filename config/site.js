@@ -1,21 +1,25 @@
 exports.configSchema = {
-  basicAuth: {
-    type: 'object',
-    subset: {
-      active: {
+  basicAuth:
+    [
+      {
+        key: 'active',
         type: 'boolean',
         default: false,
+        label: "Is active?"
       },
-      user: {
+      {
+        key: 'user',
         type: 'string',
         default: 'openstad',
+        label: "Username"
       },
-      password: {
+      {
+        key: 'password',
         type: 'string',
         default: 'LqKNcKC7',
+        label: "Password"
       },
-    }
-  },
+  ],
   ideas:  [
     {
       key: 'canAddNewIdeas',
@@ -67,18 +71,21 @@ exports.configSchema = {
   ],
   feedbackEmail: [
     {
+      parentKey: 'ideas',
       key: 'from',
       type: 'string', // todo: add type email/list of emails
       default: '',
       label: "From Address"
     },
     {
+      parentKey: 'ideas',
       key: 'subject',
       type: 'string',
       default: '',
       label: 'Subject line'
     },
     {
+      parentKey: 'ideas',
       key: 'template',
       type: 'string',
       default: '',
@@ -86,15 +93,15 @@ exports.configSchema = {
       label: 'Template (variables available)'
     },
   ],
-  arguments: {
+  arguments: [
 
-  },
-  newsletter: [
+  ],
+  newslettersignup: [
     {
-      key: 'argumentsActive',
+      key: 'isActive',
       type: 'boolean',
       default: false,
-      label: ''
+      label: 'Is active?'
     }
   ],
   votes: [
@@ -201,7 +208,7 @@ exports.configSchema = {
     },
 
   ],
-  ignoreBruteForce : [
+/*  ignoreBruteForce : [
 
-  ]
+]*/
 };

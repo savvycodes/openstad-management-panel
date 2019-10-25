@@ -19,13 +19,12 @@
     <div class="element-wrapper">
       <div class="element-box">
         <form method="POST" action="/admin/site/{{site.id}}">
-          {{ renderFields(siteConfigSchema.votes, site.config, 'config') }}
+          {{ renderFields(siteConfigSchema.votes, site.config.votes, 'config[votes]') }}
           <div class="form-buttons-w">
             <button class="btn btn-primary" type="submit">Opslaan</button>
           </div>
         </form>
       </div>
-
     </div>
   </div>
 </div>
