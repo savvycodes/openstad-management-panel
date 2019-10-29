@@ -30,7 +30,7 @@ exports.withAll = (req, res, next) => {
 exports.withAllForClient = (req, res, next) => {
   const params = req.query ? req.query : {};
   params.clientId = req.authClientId;
-
+  params.limit = req.query.limit ? req.query.limit  : 10000000;
   uniqueCodeApiService
     .fetchAll(params)
     .then((uniqueCodes) => {

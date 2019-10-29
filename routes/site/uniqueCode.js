@@ -6,7 +6,7 @@ const userClientMw      = require('../../middleware/userClient');
 const userApiUrl = process.env.USER_API;
 
 const uniqueCodeApi     = require('../../services/uniqueCodeApi');
-const maxCodesAllowed   = 10000;
+const maxCodesAllowed   = 120000;
 
 module.exports = function(app){
   app.get('/admin/site/:siteId/unique-codes',
@@ -25,10 +25,6 @@ module.exports = function(app){
       siteMw.withOne,
       siteMw.addAuthClientId,
       userClientMw.withOneForSite,
-      (req, res, next) => {
-        // add pagination hre
-        next();
-      },
       uniqueCodeMw.withAllForClient,
       (req, res) => {
         res.json(req.uniqueCodes);
@@ -44,10 +40,10 @@ module.exports = function(app){
   );
 
   app.post('/admin/site/:siteId/unique-codes/bulk',
-  siteMw.withOne,
-  siteMw.addAuthClientId,
-  userClientMw.withOneForSite,
-  uniqueCodeMw.withAllForClient,
+    siteMw.withOne,
+    siteMw.addAuthClientId,
+    userClientMw.withOneForSite,
+    uniqueCodeMw.withAllForClient,
     (req, res) => {
       const promises = [];
       const amountOfCodes = req.body.amountOfCodes;
@@ -58,16 +54,16 @@ module.exports = function(app){
       }
 
       // make a promise for every code to be created
-      for (let i = 0; i < amountOfCodes; i++) {
-        promises.push(uniqueCodeApi.create({clientId: req.authClientId}));
-      };
+    /*  for (let i = 0; i < amountOfCodes; i++) {
+    };*/
+
+      promises.push(uniqueCodeApi.create({clientId: req.authClientId, amount: req.body.amountOfCodes}));
 
       /**
        * Execute all promises
        */
       Promise.all(promises)
         .then(function (response) {
-          console.log('response', response);
           req.flash('success', { msg: 'Codes aangemaakt!'});
           res.redirect('/admin/site/'+req.site.id+'/unique-codes'  || appUrl);
         })
@@ -85,8 +81,8 @@ module.exports = function(app){
     userClientMw.withOneForSite,
     uniqueCodeMw.withAllForClient,
     (req, res, next) => {
-      const json2csvParser = new Parser(Object.keys(req.uniqueCodes[0]));
-      const csvString = json2csvParser.parse(req.uniqueCodes);
+      const json2csvParser = new Parser(Object.keys(req.uniqueCodes.data[0]));
+      const csvString = json2csvParser.parse(req.uniqueCodes.data);
 
     //  const csvString = csvParser(req.uniqueCodes);
       const filename = `codes-${req.params.siteId}-${new Date().getTime()}.csv`;
