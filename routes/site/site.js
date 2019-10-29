@@ -26,10 +26,6 @@ const dbExists              = require('../../services/mongo').dbExists;
 const copyDb                = require('../../services/mongo').copyMongoDb;
 const userApiSettingFields  = require('../../config/auth').userApiSettingFields;
 const userApiRequiredFields  = require('../../config/auth').userApiRequiredFields;
-
-
-
-
 const siteConfigSchema  = require('../../config/site').configSchema;
 
 const cleanUrl = (url) => {
@@ -296,25 +292,18 @@ module.exports = function(app){
     userClientMw.withOneForSite,
     (req, res, next) => {
       if (req.userApiClient.config && req.userApiClient.config.authTypes && req.body.config && req.body.config.authTypes) {
-        console.log(121212);
-
         const siteConfig = req.userApiClient.config;
         req.userApiClient.config.authTypes = nestedObjectAssign(req.userApiClient.config.authTypes, req.body.config.authTypes);
         req.body.config = req.userApiClient.config;
-      } else if (req.userApiClient.config &&  req.body.config.requiredFields ) {
-
+      } else if (req.userApiClient.config &&  req.body.config && req.body.config.requiredFields ) {
         req.userApiClient.config.requiredFields = req.body.config.requiredFields;
-
-      } else if (req.userApiClient.config &&  req.body.config ) {
-
+      } else if (req.userApiClient.config && req.body.config) {
         userApiSettingFields.forEach((field) => {
           if (req.body.config[field.key]) {
             var value = req.body.config[field.key];
             req.userApiClient.config[field.key] = value;
           }
         });
-
-
       }
 
       let data = pick(req.body, authFields.map(field => field.key));

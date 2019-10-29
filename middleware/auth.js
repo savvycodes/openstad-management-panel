@@ -11,8 +11,6 @@ const fetchUserData = (req, res, next) => {
     const thisHost = req.headers['x-forwarded-host'] || req.get('host');
     const fullUrl = req.protocol + '://' + thisHost;
 
-    console.log('fullUrl', fullUrl);
-
     rp({
         uri: `${apiUrl}/oauth/site/${siteId}/me?redirectUrl=${fullUrl}`,
         headers: {

@@ -19,7 +19,7 @@ Main javascript functions to init most of the elements
 #13. EMAIL APP
 #14. FULL CHAT APP
 #15. CRM PIPELINE
-#16. OUR OWN CUSTOM DROPDOWNS 
+#16. OUR OWN CUSTOM DROPDOWNS
 #17. BOOTSTRAP RELATED JS ACTIVATIONS
 #18. TODO Application
 #19. Fancy Selector
@@ -168,6 +168,89 @@ $(function () {
   if ($('#dataTable1').length) {
     $('#dataTable1').DataTable({ buttons: ['copy', 'excel', 'pdf'] });
   }
+
+  if ($('#dataTable-ajax').length) {
+    $('#dataTable-ajax').DataTable({
+      buttons: ['copy', 'excel', 'pdf'],
+      paging: true,
+      pageLength: 5,
+  //    ajax: $('#dataTable-ajax').attr('data-src')
+      ajax: function ( data, callback, settings ) {
+          var apiUrl =  $('#dataTable-ajax').attr('data-src');
+          $.ajax({
+              url:apiUrl,
+              // dataType: 'text',
+              type: 'get',
+              contentType: 'JSON',
+              data: {
+                  RecordsStart: data.start,
+                  PageSize: data.length
+              },
+              success: function( data, textStatus, jQxhr ){
+                  console.log('data', data)
+                  callback({
+                      // draw: data.draw,
+                      data: data,
+                      recordsTotal:  data.length,
+                      recordsFiltered:  data.length
+                  });
+              },
+              error: function( jqXhr, textStatus, errorThrown ){
+              }
+          });
+      },
+      serverSide: true,
+      columns: [
+          { data: "code" },
+          { data: "userId", render:  function (val) { return val ? 'yes' : 'no'  } },
+          { data: "created_at" },
+      ]
+
+    });
+
+    var url = 'http://www.json-generator.com/api/json/get/cbEfqLwFaq?indent=2';
+
+    var table = $('#examplexxxx').DataTable({
+        dom: "Bfrtip",
+        paging: true,
+        pageLength: 5,
+        ajax: function ( data, callback, settings ) {
+
+            $.ajax({
+                url: 'http://localhost:64506/api/values',
+                // dataType: 'text',
+                type: 'post',
+                contentType: 'application/x-www-form-urlencoded',
+                data: {
+                    RecordsStart: data.start,
+                    PageSize: data.length
+                },
+                success: function( data, textStatus, jQxhr ){
+                    callback({
+                        // draw: data.draw,
+                        data: data.Data,
+                        recordsTotal:  data.TotalRecords,
+                        recordsFiltered:  data.RecordsFiltered
+                    });
+                },
+                error: function( jqXhr, textStatus, errorThrown ){
+                }
+            });
+        },
+        serverSide: true,
+        columns: [
+            { data: "first_name" },
+            { data: "last_name" },
+            { data: "position" },
+            { data: "office" },
+            { data: "start_date" },
+            { data: "salary", render: $.fn.dataTable.render.number( ',', '.', 0, '$' ) }
+        ]
+
+    });
+
+  }
+
   // #6. EDITABLE TABLES
 
   if ($('#editableTable').length) {
@@ -675,7 +758,7 @@ $(function () {
     $('.all-wrapper').toggleClass('content-panel-active');
   });
 
-  // #13. EMAIL APP 
+  // #13. EMAIL APP
 
   $('.more-messages').on('click', function () {
     $(this).hide();
@@ -751,7 +834,7 @@ $(function () {
     });
   }
 
-  // #16. OUR OWN CUSTOM DROPDOWNS 
+  // #16. OUR OWN CUSTOM DROPDOWNS
   $('.os-dropdown-trigger').on('mouseenter', function () {
     $(this).addClass('over');
   });
