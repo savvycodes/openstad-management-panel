@@ -172,27 +172,40 @@ $(function () {
   if ($('#dataTable-ajax').length) {
     $('#dataTable-ajax').DataTable({
       buttons: ['copy', 'excel', 'pdf'],
+      "processing": true,
       paging: true,
-      pageLength: 5,
+      "ordering": false,
+      iDisplayLength: 50,
+      pageLength: 50,
   //    ajax: $('#dataTable-ajax').attr('data-src')
       ajax: function ( data, callback, settings ) {
           var apiUrl =  $('#dataTable-ajax').attr('data-src');
+
+          var params = {
+            offset: data.start,
+            limit: data.length,
+            //order: 'id,'
+          };
+
+          if (data.search && data.search.value && data.search.value.length >0) {
+            params.uniqueCode = data.search.value;
+          }
+
+          var apiQuery = jQuery.param(params);
+          apiUrl = apiUrl +'?a=1&'+ apiQuery;
+
           $.ajax({
               url:apiUrl,
               // dataType: 'text',
               type: 'get',
               contentType: 'JSON',
-              data: {
-                  RecordsStart: data.start,
-                  PageSize: data.length
-              },
-              success: function( data, textStatus, jQxhr ){
-                  console.log('data', data)
+              success: function( responseData, textStatus, jQxhr ){
+                  console.log('responseData', responseData.length)
                   callback({
                       // draw: data.draw,
-                      data: data,
-                      recordsTotal:  data.length,
-                      recordsFiltered:  data.length
+                      data: responseData.data,
+                      recordsTotal:  responseData.total,//data.length,
+                      recordsFiltered:  responseData.total,// data.length
                   });
               },
               error: function( jqXhr, textStatus, errorThrown ){
@@ -201,9 +214,10 @@ $(function () {
       },
       serverSide: true,
       columns: [
+          { data: "id" },
           { data: "code" },
           { data: "userId", render:  function (val) { return val ? 'yes' : 'no'  } },
-          { data: "created_at" },
+          { data: "createdAt" },
       ]
 
     });

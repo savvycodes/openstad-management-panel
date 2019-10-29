@@ -28,8 +28,11 @@ exports.withAll = (req, res, next) => {
 }
 
 exports.withAllForClient = (req, res, next) => {
+  const params = req.query ? req.query : {};
+  params.clientId = req.authClientId;
+
   uniqueCodeApiService
-    .fetchAll({clientId: req.authClientId})
+    .fetchAll(params)
     .then((uniqueCodes) => {
       req.uniqueCodes = uniqueCodes;
       res.locals.uniqueCodes = req.uniqueCodes;
