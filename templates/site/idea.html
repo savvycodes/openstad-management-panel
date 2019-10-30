@@ -1,0 +1,29 @@
+{% extends 'user-layout.html' %}
+{% import 'partials/openstad-map.html' as openStadMap %}
+
+{% block quickLinks %}
+<a class="btn btn-white btn-sm" href="#">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Create an idea</span>
+</a>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        {% if idea %}
+          Bewerk plan
+        {% else %}
+          Maak nieuw plan
+        {% endif %}
+      </h6>
+      <div class="element-box">
+        {% include 'site/idea/form.html' %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

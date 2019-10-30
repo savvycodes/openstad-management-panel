@@ -46,7 +46,7 @@ module.exports = function(app){
     ideaMw.oneForSite,
     siteMw.withOne,
     (req, res) => {
-      res.render('site/idea/form.html');
+      res.render('site/idea/edit.html');
     }
   );
 
@@ -95,19 +95,23 @@ module.exports = function(app){
   );
 
   app.post('/admin/site/:siteId/idea/:ideaId',
-    ideaMw.oneForSite,
     siteMw.withOne,
+    ideaMw.oneForSite,
     (req, res, next) => {
       const data = pick(req.body, ideaFields.filter(field => !field.extraData).map(field => field.key));
       data.extraData = pick(req.body, ideaFields.filter(field => field.extraData).map(field => field.key));
 
+
       ideaApi
-        .update(req.session.jwt, data)
+        .update(req.session.jwt, req.site.id, Object.assign(req.idea, data) )
         .then(function (response) {
+          console.log('response', response);
+
            const redirectTo = req.header('Referer')  || appUrl
            res.redirect(redirectTo);
         })
         .catch(function (err) {
+          console.log('ererer', err);
            res.redirect(req.header('Referer')  || appUrl);
         });
     }

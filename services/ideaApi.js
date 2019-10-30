@@ -26,8 +26,6 @@ exports.create = (token, siteId, body) => {
       json: true // Automatically parses the JSON string in the response
   };
 
-  console.log('options', options);
-
   return rp(options);
 }
 
@@ -56,9 +54,10 @@ exports.delete = (token, siteId, ideaId) => {
 }
 
 exports.update = (token, siteId, data) => {
+  console.log(data);
   return rp({
     method: 'PUT',
-    uri: `${apiUrl}/site/${siteId}/idea/${data.id}`,
+    uri: `${apiUrl}/api/site/${siteId}/idea/${data.id}`,
     headers: {
         'Accept': 'application/json',
         'Authorization' : `Bearer ${token}`,

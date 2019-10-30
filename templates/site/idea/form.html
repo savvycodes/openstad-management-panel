@@ -1,151 +1,87 @@
-{% extends 'user-layout.html' %}
 {% import 'partials/openstad-map.html' as openStadMap %}
 
-{% block quickLinks %}
-<a class="btn btn-white btn-sm" href="#">
-  <i class="os-icon os-icon-window-content"></i>
-  <span>Create an idea</span>
-</a>
-{% endblock %}
-
-{% block body %}
-<div class="row">
-  <div class="col-sm-12 col-xxxl-9">
-    <div class="element-wrapper">
-      <h6 class="element-header">
-        {% if idea %}
-          Bewerk plan
-        {% else %}
-          Maak nieuw plan
-        {% endif %}
-      </h6>
-      <div class="element-box">
-        <form method="POST"
-          {% if idea %}
-          action="/admin/site/{{site.id}}/idea/{{idea.id}}"
-          {% else %}
-          action="/admin/site/{{site.id}}/idea"
-          {% endif %}
-        >
-          <div class="form-group row">
-            <label class="col-form-label col-sm-4" for="">
-               Titel
-            </label>
-            <div class="col-sm-8">
-              <input type="text" name="title" value="{{idea.title}}" class="form-control" />
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-form-label col-sm-4" for="">
-               Samenvatting
-            </label>
-            <div class="col-sm-8">
-              <textarea name="summary" class="form-control">{{idea.summary}}</textarea>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-form-label col-sm-4" for="">
-              Beschrijving
-            </label>
-            <div class="col-sm-8">
-              <textarea name="description" class="form-control">{{idea.description}}</textarea>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-form-label col-sm-4" for="">
-              Gebied
-            </label>
-            <div class="col-sm-8">
-              <select id="gebied" value="{% if idea.extraData %}{{idea.extraData.gebied}}{% endif %}" class="form-control">
-                <option value="">Kies gebied</option>
-                <option value="Bos en Lommer" {% if (idea.extraData) and (idea.extraData.gebied == "Bos en Lommer") %}selected{% endif %}>Bos en Lommer</option>
-                <option value="De Baarsjes" {% if (idea.extraData) and (idea.extraData.gebied == "De Baarsjes") %}selected{% endif %}>De Baarsjes</option>
-                <option value="Oud-West" {% if (idea.extraData) and (idea.extraData.gebied == "Oud-West") %}selected{% endif %}>Oud-West</option>
-                <option value="Westerpark" {% if (idea.extraData) and (idea.extraData.gebied == "Westerpark") %}selected{% endif %}>Westerpark</option>
-                <option value="West Algemeen" {% if (idea.extraData) and (idea.extraData.gebied == "West Algemeen") %}selected{% endif %}>West Algemeen</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-form-label col-sm-4" for="">
-              Thema
-            </label>
-            <div class="col-sm-8">
-              <select id="thema" value="{% if idea.extraData %}{{idea.extraData.thema}}{% endif %}" class="form-control">
-                <option value="">Kies thema</option>
-                <option value="Groen" {% if (idea.extraData) and (idea.extraData.thema == "Groen") %}selected{% endif %}>Groen en Openbare ruimte</option>
-                <option value="Diversiteit & Inclusiviteit" {% if (idea.extraData) and (idea.extraData.thema == "Diversiteit & Inclusiviteit") %}selected{% endif %}>Diversiteit en Inclusiviteit</option>
-                <option value="Duurzaam" {% if (idea.extraData) and (idea.extraData.thema == "Duurzaam") %}selected{% endif %}>Duurzaam</option>
-              </select>
-            </div>
-          </div>
-
-          <fieldset>
-            <legend><span>Locatie</span></legend>
-            <div class="form-group row">
-          <!--    <label class="col-form-label col-sm-4" for="">
-                Locatie
-              </label> -->
-              <div class="col-sm-12">
-                <div id="location">
-                  <input type="hidden" id="locationField" name="location" value='{{idea.location | dump | safe}}'>
-                  <div id="mapcontainer">
-                    {{openStadMap.map(googleMapsKey, [], editorInputElementId = 'locationField')}}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          {% if idea.posterImage %}
-            <input type="hidden" name="images[]" value="{{idea.posterImage.key}}">
-          {% endif %}
-
-          <div class="form-buttons-w">
-            <button class="btn btn-primary" type="submit">Opslaan</button>
-          </div>
-        </form>
-      </div>
-      <div class="element-box">
-        <form method="POST"
-        {% if idea %}
-          action="/admin/site/{{site.id}}/idea/{{idea.id}}"
-        {% else %}
-          action="/admin/site/{{site.id}}/idea"
-        {% endif %}
-
-        >
-        <div class="form-group row">
-          <label class="col-form-label col-sm-4" for="">
-            Status
-          </label>
-          <div class="col-sm-8">
-            <select id="status" value="{% if idea.status %}{{idea.status}}{% endif %}" name="status" class="form-control">
-              <option value="">Selecteer een status</option>
-              <option value="OPEN" {% if (idea.status === "OPEN") %}selected{% endif %}>Open</option>
-              <option value="CLOSED" {% if (idea.status === "CLOSED") %}selected{% endif %}>Gesloten</option>
-              <option value="ACCEPTED" {% if (idea.status === "ACCEPTED") %}selected{% endif %}>Geaccepteerd</option>
-              <option value="DENIED" {% if (idea.status === "DENIED") %}selected{% endif %}>Afgekeurd</option>
-              <option value="BUSY" {% if (idea.status === "BUSY") %}selected{% endif %}>Busy</option>
-              <option value="DONE" {% if (idea.status === "DONE") %}selected{% endif %}>Afgelopen</option>
-          </select>
-          </div>
-          <div class="form-buttons-w">
-            <button class="btn btn-primary" type="submit">Opslaan</button>
-          </div>
-        </div>
-
-        </form>
-      </div>
-
-
-
-      <div class="element-box">
-        <form method="POST" action="/admin/site/{{site.id}}/idea/{{idea.id}}/delete">
-            <button class="btn btn-danger" type="submit">Verwijder</button>
-        </form>
-      </div>
+<form method="POST"
+  {% if idea %}
+  action="/admin/site/{{site.id}}/idea/{{idea.id}}"
+  {% else %}
+  action="/admin/site/{{site.id}}/idea"
+  {% endif %}
+>
+  <div class="form-group row">
+    <label class="col-form-label col-sm-4" for="">
+       Titel
+    </label>
+    <div class="col-sm-8">
+      <input type="text" name="title" value="{{idea.title}}" class="form-control" />
     </div>
   </div>
-</div>
-{% endblock %}
+  <div class="form-group row">
+    <label class="col-form-label col-sm-4" for="">
+       Samenvatting
+    </label>
+    <div class="col-sm-8">
+      <textarea name="summary" class="form-control">{{idea.summary}}</textarea>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-form-label col-sm-4" for="">
+      Beschrijving
+    </label>
+    <div class="col-sm-8">
+      <textarea name="description" class="form-control">{{idea.description}}</textarea>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-form-label col-sm-4" for="">
+      Gebied
+    </label>
+    <div class="col-sm-8">
+      <select id="gebied" value="{% if idea.extraData %}{{idea.extraData.gebied}}{% endif %}" class="form-control">
+        <option value="">Kies gebied</option>
+        <option value="Bos en Lommer" {% if (idea.extraData) and (idea.extraData.gebied == "Bos en Lommer") %}selected{% endif %}>Bos en Lommer</option>
+        <option value="De Baarsjes" {% if (idea.extraData) and (idea.extraData.gebied == "De Baarsjes") %}selected{% endif %}>De Baarsjes</option>
+        <option value="Oud-West" {% if (idea.extraData) and (idea.extraData.gebied == "Oud-West") %}selected{% endif %}>Oud-West</option>
+        <option value="Westerpark" {% if (idea.extraData) and (idea.extraData.gebied == "Westerpark") %}selected{% endif %}>Westerpark</option>
+        <option value="West Algemeen" {% if (idea.extraData) and (idea.extraData.gebied == "West Algemeen") %}selected{% endif %}>West Algemeen</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-form-label col-sm-4" for="">
+      Thema
+    </label>
+    <div class="col-sm-8">
+      <select id="thema" value="{% if idea.extraData %}{{idea.extraData.thema}}{% endif %}" class="form-control">
+        <option value="">Kies thema</option>
+        <option value="Groen" {% if (idea.extraData) and (idea.extraData.thema == "Groen") %}selected{% endif %}>Groen en Openbare ruimte</option>
+        <option value="Diversiteit & Inclusiviteit" {% if (idea.extraData) and (idea.extraData.thema == "Diversiteit & Inclusiviteit") %}selected{% endif %}>Diversiteit en Inclusiviteit</option>
+        <option value="Duurzaam" {% if (idea.extraData) and (idea.extraData.thema == "Duurzaam") %}selected{% endif %}>Duurzaam</option>
+      </select>
+    </div>
+  </div>
+
+  <fieldset>
+    <legend><span>Locatie</span></legend>
+    <div class="form-group row">
+  <!--    <label class="col-form-label col-sm-4" for="">
+        Locatie
+      </label> -->
+      <div class="col-sm-12">
+        <div id="location">
+          <input type="hidden" id="locationField" name="location" value='{{idea.location | dump | safe}}'>
+          <div id="mapcontainer">
+            {{openStadMap.map(googleMapsKey, [], editorInputElementId = 'locationField')}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  {% if idea.posterImage %}
+    <input type="hidden" name="images[]" value="{{idea.posterImage.key}}">
+  {% endif %}
+
+  <div class="form-buttons-w">
+    <button class="btn btn-primary" type="submit">Opslaan</button>
+  </div>
+</form>
