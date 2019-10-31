@@ -8,7 +8,7 @@ const siteMw            = require('../../middleware/site');
 const ideaApi           = require('../../services/ideaApi');
 const csvToObject       = require('../../utils/csvToObject');
 const pick              = require('../../utils/pick');
-const ideaFields        = [{key: 'title'}, {key: 'description'}, {key: 'summary'}, {key: 'location'}, {key: 'thema', extraData: true}, {key: 'area', extraData: true}, {key: 'images', extraData: true}, {key: 'status'}];
+const ideaFields        = [{key: 'title'}, {key: 'description'}, {key: 'summary'}, {key: 'location'}, {key: 'theme', extraData: true}, {key: 'area', extraData: true}, {key: 'images', extraData: true}, {key: 'status'}, {key: 'advice', extraData: true}, {key: 'ranking', extraData: true}, {key: 'originalId', extraData: true}, {key: 'budget', extraData: true, type:"number"}];
 
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;
@@ -98,20 +98,46 @@ module.exports = function(app){
     siteMw.withOne,
     ideaMw.oneForSite,
     (req, res, next) => {
-      const data = pick(req.body, ideaFields.filter(field => !field.extraData).map(field => field.key));
-      data.extraData = pick(req.body, ideaFields.filter(field => field.extraData).map(field => field.key));
+//      const data = pick(req.body, ideaFields.filter(field => !field.extraData).map(field => field.key));
+//      data.extraData = pick(req.body, ideaFields.filter(field => field.extraData).map(field => field.key));
+const idea = req.idea ? req.idea : {};
+
+
+
+            ideaFields.forEach((field) => {
+              if (req.body && req.body[field.key]) {
+                let value = req.body[field.key];
+
+                if (field.type && field.type === 'number') {
+                  value = parseInt(value, 10);
+                  console.log('vvalue', value);
+                }
+
+                if (field.extraData) {
+                  if(!idea.extraData) {
+                    idea.extraData = {};
+                  }
+
+                  console.log('field.key', field.key, value);
+
+
+                  idea.extraData[field.key] = value;
+                } else {
+                  idea[field.key] = value;
+                }
+              }
+            });
 
 
       ideaApi
-        .update(req.session.jwt, req.site.id, Object.assign(req.idea, data) )
+        .update(req.session.jwt, req.site.id, idea )
         .then(function (response) {
-          console.log('response', response);
-
            const redirectTo = req.header('Referer')  || appUrl
            res.redirect(redirectTo);
         })
         .catch(function (err) {
-          console.log('ererer', err);
+          console.log('err', err);
+
            res.redirect(req.header('Referer')  || appUrl);
         });
     }
@@ -133,17 +159,44 @@ module.exports = function(app){
     ideaMw.oneForSite,
     siteMw.withOne,
     (req, res, next) => {
-      const data = pick(req.body, ideaFields.filter(field => !field.extraData).map(field => field.key));
-      data.extraData = pick(req.body, ideaFields.filter(field => field.extraData).map(field => field.key));
+      const idea = req.idea ? req.idea : {};
+
+      ideaFields.forEach((field) => {
+        if (req.body && req.body[field.key]) {
+          let value = req.body[field.key];
+
+          if (field.type && field.type === 'number') {
+            value = parseInt(value, 10);
+            console.log('vvalue', value);
+          }
+
+          if (field.extraData) {
+            if(!idea.extraData) {
+              idea.extraData = {};
+            }
+
+            console.log('field.key', field.key, value);
+
+
+            idea.extraData[field.key] = value;
+          } else {
+            idea[field.key] = value;
+          }
+        }
+      });
+
+      console.log('idea.extraData', idea.extraData);
+
 
       ideaApi
-        .create(req.session.jwt, req.params.siteId, data)
+        .create(req.session.jwt, req.params.siteId, idea)
         .then(function (response) {
            req.flash('success', { msg: 'Aangemaakt!'});
            res.redirect(`/admin/site/${req.params.siteId}/ideas`);
            res.redirect(redirectTo);
         })
         .catch(function (err) {
+          console.log('error', err);
           req.flash('error', { msg: 'Er gaat iets mis!'});
           res.redirect(req.header('Referer')  || appUrl);
         });

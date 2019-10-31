@@ -2,12 +2,15 @@ const rp = require('request-promise');
 const apiUrl = process.env.API_URL;
 
 exports.fetch = (token, siteId) => {
+
+
   return rp({
     method: 'GET',
     uri: `${apiUrl}/site/${siteId}`,
     headers: {
         'Accept': 'application/json',
-        'Authorization' : `Bearer ${token}`,
+        //'Authorization' : `Bearer ${token}`,
+        "X-Authorization": process.env.SITE_API_KEY
     },
     json: true // Automatically parses the JSON string in the response
   })
@@ -20,7 +23,8 @@ exports.create = (token, siteId, body) => {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
-          "X-Authorization" : ` Bearer ${token}`,
+        //"X-Authorization" : ` Bearer ${token}`,
+          "X-Authorization": process.env.SITE_API_KEY
       },
       body: body, //JSON.stringify(body),
       json: true // Automatically parses the JSON string in the response
@@ -35,7 +39,8 @@ exports.fetchAll = (token, siteId) => {
     uri:  `${apiUrl}/api/site/${siteId}/idea`,
     headers: {
         'Accept': 'application/json',
-        'Authorization' : `Bearer ${token}`,
+      //  'Authorization' : `Bearer ${token}`,
+        "X-Authorization": process.env.SITE_API_KEY
     },
     json: true // Automatically parses the JSON string in the response
   });
@@ -47,20 +52,22 @@ exports.delete = (token, siteId, ideaId) => {
       uri:  apiUrl + `/api/site/${siteId}/idea/${ideaId}`,
       headers: {
           'Accept': 'application/json',
-          "X-Authorization" : ` Bearer ${token}`,
+        //  "X-Authorization" : ` Bearer ${token}`,
+          "X-Authorization": process.env.SITE_API_KEY
       },
       json: true // Automatically parses the JSON string in the response
   });
 }
 
 exports.update = (token, siteId, data) => {
-  console.log(data);
+  console.log(token, siteId, data);
   return rp({
     method: 'PUT',
     uri: `${apiUrl}/api/site/${siteId}/idea/${data.id}`,
     headers: {
         'Accept': 'application/json',
-        'Authorization' : `Bearer ${token}`,
+      //  'Authorization' : `Bearer ${token}`,
+        "X-Authorization": process.env.SITE_API_KEY
     },
     body: data,
     json: true // Automatically parses the JSON string in the response
