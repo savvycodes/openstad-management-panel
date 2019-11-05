@@ -93,8 +93,19 @@ exports.configSchema = {
       label: 'Template (variables available)'
     },
   ],
-  arguments: [
-
+  categories: [
+    {
+      key: 'themes',
+      type: 'array',
+      default: false,
+      label: 'Themes (comma seperated)'
+    },
+    {
+      key: 'areas',
+      type: 'array',
+      default: false,
+      label: 'Areas (comma seperated)'
+    },
   ],
   newslettersignup: [
     {

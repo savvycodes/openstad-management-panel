@@ -18,8 +18,6 @@ exports.withOneForSite = (req, res, next) => {
   const authClientIdDefault = req.site.config && req.site.config.oauth && req.site.config.oauth.default ? req.site.config.oauth.default["auth-client-id"]  : false;
   const authClientId  = authClientIdDefault ? authClientIdDefault : (req.site.config && req.site.config.oauth ? req.site.config.oauth["auth-client-id"] : false);
 
-  console.log('authClientIdDefault', authClientIdDefault);
-
   userClientApi
     .fetch(authClientId)
     .then((client) => {

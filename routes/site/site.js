@@ -20,13 +20,13 @@ const siteId            = process.env.SITE_ID;
 const siteFields        = [{key: 'title'}];
 const siteConfigFields  = [{key: 'basicAuth'}];
 
-const authFields            = [{key: 'name'}, {key: 'requiredUserFields'}, {key: 'authTypes'}];
-const deleteMongoDb         = require('../../services/mongo').deleteDb;
-const dbExists              = require('../../services/mongo').dbExists;
-const copyDb                = require('../../services/mongo').copyMongoDb;
-const userApiSettingFields  = require('../../config/auth').userApiSettingFields;
-const userApiRequiredFields  = require('../../config/auth').userApiRequiredFields;
-const siteConfigSchema  = require('../../config/site').configSchema;
+const authFields                  = [{key: 'name'}, {key: 'requiredUserFields'}, {key: 'authTypes'}];
+const deleteMongoDb               = require('../../services/mongo').deleteDb;
+const dbExists                    = require('../../services/mongo').dbExists;
+const copyDb                      = require('../../services/mongo').copyMongoDb;
+const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
+const userApiRequiredFields       = require('../../config/auth').userApiRequiredFields;
+const siteConfigSchema            = require('../../config/site').configSchema;
 
 const cleanUrl = (url) => {
   return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
@@ -66,9 +66,6 @@ module.exports = function(app){
     ideaMw.allForSite,
     userClientMw.withOneForSite,
     (req, res, next) => {
-
-      console.log('userApiClient', req.userApiClient);
-
       res.render(`site/${req.params.page}.html`,  {
         siteConfigSchema: siteConfigSchema,
         pageName: req.params.page,
@@ -95,9 +92,12 @@ module.exports = function(app){
     siteMw.withAll,
     userClientMw.withAll,
     (req, res, next) => {
+    let clientDefault, clientAnonymous;
     /**
      * Create client in mijnopenstad oAuth API
      */
+
+
      const domain = cleanUrl(req.body.productionUrl);
      const apiDomain = cleanUrl(apiUrl);
      const domainWithProtocol = ensureUrlHasProtocol(domain);
@@ -105,60 +105,79 @@ module.exports = function(app){
      // add time to make the name unique
      const dbName = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '');
      const siteToCopy = req.sites.find(site => parseInt(req.body.siteIdToCopy, 10) === site.id);
-     const authClientId = siteToCopy.config.oauth.authClientId;
+     const authClientIdDefault = siteToCopy && siteToCopy.config && siteToCopy.config.oauth && siteToCopy.config.oauth.default ? siteToCopy.config.oauth.default["auth-client-id"]  : false;
+     const authClientId  = authClientIdDefault ? authClientIdDefault : (siteToCopy.config && siteToCopy.config.oauth ? siteToCopy.config.oauth["auth-client-id"] : false);
      const authApiConfigCopy = req.userApiClients.find(client => client.clientId === authClientId);
 
-     let dbToCopy = siteToCopy &&  siteToCopy.config &&  siteToCopy.config.cms ? siteToCopy.config.cms.dbName : false;
+     //copy the config but overwrite specific values entered by the user
+     const authConfig = authApiConfigCopy.config ? JSON.parse(authApiConfigCopy.config) : {};
+     authConfig.backUrl = domainWithProtocol;
+     authConfig.fromEmail = req.body.fromEmail;
+     authConfig.fromName = req.body.fromName;
 
-     let siteId;
-
-     userClientApi.create({
+     const formattedAuthConfigDefault = {
        name: siteName,
        siteUrl: domainWithProtocol,
        redirectUrl: domainWithProtocol,
        description: authApiConfigCopy ? authApiConfigCopy.description : '',
-       authTypes: authApiConfigCopy ? authApiConfigCopy.authTypes : ['Url'],
-       requiredUserFields: authApiConfigCopy ? authApiConfigCopy.requiredUserFields : ["firstName", "lastName", "email"],
+       authTypes: authApiConfigCopy && authApiConfigCopy.authTypes? JSON.parse(authApiConfigCopy.authTypes) : ['Url'],
+       requiredUserFields: authApiConfigCopy && authApiConfigCopy.authTypes ? JSON.parse(authApiConfigCopy.requiredUserFields) : ["firstName", "lastName", "email"],
        allowedDomains: [domain, apiDomain],
-       config: {
-         "backUrl": domainWithProtocol,
-         'fromEmail': req.body.fromEmail,
-         'fromName': req.body.fromName,
-         'authTypes' : authApiConfigCopy && authApiConfigCopy.config && authApiConfigCopy.config.authTypes ? authApiConfigCopy.config.authTypes : ["firstName", "lastName", "email"],
-      }
-    })
-    .then((client) => {
+       config: authConfig
+    };
+
+
+    let dbToCopy = siteToCopy &&  siteToCopy.config &&  siteToCopy.config.cms ? siteToCopy.config.cms.dbName : false;
+    let siteId;
+
+    userClientApi.create(formattedAuthConfigDefault)
+     .then((defaultResponse) => {
+       clientDefault = defaultResponse;
+       formattedAuthConfigDefault.authTypes = ['Anonymous'];
+       return userClientApi.create(formattedAuthConfigDefault);
+     })
+     .then((anonymousResponse) => {
+       clientAnonymous = anonymousResponse;
     /**
      * Create Site in openstad API
      */
+
+    const siteConfig = Object.assign(siteToCopy.config, {
+        allowedDomains: [domain],
+        basicAuth: {
+          active: req.body.basicAuthActive === 'yes',
+          user: req.body.basicAuthUser,
+          password: req.body.basicAuthPassword,
+        },
+        cms: {
+          dbName: dbName,
+          url: domainWithProtocol,
+          hostname: domain,
+        },
+        oauth: {
+          default : {
+            "auth-client-id": clientDefault.clientId,
+            "auth-client-secret":  clientDefault.clientSecret,
+          },
+          anonymous: {
+            "auth-client-id": clientAnonymous.clientId,
+            "auth-client-secret":  clientAnonymous.clientSecret,
+          }
+        },
+        email: {
+          siteaddress: req.body.fromEmail,
+          thankyoumail: {
+            from: req.body.fromEmail,
+          }
+        }
+    });
+
      return siteApi
          .create(req.session.jwt, {
             domain: domain,
             name: `${slugify(req.body.siteName)}-${new Date().getTime()}`,
             title: req.body.siteName,
-            config: {
-              allowedDomains: [domain],
-              basicAuth: {
-                active: req.body.basicAuthActive === 'yes',
-                user: req.body.basicAuthUser,
-                password: req.body.basicAuthPassword,
-              },
-              cms: {
-                dbName: dbName,
-                url: domainWithProtocol,
-                hostname: domain,
-              },
-              oauth: {
-                "auth-client-id": client.clientId,
-                "auth-client-secret":  client.clientSecret,
-              },
-              email: {
-      					siteaddress: req.body.fromEmail,
-      					thankyoumail: {
-    							from: req.body.fromEmail,
-      					}
-        			},
-            }
+            config: siteConfig
          })
        })
        .then((site) => {
@@ -213,13 +232,23 @@ module.exports = function(app){
                   value = parseInt(value, 10);
                 }
 
-                if (field.parentKey) {
+                if (field.type === 'array') {
+                  value = value.split(',').map((item) => {
+                    return item.trim();
+                  });
+                }
 
+                if (field.parentKey) {
                   if (!siteData.config[field.parentKey][siteConfigField]) {
                     siteData.config[field.parentKey][siteConfigField] = {};
                   }
                   siteData.config[field.parentKey][siteConfigField][field.key] = value;
                 } else {
+                  if (!siteData.config[siteConfigField]) {
+                    siteData.config[siteConfigField] = {};
+                  }
+
+
                   siteData.config[siteConfigField][field.key] = value;
                 }
 
