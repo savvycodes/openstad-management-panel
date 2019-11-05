@@ -16,7 +16,7 @@ exports.configSchema = {
       {
         key: 'password',
         type: 'string',
-        default: 'LqKNcKC7',
+        default: process.env.BASIC_AUTH_DEFAULT_PW,
         label: "Password"
       },
   ],
