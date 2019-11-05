@@ -1,3 +1,7 @@
 #dataTable-ajax_wrapper {
   display: block;
 }
+
+label.error {
+  color: red;
+}
