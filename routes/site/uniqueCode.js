@@ -1,5 +1,4 @@
 const { Parser }        = require('json2csv');
-const proxy             = require('http-proxy-middleware');
 const siteMw            = require('../../middleware/site');
 const uniqueCodeMw      = require('../../middleware/uniqueCode');
 const userClientMw      = require('../../middleware/userClient');
