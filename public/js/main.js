@@ -42,6 +42,18 @@ function not_display_type(display_type) {
   return $('.display-type').css('content') != display_type && $('.display-type').css('content') != '"' + display_type + '"';
 }
 
+function initHideFlash() {
+  $('.flash-container .close-button').click(function() {
+    $(this).closest('.flash-container').remove();
+  });
+
+  setTimeout(function() {
+    $('.flash-container').remove();
+  }, 5000);
+}
+
+initHideFlash();
+
 // Initiate on click and on hover sub menu activation logic
 function os_init_sub_menus() {
 

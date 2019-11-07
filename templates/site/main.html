@@ -1,129 +1,149 @@
 {% extends 'user-layout.html' %}
+{% set fullWidthLayout = true %}
 
 {% block body %}
 <div class="row">
   <div class="col-sm-12 col-xxxl-9">
     <div class="element-wrapper">
       <h6 class="element-header">
-        {{ __('Overview') }}
+        {{ __('Overview') }}  {{site.title}}
       </h6>
+      <div class="row pt-4">
+        <div class="col-sm-12">
+          <!--START - Grid of tablo statistics-->
+          <div class="element-wrapper">
+            <div class="element-content">
+              <div class="tablo-with-chart">
+                <div class="row">
+                  <div class="col-sm-12 col-xxl-4">
+                    <div class="tablos">
+                      <div class="row mb-xl-2 mb-xxl-3">
+                        <div class="col-sm-6">
+                          <span class="element-box el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+                            <div class="value">
+                              {{ideas.length}}
+                            </div>
+                            <div class="label">
+                              {{ __('Ideas') }}
+                            </div>
+                            {#<div class="trending trending-up-basic">
+                              <span>12%</span><i class="os-icon os-icon-arrow-up2"></i>
+                            </div>#}
+                          </span>
+                        </div>
+                        <div class="col-sm-6">
+                          <span class="element-box el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+                            <div class="value">
+                              {{totalVoteCount}}
+                            </div>
+                            <div class="label">
+                              {{ __('Total Votes') }}
+                            </div>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <span class="element-box el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+                            <div class="value">
+                              {{totalVotesByUser}}
+                            </div>
+                            <div class="label">
+                              {{ __('Total users voted') }}
+                            </div>
+                          </span>
+                        </div>
+                        {#<div class="col-sm-6">
+                          <span class="element-box el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+                            <div class="value">
+
+                            </div>
+                            <div class="label">
+                              {{ __('Total arguments') }}
+                            </div>
+                          </span>
+                        </div>
+                        #}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <!--START - Chart Box-->
+                    <div class="element-box pl-xxl-5 pr-xxl-5">
+                      <div class="el-tablo bigger highlight bold-label">
+                        <div class="label">
+                          Users voted per day
+                        </div>
+                      </div>
+                      <script src="/js/vendor/Chart.min.js"></script>
+
+                      <canvas id="myChart" width="400" height="400"></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [
+          {% for day in votesPerDayDays %}
+          '{{day}}',
+          {% endfor %}
+        ],
+        datasets: [{
+            label: 'Votes: ',
+            data: [{{votesPerDayCount}}],
+            backgroundColor: null,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+                    </div>
+                    <!--END - Chart Box-->
+                  </div>
+                  <div class="col-sm-12">
+                    <!--START - Chart Box-->
+                    <div class="element-box pl-xxl-5 pr-xxl-5">
+                      <div class="el-tablo bigger highlight bold-label">
+                        <div class="label">
+                          Users voted per day
+                        </div>
+                      </div>
+                      <table class="table">
+                        <tr>
+                          <th> Date </th>
+                          <th> Amount of votes </th>
+                        </tr>
+                        {% for voteDay in votesPerDay  %}
+                        <tr>
+                          <td> {{voteDay.date}} </td>
+                          <td> {{voteDay.votes.length}} </td>
+                        </tr>
+                        {% endfor %}
+                      </table>
+                    </div>
+                    <!--END - Chart Box-->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
     </div>
+      </div>
+    </div>
+
+
   </div>
 </div>
 
-<!--
-<div class="row">
-  <div class="col-sm-12 col-xxxl-9">
-    <div class="element-wrapper">
-      <h6 class="element-header">
-        Bezoekerstatistieken (DUMMY DATA)
-      </h6>
-      <div class="element-box">
-        <div class="os-tabs-w">
-          <div class="os-tabs-controls">
-            <ul class="nav nav-tabs smaller">
-              <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#tab_overview">
-                  Overzicht
-                </a>
-              </li>
 
-            </ul>
-            <ul class="nav nav-pills smaller d-none d-md-flex">
-              <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#">Vandaag</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#">7 Dagen</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#">14 Dagen</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#">Afgelopen Maand</a>
-              </li>
-            </ul>
-          </div>
-          <div class="tab-content">
-            <div class="tab-pane active" id="tab_overview">
-              <div class="el-tablo bigger">
-                <div class="label">
-                  Unieke Bezoekers
-                </div>
-                <div class="value">
-                  12,537
-                </div>
-              </div>
-              <div class="el-chart-w">
-                <canvas height="150px" id="lineChart" width="600px"></canvas>
-              </div>
-            </div>
-            <div class="tab-pane" id="tab_sales"></div>
-            <div class="tab-pane" id="tab_conversion"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="d-none d-xxxl-block col-xxxl-3">
-    <div class="element-wrapper">
-      <h6 class="element-header">
-        Visitors by Browser
-      </h6>
-      <div class="element-box less-padding">
-        <div class="el-chart-w">
-          <canvas height="120" id="donutChart1" width="120"></canvas>
-          <div class="inside-donut-chart-label">
-            <strong>1,248</strong><span>Visitors</span>
-          </div>
-        </div>
-        <div class="el-legend condensed">
-          <div class="row">
-            <div class="col-auto col-xxxxl-6 ml-sm-auto mr-sm-auto">
-              <div class="legend-value-w">
-                <div class="legend-pin legend-pin-squared" style="background-color: #6896f9;"></div>
-                <div class="legend-value">
-                  <span>Safari</span>
-                  <div class="legend-sub-value">
-                    17%, 12 Visits
-                  </div>
-                </div>
-              </div>
-              <div class="legend-value-w">
-                <div class="legend-pin legend-pin-squared" style="background-color: #85c751;"></div>
-                <div class="legend-value">
-                  <span>Chrome</span>
-                  <div class="legend-sub-value">
-                    22%, 763 Visits
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 d-none d-xxxxl-block">
-              <div class="legend-value-w">
-                <div class="legend-pin legend-pin-squared" style="background-color: #806ef9;"></div>
-                <div class="legend-value">
-                  <span>Firefox</span>
-                  <div class="legend-sub-value">
-                    3%, 7 Visits
-                  </div>
-                </div>
-              </div>
-              <div class="legend-value-w">
-                <div class="legend-pin legend-pin-squared" style="background-color: #d97b70;"></div>
-                <div class="legend-value">
-                  <span>Explorer</span>
-                  <div class="legend-sub-value">
-                    15%, 45 Visits
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-!-->
 {% endblock %}

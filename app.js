@@ -12,6 +12,10 @@ const nunjucks          = require('nunjucks');
 const flash             = require('express-flash');
 const app               = express();
 const FileStore         = require('session-file-store')(expressSession);
+const auth              = require('basic-auth');
+const compare           = require('tsscmp');
+
+//middleware
 const ideaMw            = require('./middleware/idea');
 const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
@@ -61,6 +65,29 @@ const nunjucksEnv = nunjucks.configure('templates', {
   autoescape: true,
   express: app
 });
+
+
+app.use((req, res, next) => {
+  const unauthorized = (req, res) => {
+      var challengeString = 'Basic realm=Openstad';
+      res.set('WWW-Authenticate', challengeString);
+      return res.status(401).send('Authentication required.');
+  }
+
+  const basicAuthUser = process.env.BASIC_AUTH_USER;
+  const basicAuthPassword = process.env.BASIC_AUTH_PASSWORD;
+
+  if (basicAuthUser && basicAuthPassword) {
+    var user = auth(req);
+
+    if (!user || !compare(user.name, basicAuthUser) || ! compare(user.pass, basicAuthPassword)) {
+      unauthorized(req, res);
+    } else {
+      next();
+    }
+  }
+});
+
 
 app.use((req, res, next) => {
   dateFilter.setDefaultFormat('DD-MM-YYYY HH:mm');

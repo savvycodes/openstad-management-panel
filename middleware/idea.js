@@ -3,7 +3,7 @@ const apiUrl = process.env.API_URL;
 
 exports.allForSite = (req, res, next) => {
   var options = {
-      uri: `${apiUrl}/api/site/${req.params.siteId}/idea`,
+      uri: `${apiUrl}/api/site/${req.params.siteId}/idea?includeVoteCount=1&includeUserVote=1`,
       headers: {
           'Accept': 'application/json',
   //         "Authorization" : auth
@@ -25,7 +25,7 @@ exports.allForSite = (req, res, next) => {
 
 exports.oneForSite  = (req, res, next) => {
   var options = {
-      uri: `${apiUrl}/api/site/${req.params.siteId}/idea/${req.params.ideaId}`,
+      uri: `${apiUrl}/api/site/${req.params.siteId}/idea/${req.params.ideaId}?includeVoteCount=1&includeUserVote=1`,
       headers: {
           'Accept': 'application/json',
   //         "Authorization" : auth

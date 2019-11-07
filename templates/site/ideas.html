@@ -28,7 +28,8 @@
          <thead>
             <tr>
                <th>Title</th>
-               <th>Description</th>
+               <th>Votes For</th>
+               <th>Votes Against</th>
                <th>Gemaakt op</th>
                <th> </th>
             </tr>
@@ -37,7 +38,8 @@
             {% for idea in ideas %}
             <tr>
                <td>{{ idea.title }}</td>
-               <td>{{ idea.summary | truncate(20)}}</td>
+               <th>{{ idea.yes }}</th>
+               <th>{{ idea.no }}</th>
                <td>{{ idea.createdAt | date }}</td>
                <td> <a href="/admin/site/{{site.id}}/idea/{{idea.id}}" > Bewerken </a> </td>
             </tr>

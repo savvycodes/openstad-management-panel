@@ -53,7 +53,7 @@ const ensureRights = (req, res, next) => {
   if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {
-    req.flash('error', { msg: 'Huidige account heeft geen rechten'});
+    req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
     res.redirect('/login');
   }
 }

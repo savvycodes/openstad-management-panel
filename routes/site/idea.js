@@ -29,8 +29,33 @@ module.exports = function(app){
     siteMw.withOne,
     ideaMw.allForSite,
     (req, res, next) => {
-      const json2csvParser = new Parser(Object.keys(req.ideas[0]));
-      const csvString = json2csvParser.parse(req.ideas);
+      const exportHeaders = [
+        {key: 'id', label: 'ID'},
+        {key: 'title', label: 'Title'},
+        {key: 'summary', label: 'Summary'},
+        {key: 'description', label: 'Description'},
+        {key: 'originalId', label: 'Original idea ID', 'extraData': true},
+        {key: 'area', label: 'Area', 'extraData': true},
+        {key: 'theme', label: 'Theme', 'extraData': true},
+        {key: 'advice', label: 'Advice', 'extraData': true},
+        {key: 'budget', label: 'Budget', 'extraData': true},
+        {key: 'ranking', label: 'Ranking', 'extraData': true},
+        {key: 'images', label: 'Images', 'extraData': true},
+        {key: 'yes', label: 'Votes for'},
+        {key: 'no', label: 'Votes against'},
+      ];
+
+      const formattedIdeas = req.ideas.map((idea) => {
+        const formattedIdea = {};
+        exportHeaders.forEach((header) => {
+          formattedIdea[header.key] = header.extraData &&  idea.extraData ? idea.extraData[header.key] : idea[header.key];
+        });
+
+        return formattedIdea;
+      });
+
+      const json2csvParser = new Parser(exportHeaders.map((header) => header.label));
+      const csvString = json2csvParser.parse(formattedIdeas);
 
     //  const csvString = csvParser(req.uniqueCodes);
       const filename = `ideas-${req.params.siteId}-${new Date().getTime()}.csv`;

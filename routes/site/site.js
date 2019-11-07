@@ -44,7 +44,10 @@ const ensureUrlHasProtocol = (url) => {
 module.exports = function(app){
 
   app.get('/admin/site/:siteId',
+    ideaMw.allForSite,
     siteMw.withOne,
+    voteMw.allForSite,
+    siteMw.addStats,
     userClientMw.withOneForSite,
     (req, res, next) => {
       res.render('site/main.html');
@@ -210,7 +213,6 @@ module.exports = function(app){
       const siteConfigFields = Object.keys(siteConfigSchema);
       const siteData = req.site;
 
-
       if (siteFields) {
         siteFields.forEach((siteField) => {
           if (req.body[siteField]) {
@@ -247,7 +249,6 @@ module.exports = function(app){
                   if (!siteData.config[siteConfigField]) {
                     siteData.config[siteConfigField] = {};
                   }
-
 
                   siteData.config[siteConfigField][field.key] = value;
                 }
@@ -304,7 +305,6 @@ module.exports = function(app){
        */
       Promise.all(promises)
         .then(function (response) {
-          console.log('==>>>> > > > > response', response);
           req.flash('success', { msg: 'Url aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
         })
