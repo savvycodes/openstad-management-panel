@@ -32,13 +32,15 @@ exports.addStats = (req, res, next) => {
   let votesPerDay = {}
   if (req.votes) {
     req.votes.forEach((vote) => {
-      usersVoted[vote.userId] = true;
-      let date = vote.createdAt.slice(0, 10);
+      if (!usersVoted[vote.userId]) {
+        usersVoted[vote.userId] = true;
+        let date = vote.createdAt.slice(0, 10);
 
-      if (!votesPerDay[date]) {
-        votesPerDay[date] = [vote];
-      } else {
-        votesPerDay[date].push(vote);
+        if (!votesPerDay[date]) {
+          votesPerDay[date] = [vote];
+        } else {
+          votesPerDay[date].push(vote);
+        }
       }
     });
   }
