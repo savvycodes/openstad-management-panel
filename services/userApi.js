@@ -33,7 +33,6 @@ exports.fetchAll = () => {
     json: true // Automatically parses the JSON string in the response
   }
 
-  console.log('===> options', options);
   return rp(options);
 //  .then(response => response.json());
 }

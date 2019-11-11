@@ -25,7 +25,6 @@
                <th>{{ __('ID') }}</th>
                <th>{{ __('Code') }}</th>
                <th>{{ __('Used') }}</th>
-               <th>{{ __('Created at') }}</th>
                <th> </th>
             </tr>
          </thead>
@@ -35,7 +34,6 @@
               <td>{{ uniqueCode.id }}</td>
                <td>{{ uniqueCode.code }}</td>
                <td>{% if uniqueCode.userId %} {{ __('yes') }} {% else %} {{ __('no') }} {% endif %}</td>
-               <td>{{ uniqueCode.createdAt | date }}</td>
                <td>
                  <a href="/admin/site/{{site.id}}/unique-code/delete/{{uniqueCode.id}}" class="btn btn btn-outline-danger"> {{ __('delete') }} </a>
                </td>
@@ -44,6 +42,9 @@
             #}
          </tbody>
        </table>
+
+
+
       </div>
     </div>
   </div>

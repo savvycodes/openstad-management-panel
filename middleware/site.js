@@ -19,14 +19,8 @@ exports.withOne = (req, res, next) => {
 
 exports.addStats = (req, res, next) => {
   let totalVoteCount = 0;
-  if (req.ideas) {
-    req.ideas.forEach((idea) => {
-      totalVoteCount += idea.yes;
-      totalVoteCount += idea.no;
-    });
-  }
 
-  res.locals.totalVoteCount = totalVoteCount;
+  res.locals.totalVoteCount = req.votes.filter(vote => !vote.checked).length;
 
   let usersVoted = {};
   let votesPerDay = {}

@@ -19,8 +19,6 @@ exports.withAll = (req, res, next) => {
   userApiService
     .fetchAll()
     .then((users) => {
-      console.log('===> usersusersusers', users);
-
       req.users = users;
       res.locals.users = req.users;
       next();

@@ -1,16 +1,15 @@
 const rp = require('request-promise');
 const apiUrl = process.env.API_URL;
+const siteApiKey =  process.env.SITE_API_KEY;
 
 exports.fetch = (token, siteId) => {
-
-
   return rp({
     method: 'GET',
     uri: `${apiUrl}/site/${siteId}`,
     headers: {
         'Accept': 'application/json',
         //'Authorization' : `Bearer ${token}`,
-        "X-Authorization": process.env.SITE_API_KEY
+        "X-Authorization": siteApiKey
     },
     json: true // Automatically parses the JSON string in the response
   })
@@ -24,7 +23,7 @@ exports.create = (token, siteId, body) => {
       headers: {
           'Accept': 'application/json',
         //"X-Authorization" : ` Bearer ${token}`,
-          "X-Authorization": process.env.SITE_API_KEY
+        "X-Authorization": siteApiKey
       },
       body: body, //JSON.stringify(body),
       json: true // Automatically parses the JSON string in the response
@@ -40,7 +39,7 @@ exports.fetchAll = (token, siteId) => {
     headers: {
         'Accept': 'application/json',
       //  'Authorization' : `Bearer ${token}`,
-        "X-Authorization": process.env.SITE_API_KEY
+        "X-Authorization": siteApiKey
     },
     json: true // Automatically parses the JSON string in the response
   });
@@ -53,7 +52,7 @@ exports.delete = (token, siteId, ideaId) => {
       headers: {
           'Accept': 'application/json',
         //  "X-Authorization" : ` Bearer ${token}`,
-          "X-Authorization": process.env.SITE_API_KEY
+          "X-Authorization": siteApiKey
       },
       json: true // Automatically parses the JSON string in the response
   });
@@ -67,7 +66,7 @@ exports.update = (token, siteId, data) => {
     headers: {
         'Accept': 'application/json',
       //  'Authorization' : `Bearer ${token}`,
-        "X-Authorization": process.env.SITE_API_KEY
+        "X-Authorization": siteApiKey
     },
     body: data,
     json: true // Automatically parses the JSON string in the response

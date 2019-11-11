@@ -6,7 +6,7 @@ exports.allForSite = (req, res, next) => {
       uri: `${apiUrl}/api/site/${req.params.siteId}/vote`,
       headers: {
           'Accept': 'application/json',
-  //         "Authorization" : auth
+          "X-Authorization": process.env.SITE_API_KEY
       },
       json: true // Automatically parses the JSON string in the response
   };
