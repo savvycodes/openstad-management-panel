@@ -31,11 +31,18 @@
           <fieldset>
               <legend><span>{{ __('Thank you e-mail ') }}</span></legend>
               {{ renderFields(siteConfigSchema.feedbackEmail, site.config.ideas.feedbackEmail, 'config[feedbackEmail]') }}
+
+              <button class="btn btn-secondary" data-target="#ideaThankYouModal" data-toggle="modal" type="button">More info on the E-mail Template</button>
+
               <div class="form-buttons-w">
               <button class="btn btn-primary" type="submit">Opslaan</button>
               </div>
             </fieldset>
         </form>
+
+        {% include 'site/settings/modal-thankyou-email.html' %}
+      </div>
+
       </div>
     </div>
   </div>
