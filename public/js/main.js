@@ -43,6 +43,7 @@ function not_display_type(display_type) {
 }
 
 function initHideFlash() {
+  console.log('initHideFlash', initHideFlash);
   $('.flash-container .close-button').click(function() {
     $(this).closest('.flash-container').remove();
   });
@@ -97,8 +98,8 @@ $(function () {
 
   // #4. DATE RANGE PICKER
 
-  $('input.single-daterange').daterangepicker({ "singleDatePicker": true });
-  $('input.multi-daterange').daterangepicker({ "startDate": "03/28/2017", "endDate": "04/06/2017" });
+  //$('input.single-daterange').daterangepicker({ "singleDatePicker": true });
+  //$('input.multi-daterange').daterangepicker({ "startDate": "03/28/2017", "endDate": "04/06/2017" });
 
   // #5. DATATABLES
 
@@ -160,7 +161,7 @@ $(function () {
       ]
 
     });
-
+}
 
 
   // #7. FORM STEPS FUNCTIONALITY
@@ -198,93 +199,6 @@ $(function () {
     CKEDITOR.replace('ckeditor1');
   }
 
-  // #10. CHARTJS CHARTS http://www.chartjs.org/
-
-  if (typeof Chart !== 'undefined') {
-
-    var fontFamily = '"Proxima Nova W01", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-    // set defaults
-    Chart.defaults.global.defaultFontFamily = fontFamily;
-    Chart.defaults.global.tooltips.titleFontSize = 14;
-    Chart.defaults.global.tooltips.titleMarginBottom = 4;
-    Chart.defaults.global.tooltips.displayColors = false;
-    Chart.defaults.global.tooltips.bodyFontSize = 12;
-    Chart.defaults.global.tooltips.xPadding = 10;
-    Chart.defaults.global.tooltips.yPadding = 8;
-
-    // init lite line chart if element exists
-
-    if ($("#liteLineChart").length) {
-      var liteLineChart = $("#liteLineChart");
-
-      var liteLineGradient = liteLineChart[0].getContext('2d').createLinearGradient(0, 0, 0, 200);
-      liteLineGradient.addColorStop(0, 'rgba(30,22,170,0.08)');
-      liteLineGradient.addColorStop(1, 'rgba(30,22,170,0)');
-
-      var chartData = [13, 28, 19, 24, 43, 49];
-
-      if (liteLineChart.data('chart-data')) chartData = liteLineChart.data('chart-data').split(',');
-
-      // line chart data
-      var liteLineData = {
-        labels: ["January 1", "January 5", "January 10", "January 15", "January 20", "January 25"],
-        datasets: [{
-          label: "Sold",
-          fill: true,
-          lineTension: 0.4,
-          backgroundColor: liteLineGradient,
-          borderColor: "#8f1cad",
-          borderCapStyle: 'butt',
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          pointBorderColor: "#fff",
-          pointBackgroundColor: "#2a2f37",
-          pointBorderWidth: 2,
-          pointHoverRadius: 6,
-          pointHoverBackgroundColor: "#FC2055",
-          pointHoverBorderColor: "#fff",
-          pointHoverBorderWidth: 2,
-          pointRadius: 4,
-          pointHitRadius: 5,
-          data: chartData,
-          spanGaps: false
-        }]
-      };
-
-      // line chart init
-      var myLiteLineChart = new Chart(liteLineChart, {
-        type: 'line',
-        data: liteLineData,
-        options: {
-          legend: {
-            display: false
-          },
-          scales: {
-            xAxes: [{
-              display: false,
-              ticks: {
-                fontSize: '11',
-                fontColor: '#969da5'
-              },
-              gridLines: {
-                color: 'rgba(0,0,0,0.0)',
-                zeroLineColor: 'rgba(0,0,0,0.0)'
-              }
-            }],
-            yAxes: [{
-              display: false,
-              ticks: {
-                beginAtZero: true,
-                max: 55
-              }
-            }]
-          }
-        }
-      });
-    }
-
-
   // INIT MOBILE MENU TRIGGER BUTTON
   $('.mobile-menu-trigger').on('click', function () {
     $('.menu-mobile .menu-and-user').slideToggle(200, 'swing');
@@ -310,10 +224,10 @@ $(function () {
   // #17. BOOTSTRAP RELATED JS ACTIVATIONS
 
   // - Activate tooltips
-  $('[data-toggle="tooltip"]').tooltip();
+//  $('[data-toggle="tooltip"]').tooltip();
 
   // - Activate popovers
-  $('[data-toggle="popover"]').popover();
+//  $('[data-toggle="popover"]').popover();
 
   // #18. TODO Application
 
@@ -334,6 +248,7 @@ $(function () {
       slidesToShow: 1,
       slidesToScroll: 1
     });
+
     $('.onboarding-modal').on('shown.bs.modal', function (e) {
       $('.onboarding-modal .onboarding-slider-w').slick('setPosition');
     });

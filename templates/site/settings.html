@@ -13,7 +13,7 @@
     </h6>
   </div>
   <div class="col-sm-3">
-    {% include 'site/settings/menu.html' %} 
+    {% include 'site/settings/menu.html' %}
   </div>
   <div class="col-sm-9">
     <div class="element-wrapper">
@@ -46,6 +46,7 @@
 
       </div>
 
+{#
       <div class="element-box">
         <form method="POST" action="/admin/site/{{site.id}}">
           <fieldset>
@@ -78,7 +79,6 @@
           </div>
         </form>
       </div>
-
       <div class="element-box">
         <form method="POST" action="/admin/site/{{site.id}}/user-api">
           <fieldset>
@@ -101,7 +101,7 @@
           </div>
         </form>
       </div>
-
+#}
       <div class="element-box">
         <form method="POST" action="/admin/site/{{site.id}}/delete">
             <button class="btn btn-danger" type="submit">Verwijder</button>
