@@ -1,0 +1,105 @@
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="loginModal" role="dialog" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          E-mail Template
+        </h5>
+        <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"> &times;</span></button>
+      </div>
+      <div class="modal-body">
+        <p>
+        The e-mail template can be written in html, variable are rendered with the templating engine nunjucks.
+        Certain variables are present. The can be used as follows: {% raw %}{{variable}}{% endraw %}
+        </p>
+        <p>
+          Following variables are available:
+          <table class="table">
+            <tr>
+              <td>
+                 <b> firstName </b>
+              </td>
+              <td>
+                  Firstname of user (if present)
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 <b> clientName </b>
+              </td>
+              <td>
+                 Name of the website (client) for which the login is requested
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 <b> clientUrl </b>
+              </td>
+              <td>
+                Url of the website (client) for which the login is requested
+              </td>
+            </tr>
+            <tr>
+              <td>
+                 <b> tokenUrl </b>
+              </td>
+              <td>
+                Url that leads to login 
+              </td>
+            </tr>
+          </table>
+          <br />
+        <p>
+        This is the default email template
+        </p>
+
+        <textarea class="form-control" style="min-height: 400px;">{% raw %}{% extends 'emails/layout.html' %}
+
+{% block body %}
+<h2 style="margin-bottom: 4px; font-size: 25px;">Inloglink aangevraagd</h2>
+
+{% if firstName %}
+<br />
+<b> Beste {{firstName}}, </b>
+<br />
+{% endif %}
+<br />
+
+Voor <a href="{{clientUrl}}" target="_blank">{{clientName}}</a>
+is een inloglink aangevraagd voor dit emailadres.
+Klik op de knop hieronder om automatisch in te loggen.
+<br />
+De knop is 60 minuten geldig.
+<br />
+<br />
+<p align="middle" style="margin: 10px 0;">
+<a
+  href="{{tokenUrl}}"
+  style="background-color: #ec0000; color:#fff; font-size: 15px; padding:15px 50px; text-decoration:none"
+  target="_blank"
+>
+	<b>Log in</b>
+</a>
+</p>
+
+<br />
+<p style="font-size:0.7em;font-style:italic;margin-bottom:5em" align="center">
+Of gebruik deze link in je browser:
+<br />
+<a
+  href="{{tokenUrl}}"
+  style="color:#ec0000"
+  target="_blank"
+>
+  {{tokenUrl}}
+</a>
+</p>
+{% endblock %}{% endraw %}
+</textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-dismiss="modal" type="button"> Close</button>
+      </div>
+    </div>
+  </div>
+</div>

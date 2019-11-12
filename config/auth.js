@@ -101,7 +101,7 @@ const types = [
       },
       {
         label: 'E-mail Template  ',
-        info: ' <button class="btn btn-secondary" data-target="#loginEmailTemplate" data-toggle="modal" type="button">More info on the E-mail Template</button>',
+        info: ' <button class="btn btn-secondary" data-target="#loginModal" data-toggle="modal" type="button">More info on the E-mail Template</button>',
         key: 'emailTemplate',
         default: '',
         type: 'textarea'

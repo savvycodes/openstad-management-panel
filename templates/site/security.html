@@ -121,7 +121,10 @@
             {% for field in authType.fields %}
 
             <div class="form-group row">
-              <label class="col-form-label col-sm-4" for="">{{field.label}}</label>
+              <div class=" col-sm-4">
+              <label class="col-form-label" for="">{{field.label}}</label>
+              <div class="info"> {{field.info | safe}} </div>
+              </div>
               <div class="col-sm-8">
                 {% if field.type === 'text' %}
                 <input
@@ -147,8 +150,7 @@
         </form>
       </div>
       {% endfor %}
-
-
+      {% include 'site/settings/modal-login-email.html' %}
     </div>
   </div>
 </div>
