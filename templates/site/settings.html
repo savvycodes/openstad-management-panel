@@ -104,7 +104,7 @@
 #}
       <div class="element-box">
         <form method="POST" action="/admin/site/{{site.id}}/delete">
-            <button class="btn btn-danger" type="submit">Verwijder</button>
+            <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')">Verwijder</button>
         </form>
       </div>
     </div>

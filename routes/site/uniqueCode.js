@@ -67,7 +67,8 @@ module.exports = function(app){
           res.redirect('/admin/site/'+req.site.id+'/unique-codes'  || appUrl);
         })
         .catch(function (err) {
-          req.flash('error', { msg: 'Er gaat iets mis!'});
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message});
           res.redirect(req.header('Referer')  || appUrl);
         });
     }
@@ -99,11 +100,12 @@ module.exports = function(app){
       uniqueCodeApi
         .delete(req.params.uniqueCodeId)
         .then(() => {
-          req.flash('success', { msg: ''});
+          req.flash('success', { msg: 'Aangemaakt!'});
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch((err) => {
-          req.flash('error', { msg: 'Er gaat iets mis!'});
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message});
           res.redirect(req.header('Referer')  || appUrl);
         });
     }

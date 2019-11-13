@@ -112,8 +112,8 @@ module.exports = function(app){
     //      res.redirect(redirectTo);
         })
         .catch(function (err) {
-          console.log('->>>> err import', err);
-          req.flash('error', { msg: 'Er gaat iets mis!'});
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message});
           res.redirect(req.header('Referer')  || appUrl);
         });
     }
@@ -123,36 +123,29 @@ module.exports = function(app){
     siteMw.withOne,
     ideaMw.oneForSite,
     (req, res, next) => {
-//      const data = pick(req.body, ideaFields.filter(field => !field.extraData).map(field => field.key));
-//      data.extraData = pick(req.body, ideaFields.filter(field => field.extraData).map(field => field.key));
-const idea = req.idea ? req.idea : {};
+      const idea = req.idea ? req.idea : {};
 
+      ideaFields.forEach((field) => {
+        if (req.body && req.body[field.key]) {
+          let value = req.body[field.key];
 
+          //in case of a number, parse it to int
+          if (field.type && field.type === 'number') {
+            value = parseInt(value, 10);
+          }
 
-            ideaFields.forEach((field) => {
-              if (req.body && req.body[field.key]) {
-                let value = req.body[field.key];
+          //check if field should be saved to extraData or own column
+          if (field.extraData) {
+            if(!idea.extraData) {
+              idea.extraData = {};
+            }
 
-                if (field.type && field.type === 'number') {
-                  value = parseInt(value, 10);
-                  console.log('vvalue', value);
-                }
-
-                if (field.extraData) {
-                  if(!idea.extraData) {
-                    idea.extraData = {};
-                  }
-
-                  console.log('field.key', field.key, value);
-
-
-                  idea.extraData[field.key] = value;
-                } else {
-                  idea[field.key] = value;
-                }
-              }
-            });
-
+            idea.extraData[field.key] = value;
+          } else {
+            idea[field.key] = value;
+          }
+        }
+      });
 
       ideaApi
         .update(req.session.jwt, req.site.id, idea )
@@ -161,8 +154,8 @@ const idea = req.idea ? req.idea : {};
            res.redirect(redirectTo);
         })
         .catch(function (err) {
-          console.log('err', err);
-
+           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+           req.flash('error', { msg: message});
            res.redirect(req.header('Referer')  || appUrl);
         });
     }
@@ -192,7 +185,6 @@ const idea = req.idea ? req.idea : {};
 
           if (field.type && field.type === 'number') {
             value = parseInt(value, 10);
-            console.log('vvalue', value);
           }
 
           if (field.extraData) {
@@ -200,18 +192,12 @@ const idea = req.idea ? req.idea : {};
               idea.extraData = {};
             }
 
-            console.log('field.key', field.key, value);
-
-
             idea.extraData[field.key] = value;
           } else {
             idea[field.key] = value;
           }
         }
       });
-
-      console.log('idea.extraData', idea.extraData);
-
 
       ideaApi
         .create(req.session.jwt, req.params.siteId, idea)
@@ -221,8 +207,8 @@ const idea = req.idea ? req.idea : {};
            res.redirect(redirectTo);
         })
         .catch(function (err) {
-          console.log('error', err);
-          req.flash('error', { msg: 'Er gaat iets mis!'});
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message});
           res.redirect(req.header('Referer')  || appUrl);
         });
     }

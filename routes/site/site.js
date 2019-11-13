@@ -355,8 +355,8 @@ module.exports = function(app){
     (req, res, next) => {
 
       const deleteActions = [
-  //      siteApi.delete(req.session.jwt, req.params.siteId),
-        userClientApi.delete(req.authClientId),
+        siteApi.delete(req.session.jwt, req.params.siteId),
+      //  userClientApi.delete(req.authClientId),
       ];
 
       if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
@@ -365,12 +365,12 @@ module.exports = function(app){
 
       Promise.all(deleteActions)
         .then((response) => {
-          req.flash('success', { msg: 'Aangepast!'});
+          req.flash('success', { msg: 'Verwijderd!'});
           res.redirect('/admin');
         })
         .catch((err) => {
-          console.log( 'Error, admin/site/:siteId/delete: ', err);
-          req.flash('error', { msg: 'Ging iets mis!'});
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message});
           res.redirect('/admin');
       //     next(err)
         });

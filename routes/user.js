@@ -25,7 +25,7 @@ module.exports = function(app){
     userMw.withOne,
     (req, res) => {
       const userRoles = req.editUser.roles;
-      
+
       // set user clients to role
       const userApiClients = req.userApiClients.map((client) => {
         client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
@@ -47,8 +47,8 @@ module.exports = function(app){
           res.redirect('/admin/users');
         })
         .catch((err) => {
-          console.log('==> err', err);
-          req.flash('error', { msg: 'Error: '+ err.msg });
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message });
           res.redirect('/admin/user');
         })
     }
@@ -65,8 +65,8 @@ module.exports = function(app){
           res.redirect('/admin/user/' + req.params.userId);
         })
         .catch((err) => {
-          console.log('==> err', err);
-          req.flash('error', { msg: 'Error: '+ err.msg });
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message });
           res.redirect('/admin/user/' + req.params.userId);
         })
     }
@@ -81,8 +81,8 @@ module.exports = function(app){
           res.redirect('/admin/users');
         })
         .catch((err) => {
-          console.log('==> err', err);
-          req.flash('error', { msg: 'Error: '+ err.msg });
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message });
           res.redirect('/admin/users');
         })
     }
