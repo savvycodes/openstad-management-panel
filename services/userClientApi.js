@@ -8,7 +8,6 @@ const apiCredentials = {
 }
 
 exports.fetch = (clientId) => {
-  console.log('=>>>clientId', clientId);
   return rp({
     method: 'GET',
     uri: `${apiUrl}/client/${clientId}`,

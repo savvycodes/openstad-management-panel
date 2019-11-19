@@ -4,7 +4,6 @@ exports.withOne = (req, res, next) => {
   userApiService
     .fetch(req.params.userId)
     .then((user) => {
-      console.log('===> user', user);
       req.editUser = user;
       res.locals.editUser = req.editUser;
       next();
