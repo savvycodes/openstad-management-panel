@@ -9,7 +9,7 @@ module.exports = function(app){
 
   app.get('/oauth/login', (req, res, next) => {
     const fullUrl = appUrl + '/admin' //+ req.originalUrl;
-    const redirectUrl = `${apiUrl}/oauth/site/${siteId}/login?redirectUrl=${fullUrl}`;
+    const redirectUrl = `${apiUrl}/oauth/site/${siteId}/login?redirectUrl=${fullUrl}&forceNewLogin=1`;
     res.redirect(redirectUrl);
   });
 
