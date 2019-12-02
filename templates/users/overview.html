@@ -19,17 +19,18 @@
         Users
       </h6>
       <div class="element-box">
-        <table id="dataTable1" width="100%" class="table table-striped table-lightfont">
+        <table id="dataTable-ajax" width="100%" class="table table-striped table-lightfont" data-src="{{apiUrl}}" data-custom-columns="userColumns">
          <thead>
             <tr>
               <th>ID</th>
               <th>First name</th>
               <th>Last name</th>
               <th>Email</th>
-              <th></th>
+              <th>Actions </th>
             </tr>
          </thead>
          <tbody>
+          {#
             {% for user in users %}
             {% if user.role !== 'anonymous' %}
             <tr>
@@ -45,6 +46,7 @@
             </tr>
             {% endif %}
             {% endfor %}
+          #}
          </tbody>
        </table>
       </div>

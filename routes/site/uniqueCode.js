@@ -21,14 +21,12 @@ module.exports = function(app){
   );
 
   app.get('/admin/site/:siteId/api/unique-codes',
-      siteMw.withOne,
-      siteMw.addAuthClientId,
-      userClientMw.withOneForSite,
-      uniqueCodeMw.withAllForClient,
-      (req, res) => {
-        res.json(req.uniqueCodes);
-      }
-);
+    siteMw.withOne,
+    siteMw.addAuthClientId,
+    userClientMw.withOneForSite,
+    uniqueCodeMw.withAllForClient,
+    (req, res) => { res.json(req.uniqueCodes); }
+  );
 
   app.get('/admin/site/:siteId/unique-code',
     siteMw.withOne,

@@ -1,6 +1,8 @@
 const rp = require('request-promise');
 const apiUrl = process.env.USER_API;
 const nestedObjectAssign = require('nested-object-assign');
+const httpBuildQuery = require('../utils/httpBuildQuery')
+
 
 const apiCredentials = {
     client_id:  process.env.USER_API_CLIENT_ID,
@@ -20,10 +22,12 @@ exports.fetch = (clientId) => {
 //  .then(response => response.json());
 }
 
-exports.fetchAll = () => {
+exports.fetchAll = (params) => {
+  const query = params ? httpBuildQuery(params) : '';
+
   return rp({
     method: 'GET',
-    uri: `${apiUrl}/clients`,
+    uri: `${apiUrl}/clients?${query}`,
     headers: {
         'Accept': 'application/json'
     },

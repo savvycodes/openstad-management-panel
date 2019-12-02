@@ -16,7 +16,7 @@ exports.withOne = (req, res, next) => {
 
 exports.withAll = (req, res, next) => {
   userApiService
-    .fetchAll()
+    .fetchAll(req.query)
     .then((users) => {
       req.users = users;
       res.locals.users = req.users;

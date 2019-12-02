@@ -99,8 +99,6 @@ module.exports = function(app){
     /**
      * Create client in mijnopenstad oAuth API
      */
-
-
      const domain = cleanUrl(req.body.productionUrl);
      const apiDomain = cleanUrl(apiUrl);
      const domainWithProtocol = ensureUrlHasProtocol(domain);
@@ -187,8 +185,6 @@ module.exports = function(app){
          return dbExists(dbToCopy);
        })
        .then((exists) => {
-         console.log('exists', exists);
-
          /**
           * Copy mongodb database for CMS from chosen site, or if empty default
           */

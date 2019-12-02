@@ -110,7 +110,34 @@ $(function () {
     $('#dataTable1').DataTable({ buttons: ['copy', 'excel', 'pdf'] });
   }
 
+  function userColumns () {
+    return  [
+       { data: "id" },
+       { data: "firstName" },
+       { data: "lastName" },
+       { data: "email" },
+       { data: "id",
+         render: function (val) {
+           return '<a href="/admin/user/'+val+'" target="_blank">Edit </a>'
+        }
+      }
+    ];
+  }
+
+  function uniqueCodeColumns () {
+    return  [
+       { data: "id" },
+       { data: "code" },
+       { data: "userId", render:  function (val) { return val ? 'yes' : 'no'  } },
+    ];
+  }
+
   if ($('#dataTable-ajax').length) {
+
+    var dataColumns = $('#dataTable-ajax').attr('data-custom-columns');
+
+    ;
+
     $('#dataTable-ajax').DataTable({
       buttons: ['copy', 'excel', 'pdf'],
       "processing": true,
@@ -118,8 +145,8 @@ $(function () {
       "ordering": false,
       iDisplayLength: 50,
       pageLength: 50,
-  //    ajax: $('#dataTable-ajax').attr('data-src')
       ajax: function ( data, callback, settings ) {
+
           var apiUrl =  $('#dataTable-ajax').attr('data-src');
 
           var params = {
@@ -129,7 +156,7 @@ $(function () {
           };
 
           if (data.search && data.search.value && data.search.value.length >0) {
-            params.uniqueCode = data.search.value;
+            params.search = data.search.value;
           }
 
           var apiQuery = jQuery.param(params);
@@ -141,7 +168,6 @@ $(function () {
               type: 'get',
               contentType: 'JSON',
               success: function( responseData, textStatus, jQxhr ){
-                  console.log('responseData', responseData.length)
                   callback({
                       // draw: data.draw,
                       data: responseData.data,
@@ -154,13 +180,14 @@ $(function () {
           });
       },
       serverSide: true,
-      columns: [
-          { data: "id" },
-          { data: "code" },
-          { data: "userId", render:  function (val) { return val ? 'yes' : 'no'  } },
-      ]
-
+    /*  columns: [
+        { data: "id" },
+        { data: "code" },
+        { data: "userId", render:  function (val) { return val ? 'yes' : 'no'  } },
+      ]*/
+      columns: eval(dataColumns)()
     });
+
 }
 
 

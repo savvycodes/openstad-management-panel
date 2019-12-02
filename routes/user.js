@@ -2,12 +2,16 @@ const userMw = require('../middleware/user');
 const clientMw = require('../middleware/userClient');
 const roleMw = require('../middleware/role');
 const userApiService = require('../services/userApi');
+const apiUrl = process.env.USER_API;
+
 
 module.exports = function(app){
   app.get('/admin/users',
-    userMw.withAll,
+  //  userMw.withAll,
     (req, res) => {
-      res.render('users/overview.html');
+      res.render('users/overview.html', {
+        apiUrl: `/admin/api/users`
+      });
     }
   );
 
@@ -17,6 +21,11 @@ module.exports = function(app){
     (req, res) => {
       res.render('users/form.html');
     }
+  );
+
+  app.get('/admin/api/users',
+    userMw.withAll,
+    (req, res) => { res.json(req.users); }
   );
 
   app.get('/admin/user/:userId',
