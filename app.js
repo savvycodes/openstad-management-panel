@@ -85,6 +85,8 @@ app.use((req, res, next) => {
     } else {
       next();
     }
+  } else {
+    next();
   }
 });
 
@@ -173,8 +175,7 @@ app.use('/admin',
 app.get('/admin',
   siteMw.withAll,
   (req, res) => {
-    console.log('aaaa');
-  res.render('overview.html', {
+    res.render('overview.html', {
     sites: req.sites
   });
 });
