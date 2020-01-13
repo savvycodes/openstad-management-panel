@@ -107,7 +107,10 @@ $(function () {
     $('#formValidate').validator();
   }
   if ($('#dataTable1').length) {
-    $('#dataTable1').DataTable({ buttons: ['copy', 'excel', 'pdf'] });
+    $('#dataTable1').DataTable({
+      buttons: ['copy', 'excel', 'pdf'],
+      pageLength: 50,
+    });
   }
 
   function userColumns () {
@@ -133,16 +136,13 @@ $(function () {
   }
 
   if ($('#dataTable-ajax').length) {
-
     var dataColumns = $('#dataTable-ajax').attr('data-custom-columns');
-
-    ;
 
     $('#dataTable-ajax').DataTable({
       buttons: ['copy', 'excel', 'pdf'],
-      "processing": true,
+      processing: true,
       paging: true,
-      "ordering": false,
+      ordering: false,
       iDisplayLength: 50,
       pageLength: 50,
       ajax: function ( data, callback, settings ) {

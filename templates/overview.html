@@ -19,7 +19,7 @@
       </h6>
       <div class="element-box">
         <div class="table-responsive">
-          <table class="table table-lightborder">
+          <table id="dataTable1" class="table table-lightborder">
             <thead>
               <tr>
                 <th>
@@ -40,7 +40,7 @@
               {% for site in sites %}
               <tr>
                 <td class="nowrap">
-                  {{site.title}} 
+                  {{site.title}}
                 </td>
                 <td class="text-center">
                   {% if site.config.cms.dbName %}
