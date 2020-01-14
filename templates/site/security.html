@@ -11,9 +11,39 @@
         {{ __('Security & authentication') }}
       </h6>
       <div class="element-box">
+
+        <form method="POST" action="/admin/site/{{site.id}}/user-api/name">
+          <fieldset>
+            <legend><span>Authentication</span></legend>
+
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">
+                {{ __('Name') }}
+              </label>
+              <div class="col-sm-8">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="name"
+                  value="{{userApiClient.name}}"
+                />
+              </div>
+            </div>
+            <div class="form-buttons-w">
+              <button class="btn btn-primary" type="submit">
+                {{__('Save') }}
+              </button>
+            </div>
+          </fieldset>
+        </form>
+
+        </div>
+        <div class="element-box">
+
+
         <form method="POST" action="/admin/site/{{site.id}}/user-api">
           <fieldset>
-            <legend><span>Authentication settings</span></legend>
+            <legend><span>Settings</span></legend>
 
             <div class="form-group row">
               <label class="col-form-label col-sm-4" for="">

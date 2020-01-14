@@ -344,6 +344,47 @@ module.exports = function(app){
   );
 
 
+  app.post('/admin/site/:siteId/user-api/name',
+    siteMw.withOne,
+    userClientMw.withAllForSite,
+    (req, res, next) => {
+
+      const updateActions = [];
+      req.siteClients;
+
+      req.siteClients.forEach((siteClient) => {
+        let data = Object.assign(siteClient, {
+          name: req.body.name
+        });
+
+        updateActions.push(new Promise((resolve, reject) => {
+          userClientApi.update(siteClient.clientId, data)
+            .then(() => {
+              console.log('');
+              resolve();
+            })
+            .catch((err) => {
+              reject(err);
+            });
+          }));
+      });
+
+      Promise
+        .all(updateActions)
+        .then(() => {
+          req.flash('success', { msg: 'Updated!'});
+          res.redirect(req.header('Referer')  || appUrl);
+        })
+        .catch((err) => {
+          console.log('->>> E:', err.message)
+          req.flash('success', { msg: 'Something went wrong!'});
+          res.redirect(req.header('Referer')  || appUrl);
+        })
+
+    }
+  );
+
+
   app.post('/admin/site/:siteId/delete',
     siteMw.withOne,
     siteMw.addAuthClientId,

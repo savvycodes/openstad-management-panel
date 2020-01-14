@@ -32,6 +32,41 @@ exports.withOneForSite = (req, res, next) => {
     });
 }
 
+exports.withAllForSite = (req, res, next) => {
+  req.siteClients = [];
+  const site          = req.site;
+  const oauthConfig   = req.site.config.oauth;
+  const fetchActions = [];
+  const fetchClient = (req, oauthClientId) => {
+    return new Promise((resolve, reject) => {
+      return userClientApi
+        .fetch(oauthClientId)
+        .then((client) => {
+          req.siteClients.push(client);
+          resolve();
+        })
+        .catch((err) => {
+          console.log('==>> err', oauthClientId, err.message);
+          resolve();
+        });
+    })
+  }
+
+  if (oauthConfig && Object.keys(oauthConfig).length > 0) {
+    Object.keys(oauthConfig).forEach((configKey) => {
+      let oauthClientId = oauthConfig[configKey]["auth-client-id"];
+      fetchActions.push(fetchClient(req, oauthClientId));
+    })
+  } else {
+    fetchActions.push(fetchClient(req, oauthClientId));
+  }
+
+  return Promise
+          .all(fetchActions)
+          .then(() => { next(); })
+          .catch(() => { next(); });
+}
+
 exports.withAll = (req, res, next) => {
   userClientApi
     .fetchAll()
