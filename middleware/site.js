@@ -68,6 +68,16 @@ exports.withAll = (req, res, next) => {
   siteApiService
     .fetchAll(req.session.jwt)
     .then((sites) => {
+      sites = sites.sort((a, b) => {
+        if (a.title < b.title) {
+          return -1;
+        }
+        if (b.title < a.title) {
+          return 1;
+        }
+
+        return 0;
+      });
       req.sites = sites;
       res.locals.sites = req.sites;
       next();

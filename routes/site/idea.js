@@ -55,8 +55,6 @@ module.exports = function(app){
 
         const formattedIdeas = req.ideas ? req.ideas.map((idea) => {
           const formattedIdea = {};
-          console.log('idea.user', idea.user);
-
           exportHeaders.forEach((header) => {
             if (header.userData) {
               formattedIdea[header.key] = idea.user && idea.user[header.key] ? idea.user[header.key] : '';
