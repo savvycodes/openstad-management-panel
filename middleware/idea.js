@@ -4,7 +4,7 @@ const siteApiKey =  process.env.SITE_API_KEY;
 
 exports.allForSite = (req, res, next) => {
   var options = {
-      uri: `${apiUrl}/api/site/${req.params.siteId}/idea?includeVoteCount=1&includeUserVote=1`,
+      uri: `${apiUrl}/api/site/${req.params.siteId}/idea?includeUser=1&includeVoteCount=1&includeUserVote=1`,
       headers: {
           'Accept': 'application/json',
           "X-Authorization": siteApiKey
@@ -26,7 +26,7 @@ exports.allForSite = (req, res, next) => {
 
 exports.oneForSite  = (req, res, next) => {
   var options = {
-      uri: `${apiUrl}/api/site/${req.params.siteId}/idea/${req.params.ideaId}?includeVoteCount=1&includeUserVote=1`,
+      uri: `${apiUrl}/api/site/${req.params.siteId}/idea/${req.params.ideaId}?includeUser=1&includeVoteCount=1&includeUserVote=1`,
       headers: {
           'Accept': 'application/json',
           "X-Authorization": siteApiKey
