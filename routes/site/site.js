@@ -189,7 +189,6 @@ module.exports = function(app){
           * Copy mongodb database for CMS from chosen site, or if empty default
           */
          dbToCopy = exists ? dbToCopy : process.env.DEFAULT_DB;
-
          return copyDb(dbToCopy, dbName);
        })
        .then(() => {
@@ -211,8 +210,8 @@ module.exports = function(app){
 
       if (siteFields) {
         siteFields.forEach((siteField) => {
-          if (req.body[siteField]) {
-            siteData[siteField] = req.body[siteField];
+          if (req.body[siteField.key]) {
+            siteData[siteField.key] = req.body[siteField.key];
           }
         });
       }

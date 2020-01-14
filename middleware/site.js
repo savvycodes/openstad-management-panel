@@ -54,8 +54,6 @@ exports.addStats = (req, res, next) => {
   res.locals.votesPerDayDays = votesPerDay ? votesPerDay.map((voteDate) => { let dateMoment = moment(voteDate.date); return dateMoment.format('Do, MMM');  } ) : '';
   res.locals.votesPerDayCount = votesPerDay ? votesPerDay.map(voteDate => voteDate.votes.length) : '';
 
-  console.log('res.locals.votesPerDayDays', res.locals.votesPerDayDays);
-
   next();
 }
 
