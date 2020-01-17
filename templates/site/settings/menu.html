@@ -10,3 +10,9 @@
     <li {% if pageName === 'newsletter'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/newsletter">{{ __('Newsletter') }}</a> </li>
   </ul>
 </div>
+
+<br />
+
+<a href="https://{{site.domain}}/config-reset" class="btn btn-primary" target="_blank">
+  Reset site configuraton
+</a>
