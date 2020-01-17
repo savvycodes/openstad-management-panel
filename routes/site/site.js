@@ -1,7 +1,7 @@
 const slugify             = require('slugify');
 const nestedObjectAssign  = require('nested-object-assign');
 const Promise             = require("bluebird");
-
+const rp                  = require('request-promise');
 //middleware
 const ideaMw            = require('../../middleware/idea');
 const siteMw            = require('../../middleware/site');
@@ -63,6 +63,31 @@ module.exports = function(app){
       res.render(`site/votes.html`);
     }
   );
+
+  app.get('/admin/site/:siteId/vote/:voteId/toggle',
+    (req, res, next) => {
+      const options = {
+          uri: `${apiUrl}/api/site/${req.params.siteId}/vote/${req.params.voteId}/toggle`,
+          headers: {
+              'Accept': 'application/json',
+              "X-Authorization": process.env.SITE_API_KEY
+          },
+          json: true // Automatically parses the JSON string in the response
+      };
+
+      rp(options)
+        .then(function (votes) {
+          req.flash('success', { msg: 'Updated!'});
+          res.redirect(req.header('Referer')  || appUrl);
+           next();
+        })
+        .catch(function (err) {
+          req.flash('error', { msg: 'Something whent wrong!'});
+          res.redirect(req.header('Referer')  || appUrl);
+          next();
+        });
+  });
+
 
   app.get('/admin/site/:siteId/:page',
     siteMw.withOne,
@@ -310,6 +335,30 @@ module.exports = function(app){
 
     }
   );
+
+
+  app.post('/admin/site/:siteId/user-api/settings',
+    siteMw.withOne,
+    userClientMw.withOneForSite,
+    (req, res, next) => {
+      let data = req.userApiClient;
+
+      if (!req.body.authTypes) {
+        req.flash('error', { msg: 'At least one authentication method is required'});
+        res.redirect(req.header('Referer')  || appUrl);
+      } else {
+        data.requiredUserFields = req.body.requiredUserFields ? req.body.requiredUserFields : [];
+        data.authTypes = req.body.authTypes;
+
+        userClientApi
+          .update(req.userApiClient.clientId, data)
+          .then((userClient) => {
+            req.flash('success', { msg: 'Aangepast!'});
+            res.redirect(req.header('Referer')  || appUrl);
+          })
+          .catch((err) => { next(err) });
+      }
+    });
 
   app.post('/admin/site/:siteId/user-api',
     siteMw.withOne,

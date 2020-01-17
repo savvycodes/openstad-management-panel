@@ -72,3 +72,7 @@ label.error {
     font-weight: 400;
     padding: 1rem 1.25rem;
   }
+
+  tr.rejected, tr.rejected td {
+    background-color: red;
+  }

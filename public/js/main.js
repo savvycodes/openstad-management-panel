@@ -121,7 +121,7 @@ $(function () {
        { data: "email" },
        { data: "id",
          render: function (val) {
-           return '<a href="/admin/user/'+val+'" target="_blank">Edit </a>'
+           return '<a href="/admin/user/'+val+'" target="_blank">Edit</a>'
         }
       }
     ];
@@ -132,6 +132,11 @@ $(function () {
        { data: "id" },
        { data: "code" },
        { data: "userId", render:  function (val) { return val ? 'yes' : 'no'  } },
+       { data: function(row, type, set) {
+          return row;
+       }, render:  function (val, row) {
+         return val.userId ? '<a href="/admin/unique-code/reset/'+val.id+'">Reset </a>' : '' }
+       },
     ];
   }
 
@@ -146,7 +151,6 @@ $(function () {
       iDisplayLength: 50,
       pageLength: 50,
       ajax: function ( data, callback, settings ) {
-
           var apiUrl =  $('#dataTable-ajax').attr('data-src');
 
           var params = {

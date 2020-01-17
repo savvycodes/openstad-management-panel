@@ -108,4 +108,21 @@ module.exports = function(app){
         });
     }
   );
+
+  app.get('/admin/unique-code/reset/:uniqueCodeId',
+    uniqueCodeMw.withOne,
+    (req, res) => {
+      uniqueCodeApi
+        .reset(req.params.uniqueCodeId)
+        .then(() => {
+          req.flash('success', { msg: 'Aangemaakt!'});
+          res.redirect(req.header('Referer')  || appUrl);
+        })
+        .catch((err) => {
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message});
+          res.redirect(req.header('Referer')  || appUrl);
+        });
+    }
+  );
 }

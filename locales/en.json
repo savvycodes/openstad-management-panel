@@ -61,5 +61,11 @@
 	"Sure? Can't be undone": "Sure? Can't be undone",
 	"Sure? It can not be undone": "Sure? It can not be undone",
 	"Title": "Title",
-	"Name": "Name"
+	"Name": "Name",
+	"Vote ID": "Vote ID",
+	"Vote date": "Vote date",
+	"": "",
+	"Vote idea ID": "Vote idea ID",
+	"Vote user ID": "Vote user ID",
+	"Newsletter subscribers": "Newsletter subscribers"
 }

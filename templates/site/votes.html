@@ -18,44 +18,46 @@
   <div class="col-sm-12 col-xxxl-9">
     <div class="element-wrapper">
       <h6 class="element-header">
-        Votes for ideas
+        Votes ({{votes.length}})
       </h6>
       <div class="element-box">
         <div class="table-responsive">
           <table id="dataTable1" class="table table-striped table-lightfont">
            <thead>
               <tr>
-                 <th>{{ __('Idea ID') }}</th>
-                 <th>{{ __('Idea Title') }}</th>
-                 <th>{{ __('For votes') }}</th>
-                 <th>{{ __('Against votes') }}</th>
-                 <th>{{ __('Budget') }}</th>
-                 <th>{{ __('Theme') }}</th>
-                 <th>{{ __('Area') }}</th>
+                 <th>{{ __('Vote ID') }}</th>
+                 <th>{{ __('Vote date') }}</th>
+                 <th>{{ __('Vote idea ID') }}</a></th>
+                 <th>{{ __('Vote user ID') }}</th>
+                <th></th>
               </tr>
            </thead>
            <tbody>
-              {% for idea in ideas %}
-              <tr>
-                 <td>{{ idea.id }}</td>
-                 <td>{{ idea.title }}</td>
-                 <td>{{ idea.voteCountFor }}</td>
-                 <td>{{ idea.voteCountAgainst }}</td>
-                 <td>{{ idea.budget }}</td>
-                 <td>{{ idea.extraData.theme }}</td>
-                 <td>{{ idea.extraData.area }}</td>
+              {% for vote in votes %}
+              <tr class="{{'rejected' if vote.checked === false}}">
+                 <td>{{ vote.id }}</td>
+                 <td>{{ vote.createdAt | date}}</td>
+                 <td><a href="/admin/site/{{site.id}}/idea/{{ vote.ideaId }}" target="_blank">{{ vote.ideaId }}</a></td>
+                 <td><a href="/admin/user/{{vote.userId}}" target="_blank">{{ vote.userId }}</a></td>
+                 <td>
+                   <a href="/admin/site/{{site.id}}/vote/{{vote.id}}/toggle">
+                   {% if vote.checked === false %}
+                      Approve
+                   {% else %}
+                      Reject
+                   {% endif %}
+                   </a>
+                 </td>
               </tr>
               {% endfor %}
            </tbody>
            <tfoot>
               <tr>
-                 <th>{{ __('Idea ID') }}</th>
-                 <th>{{ __('Idea Title') }}</th>
-                 <th>{{ __('For votes') }}</th>
-                 <th>{{ __('Against votes') }}</th>
-                 <th>{{ __('Budget') }}</th>
-                 <th>{{ __('Theme') }}</th>
-                 <th>{{ __('Area') }}</th>
+                <th>{{ __('Vote ID') }}</th>
+                <th>{{ __('Vote date') }}</th>
+                <th>{{ __('Vote idea ID') }}</a></th>
+                <th>{{ __('Vote user ID') }}</th>
+                <th></th>
               </tr>
            </tfoot>
          </table>

@@ -186,7 +186,6 @@ app.get('/admin',
 require('./routes/site/idea')(app);
 require('./routes/site/uniqueCode')(app);
 require('./routes/site/site')(app);
-
 require('./routes/user')(app);
 require('./routes/auth')(app);
 

@@ -22,8 +22,14 @@
           <table id="dataTable1" class="table table-lightborder">
             <thead>
               <tr>
+                <!--   <th>
+                  ID
+                </th>!-->
                 <th>
-                  Sites
+                  Site
+                </th>
+                <th>
+                  Created at
                 </th>
           <!--    <th>
                   Products
@@ -39,8 +45,14 @@
             <tbody>
               {% for site in sites %}
               <tr>
-                <td class="nowrap">
+            <!--    <td class="nowrap">
+                  #{{site.id}}
+                </td>!-->
+                <td >
                   {{site.title}}
+                </td>
+                <td >
+                  {{site.createdAt | date}}
                 </td>
                 <td class="text-center">
                   {% if site.config.cms.dbName %}

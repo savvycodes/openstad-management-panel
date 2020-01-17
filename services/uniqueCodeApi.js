@@ -53,6 +53,15 @@ exports.create =  (params) => {
   });
 }
 
+exports.reset = (uniqueCodeId) => {
+  return rp({
+    method: 'POST',
+    uri: `${apiUrl}/unique-code/${uniqueCodeId}/reset`,
+    json: true, // Automatically parses the JSON string in the response
+    body: Object.assign(apiCredentials),
+  });
+}
+
 exports.delete = (uniqueCodeId) => {
   return rp({
     method: 'POST',
