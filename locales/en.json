@@ -67,5 +67,9 @@
 	"": "",
 	"Vote idea ID": "Vote idea ID",
 	"Vote user ID": "Vote user ID",
-	"Newsletter subscribers": "Newsletter subscribers"
+	"Newsletter subscribers": "Newsletter subscribers",
+	"First name": "First name",
+	"Last name": "Last name",
+	"E-mail": "E-mail",
+	"Subscribed at": "Subscribed at"
 }

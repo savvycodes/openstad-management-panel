@@ -1,0 +1,55 @@
+{% extends 'user-layout.html' %}
+
+{% block quickLinks %}
+<a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}/newsletter-subscribers/export">
+  <i class="os-icon os-icon-window-content"></i>
+  <span>Export subscribers</span>
+</a>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-12 col-xxxl-9">
+    <div class="element-wrapper">
+      <h6 class="element-header">
+        Newsletter subscribers
+      </h6>
+      <div class="element-box">
+        <div class="table-responsive">
+          <table id="dataTable1" class="table table-striped table-lightfont">
+           <thead>
+              <tr>
+                 <th>{{ __('ID') }}</th>
+                 <th>{{ __('First name') }}</th>
+                 <th>{{ __('Last name') }}</a></th>
+                 <th>{{ __('E-mail') }}</th>
+                 <th>{{ __('Subscribed at') }}</th>
+              </tr>
+           </thead>
+           <tbody>
+              {% for subscriber in newsletterSubsribers %}
+              <tr class="{{'rejected' if vote.checked === false}}">
+                 <td>{{ subscriber.id }}</td>
+                 <td>{{ subscriber.firstName }}</td>
+                 <td>{{ subscriber.lastName }}</td>
+                 <td>{{ subscriber.email }}</td>
+                 <td>{{ subscriber.createdAt | date}}</td>
+              </tr>
+              {% endfor %}
+           </tbody>
+           <tfoot>
+              <tr>
+                <th>{{ __('ID') }}</th>
+                <th>{{ __('First name') }}</th>
+                <th>{{ __('Last name') }}</a></th>
+                <th>{{ __('E-mail') }}</th>
+                <th>{{ __('Subscribed at') }}</th>
+              </tr>
+           </tfoot>
+         </table>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
