@@ -183,8 +183,6 @@ app.get('/admin',
 /**
  * Required main routes.
  */
-require('./routes/site/idea')(app);
-require('./routes/site/site')(app);
 require('./routes/site/idea-export')(app);
 require('./routes/site/idea-import')(app);
 require('./routes/site/uniqueCode')(app);
@@ -192,6 +190,8 @@ require('./routes/site/user-api')(app);
 require('./routes/site/votes')(app);
 require('./routes/user')(app);
 require('./routes/auth')(app);
+require('./routes/site/idea')(app);
+require('./routes/site/site')(app);
 
 /**
  * Helper url

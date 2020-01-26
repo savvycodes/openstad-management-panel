@@ -132,51 +132,52 @@ module.exports = function(app){
        config: authConfig
     };
 
-
     let dbToCopy = siteToCopy &&  siteToCopy.config &&  siteToCopy.config.cms ? siteToCopy.config.cms.dbName : false;
     let siteId;
 
+    // create the default oAuth client API
     userClientApi.create(formattedAuthConfigDefault)
      .then((defaultResponse) => {
        clientDefault = defaultResponse;
        formattedAuthConfigDefault.authTypes = ['Anonymous'];
+       // create the anonymous oAuth client API for voting without authenticating
        return userClientApi.create(formattedAuthConfigDefault);
      })
      .then((anonymousResponse) => {
        clientAnonymous = anonymousResponse;
-    /**
-     * Create Site in openstad API
-     */
 
-    const siteConfig = Object.assign(siteToCopy.config, {
-        allowedDomains: [domain],
-        basicAuth: {
-          active: req.body.basicAuthActive === 'yes',
-          user: req.body.basicAuthUser,
-          password: req.body.basicAuthPassword,
-        },
-        cms: {
-          dbName: dbName,
-          url: domainWithProtocol,
-          hostname: domain,
-        },
-        oauth: {
-          default : {
-            "auth-client-id": clientDefault.clientId,
-            "auth-client-secret":  clientDefault.clientSecret,
+      /**
+       * Create Site in openstad API
+       */
+      const siteConfig = Object.assign(siteToCopy.config, {
+          allowedDomains: [domain],
+          basicAuth: {
+            active: req.body.basicAuthActive === 'yes',
+            user: req.body.basicAuthUser,
+            password: req.body.basicAuthPassword,
           },
-          anonymous: {
-            "auth-client-id": clientAnonymous.clientId,
-            "auth-client-secret":  clientAnonymous.clientSecret,
+          cms: {
+            dbName: dbName,
+            url: domainWithProtocol,
+            hostname: domain,
+          },
+          oauth: {
+            default : {
+              "auth-client-id": clientDefault.clientId,
+              "auth-client-secret":  clientDefault.clientSecret,
+            },
+            anonymous: {
+              "auth-client-id": clientAnonymous.clientId,
+              "auth-client-secret":  clientAnonymous.clientSecret,
+            }
+          },
+          email: {
+            siteaddress: req.body.fromEmail,
+            thankyoumail: {
+              from: req.body.fromEmail,
+            }
           }
-        },
-        email: {
-          siteaddress: req.body.fromEmail,
-          thankyoumail: {
-            from: req.body.fromEmail,
-          }
-        }
-    });
+      });
 
      return siteApi
          .create(req.session.jwt, {
@@ -191,7 +192,7 @@ module.exports = function(app){
        })
        .then((exists) => {
          /**
-          * Copy mongodb database for CMS from chosen site, or if empty default
+          * Copy mongodb database for CMS from chosen site, or if empty get the default DB
           */
          dbToCopy = exists ? dbToCopy : process.env.DEFAULT_DB;
          return copyDb(dbToCopy, dbName);
@@ -208,7 +209,6 @@ module.exports = function(app){
 
   /**
    * Edit config value of the site
-   * @type {[type]}
    */
   app.post('/admin/site/:siteId',
     siteMw.withOne,
@@ -234,6 +234,7 @@ module.exports = function(app){
 
               //check if not set (can be false in case of boolean)
               if (value || value === false) {
+                // in case it's a number cast the type, otherwise api will not see it as valid
                 if (field.type === 'number') {
                   value = parseInt(value, 10);
                 }
@@ -244,12 +245,18 @@ module.exports = function(app){
                   });
                 }
 
+                // in case it's a nested config value
+                // for now just support one level deep
+                // of course a recursive function would be pretyy
                 if (field.parentKey) {
+                  // if not set, create an empty object for the config section
                   if (!siteData.config[field.parentKey][siteConfigField]) {
                     siteData.config[field.parentKey][siteConfigField] = {};
                   }
+
                   siteData.config[field.parentKey][siteConfigField][field.key] = value;
                 } else {
+                  // if not set, create an empty object for the config section
                   if (!siteData.config[siteConfigField]) {
                     siteData.config[siteConfigField] = {};
                   }

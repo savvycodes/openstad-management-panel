@@ -4,7 +4,6 @@ const roleMw = require('../middleware/role');
 const userApiService = require('../services/userApi');
 const apiUrl = process.env.USER_API;
 
-
 module.exports = function(app){
   /**
    * Overview of users
@@ -47,7 +46,7 @@ module.exports = function(app){
     (req, res) => {
       const userRoles = req.editUser.roles;
 
-      // iteriate through every client to add which role the user 
+      // iteriate through every client to add which role the user
       const userApiClients = req.userApiClients.map((client) => {
         client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
         return client;

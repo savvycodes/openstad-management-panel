@@ -9,7 +9,7 @@ module.exports = (string) => {
     var data = arr[i].split(',');
     var obj = {};
     for(var j = 0; j < data.length; j++) {
-       obj[headers[j].trim()] = data[j].trim();
+       obj[headers[j] ? headers[j].trim() : ''] = data[j] ? data[j].trim() : '';
     }
     jsonObj.push(obj);
   }

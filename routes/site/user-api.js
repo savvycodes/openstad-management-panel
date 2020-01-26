@@ -3,6 +3,8 @@ const Promise             = require("bluebird");
 
 //middleware
 const userClientMw      = require('../../middleware/userClient');
+const siteMw            = require('../../middleware/site');
+
 //services
 const userClientApi     = require('../../services/userClientApi');
 //utils

@@ -9,7 +9,6 @@ const siteMw            = require('../../middleware/site');
 /**
  * Set the appclication values
  */
-const appUrl = process.env.APP_URL;
 const siteId = process.env.SITE_ID;
 
 module.exports = function(app){
