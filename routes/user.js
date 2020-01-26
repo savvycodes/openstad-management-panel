@@ -6,6 +6,9 @@ const apiUrl = process.env.USER_API;
 
 
 module.exports = function(app){
+  /**
+   * Overview of users
+   */
   app.get('/admin/users',
   //  userMw.withAll,
     (req, res) => {
@@ -15,6 +18,17 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * "Proxy" api so AJAX works
+   */
+  app.get('/admin/api/users',
+    userMw.withAll,
+    (req, res) => { res.json(req.users); }
+  );
+
+  /**
+   * Show new user form
+   */
   app.get('/admin/user',
     clientMw.withAll,
     roleMw.withAll,
@@ -23,11 +37,9 @@ module.exports = function(app){
     }
   );
 
-  app.get('/admin/api/users',
-    userMw.withAll,
-    (req, res) => { res.json(req.users); }
-  );
-
+  /**
+   * Render edit form
+   */
   app.get('/admin/user/:userId',
     clientMw.withAll,
     roleMw.withAll,
@@ -35,7 +47,7 @@ module.exports = function(app){
     (req, res) => {
       const userRoles = req.editUser.roles;
 
-      // set user clients to role
+      // iteriate through every client to add which role the user 
       const userApiClients = req.userApiClients.map((client) => {
         client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
         return client;
@@ -47,6 +59,9 @@ module.exports = function(app){
     }
   );
 
+  /**
+  * "Proxy" api so AJAX works in the overview datatables
+   */
   app.post('/admin/user',
     (req, res) => {
       userApiService
@@ -63,6 +78,9 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Handle post for editing user
+   */
   app.post('/admin/user/:userId',
     clientMw.withAll,
     roleMw.withAll,
@@ -81,12 +99,15 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Handle deleting user
+   */
   app.post('/admin/user/:userId/delete',
     (req, res) => {
       userApiService
         .delete(req.params.userId)
         .then((response) => {
-          req.flash('success', { msg: 'Updated user!' });
+          req.flash('success', { msg: 'Deleted user!' });
           res.redirect('/admin/users');
         })
         .catch((err) => {

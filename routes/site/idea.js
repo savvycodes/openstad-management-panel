@@ -1,15 +1,20 @@
-const Promise           = require("bluebird");
-const multer            = require('multer');
-const upload            = multer();
-const { Parser }          = require('json2csv');
-
+//Import middleware
 const ideaMw            = require('../../middleware/idea');
 const siteMw            = require('../../middleware/site');
+//services
 const ideaApi           = require('../../services/ideaApi');
 const csvToObject       = require('../../utils/csvToObject');
 const pick              = require('../../utils/pick');
+
+/**
+ * Define the idea fields, used for import, create & update
+ * @type {Array}
+ */
 const ideaFields        = [{key: 'title'}, {key: 'description'}, {key: 'summary'}, {key: 'location'}, {key: 'theme', extraData: true}, {key: 'area', extraData: true}, {key: 'images', extraData: true}, {key: 'status'}, {key: 'advice', extraData: true}, {key: 'ranking', extraData: true}, {key: 'originalId', extraData: true}, {key: 'budget', extraData: true, type:"number"}];
 
+/**
+ * Set the appclication values
+ */
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;
 const siteId = process.env.SITE_ID;
@@ -25,58 +30,6 @@ module.exports = function(app){
     }
   );
 
-  app.get('/admin/site/:siteId/idea/export',
-    siteMw.withOne,
-    ideaMw.allForSite,
-    (req, res, next) => {
-      if (req.ideas.length === 0) {
-        req.flash('error', { msg: 'No ideas to export'});
-        res.redirect(req.header('Referer'));
-      } else {
-        const exportHeaders = [
-          {key: 'id', label: 'ID'},
-          {key: 'title', label: 'Title'},
-          {key: 'summary', label: 'Summary'},
-          {key: 'description', label: 'Description'},
-          {key: 'originalId', label: 'Original idea ID', 'extraData': true},
-          {key: 'area', label: 'Area', 'extraData': true},
-          {key: 'theme', label: 'Theme', 'extraData': true},
-          {key: 'advice', label: 'Advice', 'extraData': true},
-          {key: 'budget', label: 'Budget', 'extraData': true},
-          {key: 'ranking', label: 'Ranking', 'extraData': true},
-          {key: 'images', label: 'Images', 'extraData': true},
-          {key: 'modBreak', label: 'Modbreak'},
-          {key: 'firstName', label: 'First name', userData: true},
-          {key: 'lastName', label: 'Last name', userData: true},
-          {key: 'email', label: 'email', userData: true},
-          {key: 'yes', label: 'Votes for'},
-          {key: 'no', label: 'Votes against'},
-        ];
-
-        const formattedIdeas = req.ideas ? req.ideas.map((idea) => {
-          const formattedIdea = {};
-          exportHeaders.forEach((header) => {
-            if (header.userData) {
-              formattedIdea[header.key] = idea.user && idea.user[header.key] ? idea.user[header.key] : '';
-            } else {
-              formattedIdea[header.key] = header.extraData &&  idea.extraData ? idea.extraData[header.key] : idea[header.key];
-            }
-          });
-
-          return formattedIdea;
-        }) : [];
-
-        const json2csvParser = new Parser(exportHeaders.map((header) => header.label));
-        const csvString = json2csvParser.parse(formattedIdeas);
-
-      //  const csvString = csvParser(req.uniqueCodes);
-        const filename = `ideas-${req.params.siteId}-${new Date().getTime()}.csv`;
-        res.setHeader(`Content-disposition`, `attachment; filename=${filename}`);
-        res.set('Content-Type', 'text/csv');
-        res.status(200).send(csvString);
-      }
-  });
-
   /**
    * Display Idea edit form
    */
@@ -88,50 +41,9 @@ module.exports = function(app){
     }
   );
 
-
-  app.post('/admin/site/:siteId/idea/import',
-    siteMw.withOne,
-    upload.single('import_file'),
-    (req, res) => {
-      const csvString = req.file.buffer.toString('utf8');
-      const lines = csvToObject(csvString);
-      const promises = [];
-
-      /**
-       * Create a promise to create an idea
-       */
-      lines.forEach((line) => {
-        //format image from string to array
-        line.images = line.images ? line.images.split(',') : [];
-        //format location from 2 strings to 1 object
-        //
-        if (line.location_lat && line.location_long) {
-          line.location = JSON.stringify({"type":"Point","coordinates":[line.location_lat, line.location_long]});
-        }
-
-        const data = pick(line, ideaFields.filter(field => !field.extraData).map(field => field.key));
-        data.extraData = pick(line, ideaFields.filter(field => field.extraData).map(field => field.key));
-
-        promises.push(ideaApi.create(req.session.jwt, req.params.siteId, data));
-      });
-
-      /**
-       * Import all promises
-       */
-      Promise.all(promises)
-        .then(function (response) {
-          req.flash('success', { msg: 'Geimporteerd!'});
-          res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-    //      res.redirect(redirectTo);
-        })
-        .catch(function (err) {
-          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
-          req.flash('error', { msg: message});
-          res.redirect(req.header('Referer')  || appUrl);
-        });
-    }
-  );
-
+  /**
+   * Update idea
+   */
   app.post('/admin/site/:siteId/idea/:ideaId',
     siteMw.withOne,
     ideaMw.oneForSite,
@@ -174,6 +86,9 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Delete an idea
+   */
   app.post('/admin/site/:siteId/idea/:ideaId/delete',
     (req, res, next) => {
       ideaApi.delete(req.session.jwt, req.params.siteId, req.params.ideaId)
@@ -186,6 +101,9 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Create an idea
+   */
   app.post('/admin/site/:siteId/idea',
     ideaMw.oneForSite,
     siteMw.withOne,
@@ -227,6 +145,9 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Display edit form
+   */
   app.get('/admin/site/:siteId/idea/:ideaId',
     ideaMw.oneForSite,
     siteMw.withOne,

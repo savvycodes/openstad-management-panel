@@ -46,6 +46,9 @@ const ensureUrlHasProtocol = (url) => {
 
 module.exports = function(app){
 
+  /**
+   * Show site overview dashboard
+   */
   app.get('/admin/site/:siteId',
     ideaMw.allForSite,
     siteMw.withOne,
@@ -57,87 +60,9 @@ module.exports = function(app){
     }
   );
 
-  app.get('/admin/site/:siteId/votes',
-    ideaMw.allForSite,
-    siteMw.withOne,
-    voteMw.allForSite,
-    userClientMw.withOneForSite,
-    (req, res, next) => {
-      res.render(`site/votes.html`);
-    }
-  );
-
-  app.get('/admin/site/:siteId/newsletter-subscribers',
-    siteMw.withOne,
-    userClientMw.withOneForSite,
-    newsletterMw.allForSite,
-    (req, res, next) => {
-      res.render(`site/newsletter-subscribers.html`);
-    }
-  );
-
-  app.get('/admin/site/:siteId/newsletter-subscribers/export',
-    siteMw.withOne,
-    userClientMw.withOneForSite,
-    newsletterMw.allForSite,
-    (req, res, next) => {
-      if (req.newsletterSubsribers.length === 0) {
-        req.flash('error', { msg: 'No subscribers to export'});
-        res.redirect(req.header('Referer'));
-      } else {
-        const exportHeaders = [
-          {key: 'id', label: 'ID'},
-          {key: 'firstName', label: 'First name'},
-          {key: 'lastName', label: 'Last Name'},
-          {key: 'createdAt', label: 'Subscribed at'},
-        ];
-
-        const formattedSubscribers = req.newsletterSubsribers ? req.newsletterSubsribers.map((subscriber) => {
-          const formattedSubscriber = {};
-          exportHeaders.forEach((header) => {
-            formattedSubscriber[header.key] = header.extraData &&  subscriber.extraData ? subscriber.extraData[header.key] : subscriber[header.key];
-          });
-
-          return formattedSubscriber;
-        }) : [];
-
-        const json2csvParser = new Parser(exportHeaders.map((header) => header.label));
-        const csvString = json2csvParser.parse(formattedSubscribers);
-
-      //  const csvString = csvParser(req.uniqueCodes);
-        const filename = `subscribers-${req.params.siteId}-${new Date().getTime()}.csv`;
-        res.setHeader(`Content-disposition`, `attachment; filename=${filename}`);
-        res.set('Content-Type', 'text/csv');
-        res.status(200).send(csvString);
-      }
-  });
-
-
-  app.get('/admin/site/:siteId/vote/:voteId/toggle',
-    (req, res, next) => {
-      const options = {
-          uri: `${apiUrl}/api/site/${req.params.siteId}/vote/${req.params.voteId}/toggle`,
-          headers: {
-              'Accept': 'application/json',
-              "X-Authorization": process.env.SITE_API_KEY
-          },
-          json: true // Automatically parses the JSON string in the response
-      };
-
-      rp(options)
-        .then(function (votes) {
-          req.flash('success', { msg: 'Updated!'});
-          res.redirect(req.header('Referer')  || appUrl);
-           next();
-        })
-        .catch(function (err) {
-          req.flash('error', { msg: 'Something whent wrong!'});
-          res.redirect(req.header('Referer')  || appUrl);
-          next();
-        });
-  });
-
-
+  /**
+   * Generic handling of pages, will look for template from url parameter
+   */
   app.get('/admin/site/:siteId/:page',
     siteMw.withOne,
     ideaMw.allForSite,
@@ -152,6 +77,9 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Generic handling of pages, will look for settngs template from url parameter
+   */
   app.get('/admin/site/:siteId/settings/:page',
     siteMw.withOne,
     ideaMw.allForSite,
@@ -165,6 +93,9 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Create a new site by copying an old one
+   */
   app.post('/admin/site',
     siteMw.withAll,
     userClientMw.withAll,
@@ -275,6 +206,10 @@ module.exports = function(app){
        });
   });
 
+  /**
+   * Edit config value of the site
+   * @type {[type]}
+   */
   app.post('/admin/site/:siteId',
     siteMw.withOne,
     (req, res, next) => {
@@ -339,7 +274,10 @@ module.exports = function(app){
   );
 
 
-  // this is not so nice, should only set it once in API & once in oAuth api
+  /**
+   * Edit url of the website, this has specific route because it needs to happen at specific points
+   * @type {[type]}
+   */
   app.post('/admin/site/:siteId/url',
     siteMw.withOne,
     userClientMw.withOneForSite,
@@ -386,103 +324,12 @@ module.exports = function(app){
   );
 
 
-  app.post('/admin/site/:siteId/user-api/settings',
-    siteMw.withOne,
-    userClientMw.withOneForSite,
-    (req, res, next) => {
-      let data = req.userApiClient;
 
-      if (!req.body.authTypes) {
-        req.flash('error', { msg: 'At least one authentication method is required'});
-        res.redirect(req.header('Referer')  || appUrl);
-      } else {
-        data.requiredUserFields = req.body.requiredUserFields ? req.body.requiredUserFields : [];
-        data.authTypes = req.body.authTypes;
-
-        userClientApi
-          .update(req.userApiClient.clientId, data)
-          .then((userClient) => {
-            req.flash('success', { msg: 'Aangepast!'});
-            res.redirect(req.header('Referer')  || appUrl);
-          })
-          .catch((err) => { next(err) });
-      }
-    });
-
-  app.post('/admin/site/:siteId/user-api',
-    siteMw.withOne,
-    userClientMw.withOneForSite,
-    (req, res, next) => {
-      if (req.userApiClient.config && req.userApiClient.config.authTypes && req.body.config && req.body.config.authTypes) {
-        const siteConfig = req.userApiClient.config;
-        req.userApiClient.config.authTypes = nestedObjectAssign(req.userApiClient.config.authTypes, req.body.config.authTypes);
-        req.body.config = req.userApiClient.config;
-      } else if (req.userApiClient.config &&  req.body.config && req.body.config.requiredFields ) {
-        req.userApiClient.config.requiredFields = req.body.config.requiredFields;
-      } else if (req.userApiClient.config && req.body.config) {
-        userApiSettingFields.forEach((field) => {
-          if (req.body.config[field.key]) {
-            var value = req.body.config[field.key];
-            req.userApiClient.config[field.key] = value;
-          }
-        });
-      }
-
-      let data = pick(req.body, authFields.map(field => field.key));
-      data = Object.assign(req.userApiClient, data);
-
-      userClientApi
-        .update(req.userApiClient.clientId, data)
-        .then((userClient) => {
-          req.flash('success', { msg: 'Aangepast!'});
-          res.redirect(req.header('Referer')  || appUrl);
-        })
-        .catch((err) => { next(err) });
-    }
-  );
-
-
-  app.post('/admin/site/:siteId/user-api/name',
-    siteMw.withOne,
-    userClientMw.withAllForSite,
-    (req, res, next) => {
-
-      const updateActions = [];
-      req.siteClients;
-
-      req.siteClients.forEach((siteClient) => {
-        let data = Object.assign(siteClient, {
-          name: req.body.name
-        });
-
-        updateActions.push(new Promise((resolve, reject) => {
-          userClientApi.update(siteClient.clientId, data)
-            .then(() => {
-              console.log('');
-              resolve();
-            })
-            .catch((err) => {
-              reject(err);
-            });
-          }));
-      });
-
-      Promise
-        .all(updateActions)
-        .then(() => {
-          req.flash('success', { msg: 'Updated!'});
-          res.redirect(req.header('Referer')  || appUrl);
-        })
-        .catch((err) => {
-          console.log('->>> E:', err.message)
-          req.flash('success', { msg: 'Something went wrong!'});
-          res.redirect(req.header('Referer')  || appUrl);
-        })
-
-    }
-  );
-
-
+  /**
+   * Delete a website
+   * At the moment it's a hard delete of the mongodb database.
+   * The api adds a flag "deletedAt" to the the row, but keeps the row,
+   */
   app.post('/admin/site/:siteId/delete',
     siteMw.withOne,
     siteMw.addAuthClientId,

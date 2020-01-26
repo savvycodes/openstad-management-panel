@@ -1,9 +1,8 @@
-# An implentation of apostrophecms for Amsterdam open democracy
+# An admin panel for creating & managing sites in the openstad ecosystem
 
 ## Prerequisites
  - [Git](https://git-scm.com/)
  - [Node.js and npm](https://nodejs.org/en/)
- - [Mongodb](https://www.mongodb.com/)
 
 
 #### 1. Set .env values
@@ -22,8 +21,9 @@ SITE_ID=6 #site Id from the openstad api
 SITE_API_KEY=xxxxxxx #site Id from the api
 BASIC_AUTH_USER= #basic auth pass, whatever you prefer
 BASIC_AUTH_PASSWORD=
-
 ```
+
+stijnvdvegt
 
 #### 2. Run NPM install
 
