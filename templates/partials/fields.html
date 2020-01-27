@@ -8,7 +8,7 @@
   {% set fieldValue = data[field.key] %}
   {% endif %}
 
-  {% if not fieldValue %}
+  {% if not fieldValue and not fieldValue === false %}
   {% set fieldValue = field.default %}
   {% endif %}
 

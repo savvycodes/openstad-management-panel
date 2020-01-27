@@ -232,6 +232,8 @@ module.exports = function(app){
             if (req.body.config[siteConfigField]) {
               let value = req.body.config[siteConfigField][field.key];
 
+              console.log('value', value);
+
               //check if not set (can be false in case of boolean)
               if (value || value === false) {
                 // in case it's a number cast the type, otherwise api will not see it as valid
@@ -264,6 +266,9 @@ module.exports = function(app){
                   siteData.config[siteConfigField][field.key] = value;
                 }
 
+                console.log('body', req.body);
+
+                console.log('siteData', siteData);
               }
             }
           });

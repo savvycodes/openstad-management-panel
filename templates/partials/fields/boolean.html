@@ -1,4 +1,4 @@
 <select class="form-control" name="{{fieldName}}">
   <option value="true" {% if fieldValue %} selected {% endif %}>Yes</option>
-  <option value="false" {% if not fieldValue %} selected {% endif %}>No</option>
+  <option value="false" {% if not fieldValue or fieldValue === 'false'  %} selected {% endif %}>No</option>
 </select>

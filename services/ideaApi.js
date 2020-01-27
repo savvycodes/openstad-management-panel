@@ -16,7 +16,7 @@ exports.fetch = (token, siteId) => {
 //.then(response => response.json());
 }
 
-exports.create = (token, siteId, body) => {
+exports.create = (token, siteId, body) => {  
   const options = {
       uri:  `${apiUrl}/api/site/${siteId}/idea`,
       method: 'POST',

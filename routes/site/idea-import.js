@@ -41,6 +41,8 @@ module.exports = function(app){
        * Create a promise to create an idea
        */
       lines.forEach((line) => {
+    //    console.log('line', line);
+
         //format image from string to array
         line.images = line.images ? line.images.split(',') : [];
         //format location from 2 strings to 1 object
@@ -50,8 +52,10 @@ module.exports = function(app){
         }
 
         const data = pick(line, ideaFields.filter(field => !field.extraData).map(field => field.key));
-        data.extraData = pick(line, ideaFields.filter(field => field.extraData).map(field => field.key));
 
+
+        data.extraData = pick(line, ideaFields.filter(field => field.extraData).map(field => field.key));
+        data.extraData = data.extraData ? data.extraData : {};  //      console.log('data', data);
         promises.push(ideaApi.create(req.session.jwt, req.params.siteId, data));
       });
 
@@ -65,6 +69,7 @@ module.exports = function(app){
     //      res.redirect(redirectTo);
         })
         .catch(function (err) {
+          console.log('errerrerrerr', err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
           res.redirect(req.header('Referer')  || appUrl);
