@@ -1,15 +1,12 @@
 const slugify             = require('slugify');
-const nestedObjectAssign  = require('nested-object-assign');
 const Promise             = require("bluebird");
-const rp                  = require('request-promise');
-const { Parser }          = require('json2csv');
 
 //middleware
 const ideaMw            = require('../../middleware/idea');
 const siteMw            = require('../../middleware/site');
 const voteMw            = require('../../middleware/vote');
 const userClientMw      = require('../../middleware/userClient');
-const newsletterMw      = require('../../middleware/newsletter');
+
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
@@ -23,7 +20,6 @@ const siteId            = process.env.SITE_ID;
 const siteFields        = [{key: 'title'}];
 const siteConfigFields  = [{key: 'basicAuth'}];
 
-const authFields                  = [{key: 'name'}, {key: 'requiredUserFields'}, {key: 'authTypes'}];
 const deleteMongoDb               = require('../../services/mongo').deleteDb;
 const dbExists                    = require('../../services/mongo').dbExists;
 const copyDb                      = require('../../services/mongo').copyMongoDb;

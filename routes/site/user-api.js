@@ -16,6 +16,9 @@ const siteFields        = [{key: 'title'}];
 const siteConfigFields  = [{key: 'basicAuth'}];
 const authFields        = [{key: 'name'}, {key: 'requiredUserFields'}, {key: 'authTypes'}];
 
+const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
+
+
 module.exports = function(app) {
   /**
    * Handle updating required fields & authTypes of the default oAuth API connected to this site

@@ -9,9 +9,13 @@ module.exports = (string) => {
     var data = arr[i].split(',');
     var obj = {};
     for(var j = 0; j < data.length; j++) {
-       var header = headers[j] ? headers[j].replace('"',  '').replace('"',  '') : '';
+       // ...also grab the relevant header (the RegExp in both of these removes quotes)
+       var header = headers[j];
+
        if (header) {
-         obj[header] = data[j] ? data[j].trim() : '';
+         header = header.replace(/^"|"$/g,'');
+         var propValue = data[j].replace(/^"|"$/g,'');
+         obj[header] = propValue ? propValue.trim() : '';
        }
     }
     jsonObj.push(obj);

@@ -75,6 +75,7 @@ module.exports = function(app){
           {key: 'id', label: 'ID'},
           {key: 'firstName', label: 'First name'},
           {key: 'lastName', label: 'Last Name'},
+          {key: 'email', label: 'Email'},
           {key: 'createdAt', label: 'Subscribed at'},
         ];
 
