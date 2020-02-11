@@ -37,6 +37,7 @@
                 <th class="text-center">
 
                 </th>
+
                 <th class="text-right">
 
                 </th>
@@ -44,6 +45,7 @@
             </thead>
             <tbody>
               {% for site in sites %}
+              {% if site.config.cms.dbName %}
               <tr>
             <!--    <td class="nowrap">
                   #{{site.id}}
@@ -55,12 +57,26 @@
                   {{site.createdAt | date}}
                 </td>
                 <td class="text-center">
-                  {% if site.config.cms.dbName %}
-                  <div class="badge badge-pill badge-success" data-title="CMS" data-toggle="tooltip">
-                    CMS
+                  {% if site.config.ideas.canAddNewIdeas %}
+                  <div class="badge badge-pill badge-success" style="background: #0a76ff; width: 180px;" data-title="CMS" data-toggle="tooltip">
+                    Submitting Ideas open
+                  </div>
+                  {% else %}
+                  <div class="badge badge-pill badge-success" style="background: #c7c7c7; width: 180px;" data-title="CMS" data-toggle="tooltip">
+                    Submitting Ideas closed
                   </div>
                   {% endif %}
-                </td>
+
+                  {% if site.config.votes.isActive %}
+                  <div class="badge badge-pill badge-success" style="background: #5bd6c0; width: 180px;" data-title="CMS" data-toggle="tooltip">
+                    Voting active: {{site.config.votes.voteType}}
+                  </div>
+                  {% else  %}
+                  <div class="badge badge-pill badge-success" style="background: #c7c7c7; width: 180px; " data-title="CMS" data-toggle="tooltip">
+                    Voting inactive
+                  </div>
+                  {% endif %}
+                  </td>
                 <td class="text-right">
                   {% if site.config.cms.dbName %}
                   <a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}">
@@ -70,6 +86,7 @@
                 </td>
 
               </tr>
+              {% endif %}
               {% endfor %}
             </tbody>
           </table>
