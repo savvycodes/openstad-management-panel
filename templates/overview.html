@@ -29,6 +29,9 @@
                   Site
                 </th>
                 <th>
+                  Domain
+                </th>
+                <th>
                   Created at
                 </th>
           <!--    <th>
@@ -54,7 +57,10 @@
                   {{site.title}}
                 </td>
                 <td >
-                  {{site.createdAt | date}}
+                  {{site.createdAt}}
+                </td>
+                <td >
+                  {{site.domain}}
                 </td>
                 <td class="text-center">
                   {% if site.config.ideas.canAddNewIdeas %}
