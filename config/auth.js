@@ -31,6 +31,12 @@ const types = [
         type: 'text',
       },
       {
+        label: 'Button text',
+        key: 'buttonText',
+        default: 'Controleer stemcode',
+        type: 'text'
+      },
+      {
         label: 'Help text',
         key: 'helpText',
         default: 'Let op, de unieke code is hoofdlettergevoelig! Werkt deze nog steeds niet? <a href="mailto:info@openstad.nl">Neem contact met ons op.</a>',
