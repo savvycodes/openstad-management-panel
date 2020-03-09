@@ -29,7 +29,7 @@ module.exports = function(app){
           {key: 'area', label: 'Area', 'extraData': true},
           {key: 'theme', label: 'Theme', 'extraData': true},
           {key: 'advice', label: 'Advice', 'extraData': true},
-          {key: 'budget', label: 'Budget', 'extraData': true},
+          {key: 'budget', label: 'Budget'},
           {key: 'ranking', label: 'Ranking', 'extraData': true},
           {key: 'images', label: 'Images', 'extraData': true},
           {key: 'modBreak', label: 'Modbreak'},
