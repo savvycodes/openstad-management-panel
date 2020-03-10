@@ -136,6 +136,10 @@ module.exports = function(app){
      .then((defaultResponse) => {
        clientDefault = defaultResponse;
        formattedAuthConfigDefault.authTypes = ['Anonymous'];
+
+       // for anonymous "authenticating" only require the postcode
+       formattedAuthConfigDefault.requiredUserFields = ['postcode'];
+
        // create the anonymous oAuth client API for voting without authenticating
        return userClientApi.create(formattedAuthConfigDefault);
      })
