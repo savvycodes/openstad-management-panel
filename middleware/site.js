@@ -26,7 +26,7 @@ exports.addStats = (req, res, next) => {
   let votesPerDay = {}
   if (req.votes) {
     req.votes.forEach((vote) => {
-      if (!usersVoted[vote.userId] && vote.checked) {
+      if (!usersVoted[vote.userId] && !vote.checked) {
         usersVoted[vote.userId] = true;
         let date = vote.createdAt.slice(0, 10);
 
