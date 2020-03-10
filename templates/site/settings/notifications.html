@@ -1,0 +1,32 @@
+{% set fullWidthLayout = true %}
+
+{% extends 'user-layout.html' %}
+
+{% block body %}
+<div class="element-wrapper">
+  {% from 'partials/fields.html' import renderFields %}
+  <div class="row">
+    <div class="col-sm-12">
+      <h6 class="element-header">
+        {{ __('Site settings') }}
+      </h6>
+    </div>
+    <div class="col-sm-3">
+      {% include 'site/settings/menu.html' %}
+    </div>
+    <div class="col-sm-9">
+      <div class="element-wrapper">
+        <div class="element-box">
+          <form method="POST" action="/admin/site/{{site.id}}">
+            {{ renderFields(siteConfigSchema.notifications, site.config.notifications, 'config[notifications]') }}
+            <div class="form-buttons-w">
+              <button class="btn btn-primary" type="submit">Opslaan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

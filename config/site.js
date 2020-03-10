@@ -115,6 +115,20 @@ exports.configSchema = {
       label: 'Is active?'
     }
   ],
+  notifications : [
+    {
+      key: 'to',
+      type: 'string',
+      default: '',
+      label: 'To e-mail address'
+    },
+    {
+      key: 'from',
+      type: 'string',
+      default: '',
+      label: 'From e-mail address'
+    },
+  ],
   votes: [
     {
       key: 'isViewable',

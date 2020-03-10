@@ -6,7 +6,7 @@
     <li {% if pageName === 'basic-auth'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/basic-auth">{{ __('Password protection') }}</a> </li>
 
     <li {% if pageName === 'themes-areas'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/themes-areas">{{ __('Themes & areas') }}</a> </li>
-  {#  <li {% if pageName === 'admin-notifications'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/admin-notifications">{{ __('Admin notifications') }}</a> </li>#}
+    <li {% if pageName === 'notifications'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/notifications">{{ __('Admin notifications') }}</a> </li>#}
     <li {% if pageName === 'newsletter'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/newsletter">{{ __('Newsletter') }}</a> </li>
   </ul>
 </div>
