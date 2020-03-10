@@ -20,13 +20,13 @@ exports.withOne = (req, res, next) => {
 exports.addStats = (req, res, next) => {
   let totalVoteCount = 0;
 
-  res.locals.totalVoteCount = req.votes.filter(vote => !vote.checked).length;
+  res.locals.totalVoteCount = req.votes.filter(vote => (vote.checked === true || vote.checked === null) ).length;
 
   let usersVoted = {};
   let votesPerDay = {}
   if (req.votes) {
     req.votes.forEach((vote) => {
-      if (!usersVoted[vote.userId] && !vote.checked) {
+      if (!usersVoted[vote.userId] && (vote.checked === true || vote.checked === null)) {
         usersVoted[vote.userId] = true;
         let date = vote.createdAt.slice(0, 10);
 
