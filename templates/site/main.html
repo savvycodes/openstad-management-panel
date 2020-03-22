@@ -8,6 +8,7 @@
       <h6 class="element-header">
         {{ __('Overview') }}  {{site.title}}
       </h6>
+      {% if voteStatsActive %}
       <div class="row pt-4">
         <div class="col-sm-12">
           <!--START - Grid of tablo statistics-->
@@ -144,9 +145,12 @@ var myChart = new Chart(ctx, {
           </div>
     </div>
       </div>
+      {% else %}
+      <span class="element-box el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+      <b> Voting statistics are turned off</b>
+      </span>
+      {% endif %}
     </div>
-
-
   </div>
 </div>
 

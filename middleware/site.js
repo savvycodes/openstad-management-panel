@@ -18,41 +18,46 @@ exports.withOne = (req, res, next) => {
 }
 
 exports.addStats = (req, res, next) => {
-  let totalVoteCount = 0;
 
-  res.locals.totalVoteCount = req.votes.filter(vote => (vote.checked === true || vote.checked === null) ).length;
+  if (req.site.config.admin && req.site.config.admin.displayStats) {
+    let totalVoteCount = 0;
+    res.locals.voteStatsActive = true;
+    res.locals.totalVoteCount = req.votes.filter(vote => (vote.checked === true || vote.checked === null) ).length;
 
-  let usersVoted = {};
-  let votesPerDay = {}
-  if (req.votes) {
-    req.votes.forEach((vote) => {
-      if (!usersVoted[vote.userId] && (vote.checked === true || vote.checked === null)) {
-        usersVoted[vote.userId] = true;
-        let date = vote.createdAt.slice(0, 10);
+    let usersVoted = {};
+    let votesPerDay = {}
+    if (req.votes) {
+      req.votes.forEach((vote) => {
+        if (!usersVoted[vote.userId] && (vote.checked === true || vote.checked === null)) {
+          usersVoted[vote.userId] = true;
+          let date = vote.createdAt.slice(0, 10);
 
-        if (!votesPerDay[date]) {
-          votesPerDay[date] = [vote];
-        } else {
-          votesPerDay[date].push(vote);
+          if (!votesPerDay[date]) {
+            votesPerDay[date] = [vote];
+          } else {
+            votesPerDay[date].push(vote);
+          }
         }
-      }
+      });
+    }
+
+    votesPerDay = Object.keys(votesPerDay).map((voteDate) => {
+      return {
+          date: voteDate,
+          votes: votesPerDay[voteDate]
+      };
+    })
+    .sort((a,b) => {
+      return new Date(a.date) - new Date(b.date);
     });
+
+    res.locals.totalVotesByUser = Object.keys(usersVoted).length;
+    res.locals.votesPerDay = votesPerDay;
+    res.locals.votesPerDayDays = votesPerDay ? votesPerDay.map((voteDate) => { let dateMoment = moment(voteDate.date); return dateMoment.format('Do, MMM');  } ) : '';
+    res.locals.votesPerDayCount = votesPerDay ? votesPerDay.map(voteDate => voteDate.votes.length) : '';
+  } else {
+    res.locals.voteStatsActive = false;
   }
-
-  votesPerDay = Object.keys(votesPerDay).map((voteDate) => {
-    return {
-        date: voteDate,
-        votes: votesPerDay[voteDate]
-    };
-  })
-  .sort((a,b) => {
-    return new Date(a.date) - new Date(b.date);
-  });
-
-  res.locals.totalVotesByUser = Object.keys(usersVoted).length;
-  res.locals.votesPerDay = votesPerDay;
-  res.locals.votesPerDayDays = votesPerDay ? votesPerDay.map((voteDate) => { let dateMoment = moment(voteDate.date); return dateMoment.format('Do, MMM');  } ) : '';
-  res.locals.votesPerDayCount = votesPerDay ? votesPerDay.map(voteDate => voteDate.votes.length) : '';
 
   next();
 }

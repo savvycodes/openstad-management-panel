@@ -51,7 +51,6 @@ module.exports = function(app){
     ideaMw.allForSite,
     siteMw.withOne,
     voteMw.allForSite,
-    siteMw.addStats,
     userClientMw.withOneForSite,
     (req, res, next) => {
       const promises = [];
