@@ -16,7 +16,7 @@ exports.fetch = (token, siteId) => {
 //.then(response => response.json());
 }
 
-exports.create = (token, siteId, body) => {  
+exports.create = (token, siteId, body) => {
   const options = {
       uri:  `${apiUrl}/api/site/${siteId}/idea`,
       method: 'POST',
@@ -59,7 +59,7 @@ exports.delete = (token, siteId, ideaId) => {
 }
 
 exports.update = (token, siteId, data) => {
-  console.log(token, siteId, data);
+  console.log('update.:', token, siteId, data.extraData);
   return rp({
     method: 'PUT',
     uri: `${apiUrl}/api/site/${siteId}/idea/${data.id}`,

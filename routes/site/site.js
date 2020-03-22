@@ -20,6 +20,7 @@ const siteId            = process.env.SITE_ID;
 const siteFields        = [{key: 'title'}];
 const siteConfigFields  = [{key: 'basicAuth'}];
 
+const ideaApi                     = require('../../services/ideaApi');
 const deleteMongoDb               = require('../../services/mongo').deleteDb;
 const dbExists                    = require('../../services/mongo').dbExists;
 const copyDb                      = require('../../services/mongo').copyMongoDb;
@@ -41,6 +42,41 @@ const ensureUrlHasProtocol = (url) => {
 }
 
 module.exports = function(app){
+
+
+  /**
+   * Show site overview dashboard
+   */
+  app.get('/admin/site/:siteId/archive-votes',
+    ideaMw.allForSite,
+    siteMw.withOne,
+    voteMw.allForSite,
+    siteMw.addStats,
+    userClientMw.withOneForSite,
+    (req, res, next) => {
+      const promises = [];
+
+      req.ideas.forEach((idea) => {
+        console.log('ideaideaidea', idea.extraData);
+        idea.extraData.archivedYes = idea.yes;
+        idea.extraData.archivedNo = idea.no;
+        promises.push(ideaApi.update(req.session.jwt, req.site.id, idea))
+      });
+
+      /**
+       * Import all promises
+       */
+      Promise.all(promises)
+        .then(function (response) {
+          req.flash('success', { msg: 'Ideas update!'});
+          res.redirect('/admin/site/' + req.site.id  || appUrl);
+        })
+        .catch(function (err) {
+          req.flash('error', { msg: 'Error'});
+          res.redirect('/admin/site/' + req.site.id  || appUrl);
+        });
+    }
+  );
 
   /**
    * Show site overview dashboard
@@ -266,9 +302,6 @@ module.exports = function(app){
                   siteData.config[siteConfigField][field.key] = value;
                 }
 
-                console.log('body', req.body);
-
-                console.log('siteData', siteData);
               }
             }
           });
@@ -334,8 +367,6 @@ module.exports = function(app){
 
     }
   );
-
-
 
   /**
    * Delete a website
