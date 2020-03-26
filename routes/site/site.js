@@ -56,7 +56,6 @@ module.exports = function(app){
       const promises = [];
 
       req.ideas.forEach((idea) => {
-        console.log('ideaideaidea', idea.extraData);
         idea.extraData.archivedYes = idea.yes;
         idea.extraData.archivedNo = idea.no;
         promises.push(ideaApi.update(req.session.jwt, req.site.id, idea))
