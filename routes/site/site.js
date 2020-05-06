@@ -186,9 +186,10 @@ module.exports = function(app){
       const siteConfig = Object.assign(siteToCopy.config, {
           allowedDomains: [domain],
           basicAuth: {
-            active: req.body.basicAuthActive === 'yes',
-            user: req.body.basicAuthUser,
-            password: req.body.basicAuthPassword,
+            //check if set, default to true
+            active: req.body.basicAuthActive ? req.body.basicAuthActive === 'yes' : true,
+            user: req.body.basicAuthUser ? req.body.basicAuthUser : 'openstad_' + Math.random().toString(36).slice(-3),
+            password: req.body.basicAuthPassword ? req.body.basicAuthPassword : Math.random().toString(36).slice(-10),
           },
           cms: {
             dbName: dbName,
@@ -337,6 +338,12 @@ module.exports = function(app){
     ///  siteData.config.cms.url = siteData.config.cms.url ? [domain] : [];
       siteData.config.allowedDomains = siteData.config.allowedDomains ? [domain] : [];
 
+      // update CMS urls
+      if (siteData.config.cms) {
+        siteData.config.cms.url = domainWithProtocol;
+        siteData.config.cms.domain =  domain;
+      }
+
       promises.push(siteApi.update(req.session.jwt, req.params.siteId, siteData));
 
       if (req.userApiClient)  {
@@ -348,7 +355,6 @@ module.exports = function(app){
 
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
-
 
       /**
        * Import all promises
