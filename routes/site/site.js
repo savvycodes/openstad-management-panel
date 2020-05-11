@@ -139,7 +139,8 @@ module.exports = function(app){
      const domainWithProtocol = ensureUrlHasProtocol(domain);
      const siteName = req.body.siteName;
      // add time to make the name unique
-     const dbName = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '');
+     // max amount of 120 bytes for name is 125 in mongodb, cut short at 100
+     const dbName = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '').slice(0,99);
      const siteToCopy = req.sites.find(site => parseInt(req.body.siteIdToCopy, 10) === site.id);
      const authClientIdDefault = siteToCopy && siteToCopy.config && siteToCopy.config.oauth && siteToCopy.config.oauth.default ? siteToCopy.config.oauth.default["auth-client-id"]  : false;
      const authClientId  = authClientIdDefault ? authClientIdDefault : (siteToCopy.config && siteToCopy.config.oauth ? siteToCopy.config.oauth["auth-client-id"] : false);
