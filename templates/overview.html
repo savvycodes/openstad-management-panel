@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block quickLinks %}
-<a class="btn btn-white btn-sm" data-toggle="modal" data-target="#onboardingWideSlideModal" href="#"><i class="os-icon os-icon-delivery-box-2"></i>
+<a class="btn btn-outline-primary btn-sm" href="/admin/site"><i class="os-icon os-icon-delivery-box-2"></i>
   <span>Maak nieuwe site aan</span>
 </a>
 {% endblock %}
@@ -14,10 +14,10 @@
 <div class="row">
   <div class="col-sm-12 col-xxxl-12">
     <div class="element-wrapper">
-      <h6 class="element-header">
+      <h3 class="section-header">
         Sites
-      </h6>
-      <div class="element-box">
+      </h3>
+      <div class="card card-openstad">
         <div class="table-responsive">
           <table id="dataTable1" class="table table-lightborder">
             <thead>
@@ -87,11 +87,27 @@
                     Voting inactive
                   </div>
                   {% endif %}
+
+                  {% if site.config.basicAuth.active %}
+                  <div class="badge badge-pill badge-success" style="background: #ffa940; width: 180px; " data-title="CMS" data-toggle="tooltip">
+                    Password Protected
+                  </div>
+                  {% else %}
+                  <div class="badge badge-pill badge-success" style="background: #5bd7c0; width: 180px; " data-title="CMS" data-toggle="tooltip">
+                    Public
+                  </div>
+                  {% endif %}
+
+
                   </td>
                 <td class="text-right">
                   {% if site.config.cms.dbName %}
-                  <a class="btn btn-white btn-sm" href="/admin/site/{{site.id}}">
+                  <a class="btn btn-light " href="/admin/site/{{site.id}}">
                     <span>beheer</span>
+                  </a>
+                  <br />
+                  <a class="btn btn-link btn-sm" href="/admin/site/{{site.id}}/beta">
+                    <small><span>beheer (beta)</span></small>
                   </a>
                   {% endif %}
                 </td>

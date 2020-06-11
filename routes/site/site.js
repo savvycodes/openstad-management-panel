@@ -45,8 +45,7 @@ module.exports = function(app){
 
 
   /**
-   * Show site overview dashboard
-   */
+   *
   app.get('/admin/site/:siteId/archive-votes',
     ideaMw.allForSite,
     siteMw.withOne,
@@ -61,9 +60,6 @@ module.exports = function(app){
         promises.push(ideaApi.update(req.session.jwt, req.site.id, idea))
       });
 
-      /**
-       * Import all promises
-       */
       Promise.all(promises)
         .then(function (response) {
           req.flash('success', { msg: 'Ideas update!'});
@@ -73,6 +69,17 @@ module.exports = function(app){
           req.flash('error', { msg: 'Error'});
           res.redirect('/admin/site/' + req.site.id  || appUrl);
         });
+    }
+  );
+   */
+  /**
+   * Show new site form
+   */
+  app.get('/admin/site',
+    siteMw.withAll,
+    userClientMw.withAll,
+    (req, res, next) => {
+      res.render('site/new-form.html');
     }
   );
 
@@ -171,6 +178,7 @@ module.exports = function(app){
      .then((defaultResponse) => {
        clientDefault = defaultResponse;
        formattedAuthConfigDefault.authTypes = ['Anonymous'];
+       formattedAuthConfigDefault.name = formattedAuthConfigDefault.name + ' ' + 'Anonymous';
 
        // for anonymous "authenticating" only require the postcode
        formattedAuthConfigDefault.requiredUserFields = ['postcode'];
@@ -235,7 +243,7 @@ module.exports = function(app){
        })
        .then(() => {
          req.flash('success', { msg: 'Aangemaakt!'});
-         res.redirect(req.header('Referer')  || appUrl);
+         res.redirect('/admin');
        })
        .catch((e) => {
          console.log(e);

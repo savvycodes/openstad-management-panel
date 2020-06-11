@@ -193,6 +193,7 @@ require('./routes/user')(app);
 require('./routes/auth')(app);
 require('./routes/site/idea')(app);
 require('./routes/site/site')(app);
+require('./routes/api-proxy')(app);
 
 /**
  * Helper url
