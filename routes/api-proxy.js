@@ -1,4 +1,4 @@
-const proxy = require('http-proxy-middleware');
+const {createProxyMiddleware} = require('http-proxy-middleware');
 const apiUrl = process.env.API_URL;
 
 module.exports = function(app){
@@ -6,7 +6,7 @@ module.exports = function(app){
     /*
     * Create api route for proxying api so we don't have cross origin errors when making AJAX requests
     */
-   app.use('/api', proxy({
+   app.use('/api', createProxyMiddleware({
      target: apiUrl,
      changeOrigin: true,
      onProxyReq : (proxyReq, req, res) => {
@@ -45,7 +45,7 @@ module.exports = function(app){
     /*
     * Create api route for proxying api so we don't have cross origin errors when making AJAX requests
     */
-    app.use('/stats', proxy({
+    app.use('/stats', createProxyMiddleware({
      target: apiUrl,
      changeOrigin: true,
      onProxyReq : (proxyReq, req, res) => {
