@@ -73,6 +73,9 @@ app.use('/live', health.LivenessEndpoint(healthcheck));
 app.use('/ready', health.ReadinessEndpoint(healthcheck));
 app.use('/health', health.HealthEndpoint(healthcheck));
 
+// redirect the index page to the admin section
+app.get('/', health.ReadinessEndpoint(healthcheck));
+
 app.use('/admin', (req, res, next) => {
   const unauthorized = (req, res) => {
       var challengeString = 'Basic realm=Openstad';
@@ -155,7 +158,7 @@ app.use(enrichMw.run);
 
 // redirect the index page to the admin section
 app.get('/', (req, res) => {
-  res.redirect('/admin');
+//  res.redirect('/admin');
 });
 
 /**
