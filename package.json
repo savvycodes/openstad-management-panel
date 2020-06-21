@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon server.js ",
-    "watch:css": "nodemon -e less -w public/css -x npm run build:css"
+    "watch:css": "nodemon -e less -w public/css -x npm run build:css",
+    "test": "npm run test:unit",
+    "test:unit": "jest --no-cache --config jest.config.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "express-session": "^1.15.6",
     "http-proxy-middleware": "^1.0.4",
     "i18n": "^0.8.3",
+    "jest": "^26.0.1",
     "json2csv": "^4.5.1",
     "knex": "^0.15.2",
     "moment-timezone": "^0.5.23",
