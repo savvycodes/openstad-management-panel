@@ -73,7 +73,7 @@ app.use('/live', health.LivenessEndpoint(healthcheck));
 app.use('/ready', health.ReadinessEndpoint(healthcheck));
 app.use('/health', health.HealthEndpoint(healthcheck));
 
-app.use((req, res, next) => {
+app.use('/admin', (req, res, next) => {
   const unauthorized = (req, res) => {
       var challengeString = 'Basic realm=Openstad';
       res.set('WWW-Authenticate', challengeString);
