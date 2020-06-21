@@ -66,6 +66,13 @@ const nunjucksEnv = nunjucks.configure('templates', {
   express: app
 });
 
+const health = require('@cloudnative/health-connect');
+let healthcheck = new health.HealthChecker();
+
+app.use('/live', health.LivenessEndpoint(healthcheck));
+app.use('/ready', health.ReadinessEndpoint(healthcheck));
+app.use('/health', health.HealthEndpoint(healthcheck));
+
 
 app.use((req, res, next) => {
   const unauthorized = (req, res) => {
