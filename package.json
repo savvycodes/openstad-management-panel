@@ -17,6 +17,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/osetin/light-admin#readme",
   "dependencies": {
+    "@kubernetes/client-node": "^0.12.0",
     "basic-auth": "^2.0.1",
     "body-parser": "^1.18.3",
     "bookshelf": "^0.13.3",

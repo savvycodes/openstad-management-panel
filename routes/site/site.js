@@ -223,10 +223,12 @@ module.exports = function(app){
           }
       });
 
+    const siteName = `${slugify(req.body.siteName)}-${new Date().getTime()}`;
+
      return siteApi
          .create(req.session.jwt, {
             domain: domain,
-            name: `${slugify(req.body.siteName)}-${new Date().getTime()}`,
+            name: siteName,
             title: req.body.siteName,
             config: siteConfig
          })
@@ -242,8 +244,55 @@ module.exports = function(app){
          return copyDb(dbToCopy, dbName);
        })
        .then(() => {
-         req.flash('success', { msg: 'Aangemaakt!'});
-         res.redirect('/admin');
+         const successAction = () => {
+           req.flash('success', { msg: 'Aangemaakt!'});
+           res.redirect('/admin');
+         }
+
+         // kubernetes namespace is available
+         if (process.env.KUBERNETES_NAMESPACE) {
+            const k8s = require('@kubernetes/client-node')
+            const kc = new k8s.KubeConfig()
+            kc.loadFromCluster();
+
+            const k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api)
+            const clientIdentifier = 'openstad'
+
+            k8sApi.createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, {
+              apiVersions: 'networking.k8s.io/v1beta1',
+              kind: 'Ingress',
+              metadata: { name: `${siteName}-custom-domain` },
+              spec: {
+                rules: [{
+                  host: domain,
+                  http: {
+                    paths: [{
+                      backend: {
+                        serviceName: 'openstad-frontend-service',
+                        servicePort: 4444
+                      },
+                      path: '/'
+                    }]
+                  }
+                }],
+                tls: [{ hosts: [domain] }]
+              }
+            })
+            .then(() => {
+              //@todo: improve succes message, will take a few min to have a lets encrypt
+              console.log('Succesfully added ',domain, ' to ingress files');
+              successAction();
+            })
+            .catch((e) => {
+              console.log('Error while trying to add domain ',domain, ' to ingress files:', e);
+              //@todo, how to deal with failure? Add a route to retry?
+              successAction();
+            })
+         } else {
+           successAction();
+         }
+
+
        })
        .catch((e) => {
          console.log(e);

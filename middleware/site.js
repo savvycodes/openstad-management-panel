@@ -71,8 +71,9 @@ exports.addAuthClientId = (req, res, next) => {
 
 exports.withAll = (req, res, next) => {
   siteApiService
-    .fetchAll(req.session.jwt)
+    .fetchAll()
     .then((sites) => {
+      console.log('sites', sites)
       sites = sites.sort((a, b) => {
         if (a.title < b.title) {
           return -1;
@@ -88,6 +89,8 @@ exports.withAll = (req, res, next) => {
       next();
     })
     .catch((err) => {
+      console.log('err', sites)
+
       next(err);
     });
 }
