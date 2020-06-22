@@ -168,6 +168,8 @@ app.use(
   authMw.fetchUserData
 );
 
+require('./routes/auth')(app);
+
 /**
  * Make sure user is isAuthenticated & has rights to access
  */
@@ -198,7 +200,6 @@ require('./routes/site/user-api')(app);
 require('./routes/site/votes')(app);
 require('./routes/site/newsletter.js')(app);
 require('./routes/user')(app);
-require('./routes/auth')(app);
 require('./routes/site/idea')(app);
 require('./routes/site/site')(app);
 require('./routes/site/site-import')(app);

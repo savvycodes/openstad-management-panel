@@ -53,8 +53,12 @@ const ensureRights = (req, res, next) => {
   if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {
-    req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
-    res.redirect('/admin/login');
+    req.session.destroy(() => {
+      req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
+      if (req.originalUrl !== '/admin/login') {
+        res.redirect('/admin/login');
+      }
+    });
   }
 }
 
@@ -62,8 +66,12 @@ const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated) {
     next();
   } else {
-  //  console.log('login redirected', redirectUrl);
-    res.redirect('/admin/login');
+    console.log('req.path', req.originalUrl)
+    if (req.originalUrl !== '/admin/login') {
+      res.redirect('/admin/login');
+    } else {
+      next();
+    }
   }
 };
 
