@@ -29,6 +29,16 @@ const siteId            = process.env.SITE_ID;
 const tmpDir = process.env.TMPDIR || './tmp';
 
 module.exports = function(app){
+  /**
+   * Show new site form
+   */
+  app.get('/admin/site-import',
+    siteMw.withAll,
+    userClientMw.withAll,
+    (req, res, next) => {
+      res.render('site/import-form.html');
+    }
+  );
 
   /**
    * Import
