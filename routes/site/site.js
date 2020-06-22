@@ -1,3 +1,10 @@
+const fs = require('fs');
+const tar = require('tar');
+const fetch = require('node-fetch');
+
+const multer            = require('multer');
+const upload            = multer();
+
 const slugify             = require('slugify');
 const Promise             = require("bluebird");
 
@@ -10,6 +17,7 @@ const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
+
 //utils
 const pick              = require('../../utils/pick');
 //ENV constants
@@ -24,9 +32,14 @@ const ideaApi                     = require('../../services/ideaApi');
 const deleteMongoDb               = require('../../services/mongo').deleteDb;
 const dbExists                    = require('../../services/mongo').dbExists;
 const copyDb                      = require('../../services/mongo').copyMongoDb;
+const exportDb                      = require('../../services/mongo').export;
+const queryDb                      = require('../../services/mongo').query;
+const importDb                      = require('../../services/mongo').import;
 const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
 const userApiRequiredFields       = require('../../config/auth').userApiRequiredFields;
 const siteConfigSchema            = require('../../config/site').configSchema;
+
+const tmpDir = process.env.TMPDIR || './tmp';
 
 const cleanUrl = (url) => {
   return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
@@ -122,7 +135,7 @@ module.exports = function(app){
       });
     }
   );
-
+  
   /**
    * Create a new site by copying an old one
    */
@@ -246,7 +259,7 @@ module.exports = function(app){
   /**
    * Edit config value of the site
    */
-  app.post('/admin/site/:siteId',
+  app.post('/admin/site/:siteId(\\d+)',
     siteMw.withOne,
     (req, res, next) => {
       delete req.body.url;
@@ -398,6 +411,9 @@ module.exports = function(app){
           res.redirect('/admin');
         })
         .catch((err) => {
+
+          console.log('++++++++++++++++++++');
+          console.log(err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
           res.redirect('/admin');
@@ -405,4 +421,5 @@ module.exports = function(app){
         });
     }
   );
+
 }

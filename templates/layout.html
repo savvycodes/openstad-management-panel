@@ -226,15 +226,26 @@
     </div>
 
     <div aria-hidden="true" class="onboarding-modal modal fade animated" id="onboardingWideSlideModal" role="dialog" tabindex="-1">
-          <div class="modal-dialog modal-lg modal-centered" role="document">
-            <div class="modal-content text-center">
-              <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                <span class="os-icon os-icon-close"></span>
-              </button>
-              {% include "site/new-form.html" %}
-            </div>
-          </div>
-     </div>
+      <div class="modal-dialog modal-lg modal-centered" role="document">
+        <div class="modal-content text-center">
+          <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+            <span class="os-icon os-icon-close"></span>
+          </button>
+          {% include "site/new-form.html" %}
+        </div>
+      </div>
+    </div>
+
+    <div aria-hidden="true" class="onboarding-modal modal fade animated" id="onboardingWideSlideModal2" role="dialog" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-centered" role="document">
+        <div class="modal-content text-center">
+          <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+            <span class="os-icon os-icon-close"></span>
+          </button>
+          {% include "site/import-form.html" %}
+        </div>
+      </div>
+    </div>
     {% include 'partials/scripts.html' %}
   </body>
 </html>

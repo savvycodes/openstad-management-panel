@@ -71,5 +71,6 @@
 	"First name": "First name",
 	"Last name": "Last name",
 	"E-mail": "E-mail",
-	"Subscribed at": "Subscribed at"
+	"Subscribed at": "Subscribed at",
+	"Export": "Export"
 }

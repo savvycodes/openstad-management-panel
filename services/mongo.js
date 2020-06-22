@@ -3,6 +3,8 @@ const MongoClient = mongodb.MongoClient;
 const host = process.env.MONGO_DB_HOST || 'localhost';
 const port = 27017;
 const MongoServer = new mongodb.Server(host, port);
+const mongoBackup = require('mongodb-backup');
+const mongoRestore = require('mongodb-restore');
 const url = 'mongodb://' + host + ':' + port;
 
 exports.copyMongoDb = (oldDbName, newDbName) => {
@@ -81,3 +83,60 @@ exports.deleteDb = (dbName) => {
     });
   });
 }
+
+exports.query = (dbName, collectionName) => {
+
+  return new Promise((resolve, reject) => {
+
+    MongoClient.connect(url, function(err, db) {
+      if (err) throw err;
+      var dbo = db.db(dbName);
+      dbo.collection(collectionName).find({}).toArray(function(err, result) {
+        if (err) throw err;
+        db.close();
+        resolve(result)
+      });
+    });
+
+  });
+
+}
+
+exports.export = (dbName, dirname) => {
+
+  return new Promise((resolve, reject) => {
+
+    let uri = url + '/' + dbName;
+    dirname = dirname || './tmp';
+
+    mongoBackup({
+      uri: uri,
+      root: dirname,
+      callback: (err, result) => {
+        resolve();
+      }
+    });
+
+
+  });
+}
+
+exports.import = (dbName, dirname) => {
+
+  return new Promise((resolve, reject) => {
+
+    let uri = url + '/' + dbName;
+    dirname = dirname || './tmp';
+
+    mongoRestore({
+      uri: uri,
+      root: dirname,
+      callback: (err, result) => {
+        resolve();
+      }
+    });
+
+
+  });
+}
+
