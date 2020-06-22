@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block quickLinks %}
-<a class="btn btn-white btn-sm" href="/admin/user">
+<a class="btn btn-outline-primary btn-sm" href="/admin/user">
   <i class="os-icon os-icon-window-content"></i>
   <span>Nieuwe gebruiker</span>
 </a>
@@ -15,14 +15,14 @@
 <div class="row">
   <div class="col-sm-12 col-xxxl-9">
     <div class="element-wrapper">
-      <h6 class="element-header">
+      <h6 class="section-header">
         {% if editUser %}
           Bewerk gebruiker
         {% else %}
           Maak een nieuwe gebruiker aan
         {% endif %}
       </h6>
-      <div class="element-box">
+      <div class="card card-openstad">
         <form
           method="post"
           {% if editUser %}
@@ -79,13 +79,15 @@
               <legend><span>Roles </span></legend>
               <table class="table">
               {% for client in userApiClients %}
+
                   <tr>
                     <td>
                       <b> {{client.name}} </b>
                     </td>
                     {% for role in roles %}
+
                     <td>
-                      <label class="col-form-label col-sm-4" for="">
+                      <label class="col-form-label" for="">
                         <input
                           type="radio"
                           name="roles['{{client.id}}']"
@@ -117,7 +119,7 @@
               </div>
           </fieldset>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-outline-primary">
               {% if editUser %}
               Save changes
               {% else %}

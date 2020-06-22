@@ -1,52 +1,13 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title> Login Openstad</title>
-    <meta charset="utf-8">
-    <meta content="ie=edge" http-equiv="x-ua-compatible">
-    <meta content="template language" name="keywords">
-    <meta content="Tamerlan Soziev" name="author">
-    <meta content="Admin dashboard html template" name="description">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="/favicon.png" rel="shortcut icon">
-    <link href="/apple-touch-icon.png" rel="apple-touch-icon">
-    <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500" rel="stylesheet" type="text/css">
-    <link href="/css/vendor/select2.min.css" rel="stylesheet">
-    <link href="/css/vendor/daterangepicker.css" rel="stylesheet">
-    <link href="/css/vendor/dropzone.css" rel="stylesheet">
-    <link href="/css/vendor/dataTables.bootstrap.min.css" rel="stylesheet">
-    <link href="/css/vendor/fullcalendar.min.css" rel="stylesheet">
-    <link href="/css/vendor/perfect-scrollbar.min.css" rel="stylesheet">
-    <link href="/css/vendor/slick.css" rel="stylesheet">
-    <link href="/css/main.css?version=4.4.0" rel="stylesheet">
-    <link href="/css/custom.css" rel="stylesheet">
-
-  </head>
-  <body class="auth-wrapper">
-    <div class="all-wrapper menu-side with-pattern">
-      <div class="auth-box-w wider centered">
-        <br />
-        <br />
-        {% include 'partials/flash.html' %}
-        <br />
-        <h3> OPENSTAD BEHEER </h3>
-        <br />
-        <br />
-
-        <h5 class="auth-header">
-          Login om toegang te krijgen
-        </h5>
-        <a class="btn btn-outline-primary" href="/oauth/login">
-          Inloggen
-        </a>
-
-        <br />
-        <br />
-        <br />
-
-
-      </div>
-    </div>
-
+{% include 'partials/head.html' %}
+<body class="login-page text-center">
+=
+  {% include 'partials/flash.html' %}
+    <form class="form-signin">
+      <h3> OPENSTAD </h3>
+      <br />
+      <a class="btn btn-lg btn-outline-primary btn-block" href="/oauth/login">Sign in</a>
+      <p class="mt-5 mb-3 text-muted">2020</p>
+    </form>
+    {% include 'partials/scripts.html' %}
 </body>
 </html>

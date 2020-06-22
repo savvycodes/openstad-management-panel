@@ -66,8 +66,20 @@ const nunjucksEnv = nunjucks.configure('templates', {
   express: app
 });
 
+const health = require('@cloudnative/health-connect');
+let healthcheck = new health.HealthChecker();
 
-app.use((req, res, next) => {
+app.use('/live', health.LivenessEndpoint(healthcheck));
+app.use('/ready', health.ReadinessEndpoint(healthcheck));
+app.use('/health', health.HealthEndpoint(healthcheck));
+
+app.get('/', (req, res) => {
+  res.redirect('/admin');
+});
+
+// redirect the index page to the admin section
+
+app.use('/admin', (req, res, next) => {
   const unauthorized = (req, res) => {
       var challengeString = 'Basic realm=Openstad';
       res.set('WWW-Authenticate', challengeString);
@@ -147,10 +159,6 @@ app.use(i18n.init);
 app.use(flash());
 app.use(enrichMw.run);
 
-// redirect the index page to the admin section
-app.get('/', (req, res) => {
-  res.redirect('/admin');
-});
 
 /**
  * Check if user is isAuthenticated and fetch data
@@ -195,6 +203,7 @@ require('./routes/site/idea')(app);
 require('./routes/site/site')(app);
 require('./routes/site/site-import')(app);
 require('./routes/site/site-export')(app);
+require('./routes/api-proxy')(app);
 
 /**
  * Helper url

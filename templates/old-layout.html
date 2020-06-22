@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Openstad Admin Gemeente Amsterdam</title>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="template language" name="keywords">
+    <meta content="Tamerlan Soziev" name="author">
+    <meta content="Admin dashboard html template" name="description">
+    <meta content="width=1200, initial-scale=1" name="viewport">
+    <link href="/favicon.png" rel="shortcut icon">
+    <link href="/apple-touch-icon.png" rel="apple-touch-icon">
+    <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500" rel="stylesheet" type="text/css">
+    <link href="/css/vendor/select2.min.css" rel="stylesheet">
+    <link href="/css/vendor/daterangepicker.css" rel="stylesheet">
+    <link href="/css/vendor/dropzone.css" rel="stylesheet">
+    <link href="/css/vendor/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/css/vendor/fullcalendar.min.css" rel="stylesheet">
+    <link href="/css/vendor/perfect-scrollbar.min.css" rel="stylesheet">
+    <link href="/css/vendor/slick.css" rel="stylesheet">
+    <link href="/css/main.css?version=4.4.1" rel="stylesheet">
+    <link href="/css/custom.css" rel="stylesheet">
+  </head>
+  <body class="menu-position-side menu-side-left full-screen with-content-panel">
+    <div class="all-wrapper with-side-panel solid-bg-all">
+      <div class="layout-w" style="min-height: 100vh;">
+        <!--------------------
+        START - Mobile Menu
+        -------------------->
+        <div class="menu-mobile menu-activated-on-click color-scheme-dark">
+          <div class="mm-logo-buttons-w">
+            <a class="mm-logo" href="/">
+              <img src="/img/logo.png"><span>Openstad</span>
+            </a>
+            <div class="mm-buttons">
+              <div class="content-panel-open">
+                <div class="os-icon os-icon-grid-circles"></div>
+              </div>
+              <div class="mobile-menu-trigger">
+                <div class="os-icon os-icon-hamburger-menu-1"></div>
+              </div>
+            </div>
+          </div>
+          <div class="menu-and-user">
+            <div class="logged-user-w">
+              <div class="avatar-w">
+                <img alt="" src="/img/avatar.png">
+              </div>
+              <div class="logged-user-info-w">
+                <div class="logged-user-name">
+                  {{user.firstName}}
+                </div>
+                <div class="logged-user-role">
+                  Administrator
+                </div>
+              </div>
+            </div>
+            {% include 'partials/mobile-menu.html' %}
+          </div>
+        </div>
+        <!--------------------
+        END - Mobile Menu
+        --------------------><!--------------------
+        START - Main Menu
+        -------------------->
+        <div class="menu-w selected-menu-color-light menu-activated-on-hover menu-has-selected-link color-scheme-light color-style-default sub-menu-color-bright menu-position-side menu-side-left menu-layout-compact sub-menu-style-over">
+          <div class="logo-w">
+            <a class="logo" href="/">
+              <img
+                src="https://www.amsterdam.nl/views/core/images/logos/andreas.svg"
+                style=" height: 26px; margin-left: -12px;
+                  "
+              />
+              <div class="logo-label">
+                Openstad
+              </div>
+            </a>
+          </div>
+          <div class="logged-user-w avatar-inline">
+            <div class="logged-user-i">
+              <div class="avatar-w">
+                <img alt="" src="/img/avatar.png">
+              </div>
+              <div class="logged-user-info-w">
+                <div class="logged-user-name">
+                  {{user.firstName}}
+                </div>
+                <div class="logged-user-role">
+                  Administrator
+                </div>
+              </div>
+              <div class="logged-user-toggler-arrow">
+                <div class="os-icon os-icon-chevron-down"></div>
+              </div>
+              <div class="logged-user-menu color-style-bright">
+                <div class="logged-user-avatar-info">
+                  <div class="avatar-w">
+                    <img alt="" src="/img/avatar.png">
+                  </div>
+                  <div class="logged-user-info-w">
+                    <div class="logged-user-name">
+                      {{user.firstName}}
+                    </div>
+                    <div class="logged-user-role">
+                      Administrator
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-icon">
+                  <i class="os-icon os-icon-wallet-loaded"></i>
+                </div>
+                {% include 'partials/header-menu.html' %}
+
+              </div>
+            </div>
+          </div>
+          {% block sideMenu %}{% endblock %}
+        </div>
+        <!--------------------
+        END - Main Menu
+        -------------------->
+        <div class="content-w">
+          <!--------------------
+          START - Top Bar
+          -------------------->
+          <div class="top-bar color-scheme-light">
+            <!--------------------
+            START - Top Menu Controls
+            -------------------->
+            <div class="top-menu-controls">
+
+              <!--------------------
+              START - Messages Link in secondary top menu
+              -------------------->
+
+              <!--------------------
+              END - Messages Link in secondary top menu
+              --------------------><!--------------------
+              START - Settings Link in secondary top menu
+              -------------------->
+
+              <!--------------------
+              END - Settings Link in secondary top menu
+              --------------------><!--------------------
+              START - User avatar and menu in secondary top menu
+              -------------------->
+              <div class="logged-user-w">
+                <div class="logged-user-i">
+                  <div class="avatar-w">
+                    <img alt="" src="/img/avatar.png">
+                  </div>
+                  <div class="logged-user-menu color-style-bright">
+                    <div class="logged-user-avatar-info">
+                      <div class="avatar-w">
+                        <img alt="" src="/img/avatar.png">
+                      </div>
+                      <div class="logged-user-info-w">
+                        <div class="logged-user-name">
+                          {{user.firstName}}
+                        </div>
+                        <div class="logged-user-role">
+                          Administrator
+                        </div>
+                      </div>
+                    </div>
+                    <div class="bg-icon">
+                      <i class="os-icon os-icon-wallet-loaded"></i>
+                    </div>
+                    <ul>
+                      <li>
+                        <a href="/logout"><i class="os-icon os-icon-signs-11"></i><span>Logout</span></a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!--------------------
+              END - User avatar and menu in secondary top menu
+              -------------------->
+            </div>
+            <!--------------------
+            END - Top Menu Controls
+            -------------------->
+          </div>
+          <!--------------------
+          END - Top Bar
+          -------------------->
+          <div class="content-panel-toggler">
+            <i class="os-icon os-icon-grid-squares-22"></i><span>Sidebar</span>
+          </div>
+          <div class="content-i">
+            <div class="content-box">
+              {% include 'partials/flash.html' %}
+
+              {% block body %}{% endblock %}
+            </div>
+            <!--------------------
+            START - Sidebar
+            -------------------->
+            <div class="content-panel">
+              <div class="content-panel-close">
+                <i class="os-icon os-icon-close"></i>
+              </div>
+              <div class="element-wrapper">
+                <h6 class="section-header">
+                  Snelle Links
+                </h6>
+                <div class="card card-openstad-tp">
+                   <div class="el-buttons-list full-width">
+                     {% block quickLinks %}{% endblock %}
+                  </div>
+                </div>
+              </div>
+              <!--------------------
+              START - Recent Activity
+              -------------------->
+
+            </div>
+            <!--------------------
+            END - Sidebar
+            -------------------->
+          </div>
+        </div>
+      </div>
+      <div class="display-type"></div>
+    </div>
+
+    <div aria-hidden="true" class="onboarding-modal modal fade animated" id="onboardingWideSlideModal" role="dialog" tabindex="-1">
+          <div class="modal-dialog modal-lg modal-centered" role="document">
+            <div class="modal-content text-center">
+              <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                <span class="os-icon os-icon-close"></span>
+              </button>
+              {% include "site/new-form.html" %}
+            </div>
+          </div>
+     </div>
+    {% include 'partials/scripts.html' %}
+  </body>
+</html>

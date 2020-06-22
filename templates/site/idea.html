@@ -5,16 +5,18 @@
 {% block body %}
 <div class="row">
   <div class="col-sm-12 col-xxxl-9">
-    <div class="element-wrapper">
-      <h6 class="element-header">
+    <div class="card-container">
+      <h6 class="section-header">
         {% if idea %}
           Bewerk plan
         {% else %}
           Maak nieuw plan
         {% endif %}
       </h6>
-      <div class="element-box">
+      <div class="card">
+        <div class="card-body">
         {% include 'site/idea/form.html' %}
+        </div>
       </div>
     </div>
   </div>

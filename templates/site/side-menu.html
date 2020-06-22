@@ -1,96 +1,77 @@
-<ul class="main-menu">
-  <li class="sub-header">
+<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
     <span>{{ __('SITE') }} {{site.name}}</span>
-  </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
+</h6>
+
+<ul class="nav flex-column">
+
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}" >
+      <span data-feather="home"></span>
       <span> {{ __('Dashboard') }} </span>
     </a>
   </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}/settings">
-      <div class="icon-w">
-        <div class="os-icon os-icon-ui-46"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/settings">
+      <span data-feather="settings"></span>
       <span> {{ __('Settings') }} </span>
     </a>
   </li>
   {% if userApiClient %}
-  <li class="">
-    <a href="/admin/site/{{site.id}}/security">
-      <div class="icon-w">
-        <div class="os-icon os-icon-users"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/security">
+      <span data-feather="security"></span>
       <span> {{ __('Authentication & security') }} </span>
     </a>
   </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}/unique-codes">
-      <div class="icon-w">
-        <div class="os-icon os-icon-users"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/unique-codes">
+      <span data-feather="users"></span>
       <span> {{ __('Voting codes') }} </span>
     </a>
   </li>
   {% endif %}
   {% if site.config.cms.dbName %}
-  <li class="">
-    <a href="https://{{site.domain}}" target="_blank">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="https://{{site.domain}}" target="_blank">
+      <span data-feather="layers"></span>
       <span> {{ __('Edit site') }} ↗</span>
     </a>
   </li>
   {% endif %}
-  <li class="">
-    <a href="/admin/site/{{site.id}}/ideas">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/ideas">
+      <span data-feather="layers"></span>
       <span> {{ __('Ideas') }} </span>
     </a>
   </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}/votes">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/votes">
+      <span data-feather="layers"></span>
       <span> {{ __('Votes') }} </span>
     </a>
   </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}/newsletter-subscribers">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
-      <span> {{ __('Newsletter subscribers') }} </span>
-    </a>
+  <li class="nav-item">
+  <a class="nav-link" href="/admin/site/{{site.id}}/newsletter-subscribers">
+    <span data-feather="layers"></span>
+    <span> {{ __('Newsletter subscribers') }} </span>
+  </a>
   </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}/submissions">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
+  <!--
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/submissions">
+      <span data-feather="layers"></span>
       <span> {{ __('Submissions') }} </span>
     </a>
   </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}/arguments">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/arguments">
+      <span data-feather="layers"></span>
       <span> {{ __('Arguments') }}  </span>
     </a>
   </li>
-  <li class="">
-    <a href="/admin/site/{{site.id}}/export">
-      <div class="icon-w">
-        <div class="os-icon os-icon-layers"></div>
-      </div>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/site/{{site.id}}/export">
+      <span data-feather="layers"></span>
       <span> {{ __('Export') }}  </span>
     </a>
   </li>

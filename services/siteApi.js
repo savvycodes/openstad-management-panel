@@ -14,7 +14,7 @@ exports.fetch = (token, siteId) => {
   });
 }
 
-exports.fetchAll = (token) => {
+exports.fetchAll = () => {
   return rp({
     method: 'GET',
     uri: `${apiUrl}/site`,

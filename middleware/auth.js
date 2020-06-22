@@ -54,7 +54,7 @@ const ensureRights = (req, res, next) => {
     next();
   } else {
     req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
-    res.redirect('/login');
+    res.redirect('/admin/login');
   }
 }
 
@@ -63,7 +63,7 @@ const ensureAuthenticated = (req, res, next) => {
     next();
   } else {
   //  console.log('login redirected', redirectUrl);
-    res.redirect('/login');
+    res.redirect('/admin/login');
   }
 };
 

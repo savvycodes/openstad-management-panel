@@ -3,12 +3,12 @@
 {% extends 'user-layout.html' %}
 
 {% block body %}
-<div class="element-wrapper">
+<div class="card-container">
   {% from 'partials/fields.html' import renderFields %}
 
 <div class="row">
   <div class="col-sm-12">
-    <h6 class="element-header">
+    <h6 class="section-header">
       {{ __('Site settings') }}
     </h6>
   </div>
@@ -16,16 +16,16 @@
     {% include 'site/settings/menu.html' %}
   </div>
   <div class="col-sm-9">
-    <div class="element-wrapper">
-      <div class="element-box">
+    <div class="card-container">
+      <div class="card card-openstad">
         <form method="POST" action="/admin/site/{{site.id}}">
           {{ renderFields(ideaFields, site.config.ideas, 'config[ideas]') }}
           <div class="form-buttons-w">
-            <button class="btn btn-primary" type="submit">Opslaan</button>
+            <button class="btn btn-outline-primary" type="submit">Opslaan</button>
           </div>
         </form>
       </div>
-      <div class="element-box">
+      <div class="card card-openstad">
 
         <form method="POST" action="/admin/site/{{site.id}}">
           <fieldset>
@@ -35,7 +35,7 @@
               <button class="btn btn-secondary" data-target="#ideaThankYouModal" data-toggle="modal" type="button">More info on the E-mail Template</button>
 
               <div class="form-buttons-w">
-              <button class="btn btn-primary" type="submit">Opslaan</button>
+              <button class="btn btn-outline-primary" type="submit">Opslaan</button>
               </div>
             </fieldset>
         </form>
