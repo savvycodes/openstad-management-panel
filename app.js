@@ -11,7 +11,7 @@ const expressSession    = require('express-session')
 const nunjucks          = require('nunjucks');
 const flash             = require('express-flash');
 const app               = express();
-const FileStore         = require('session-file-store')(expressSession);
+//const FileStore         = require('session-file-store')(expressSession);
 const auth              = require('basic-auth');
 const compare           = require('tsscmp');
 const MongoStore        = require('connect-mongo')(expressSession);
@@ -148,8 +148,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET, {
   sameSite: false
 }));
 
-// Session Configuration
-app.use(expressSession({
+const sessionSettings = {
   saveUninitialized : true,
   resave            : true,
   secret            : process.env.SESSION_SECRET,
@@ -162,8 +161,13 @@ app.use(expressSession({
     sameSite: false,
     path: '/'
   },
-  store: new FileStore({ ttl: 3600 * 24 * 31 }),
-}));
+  store: sessionStore
+}
+
+console.log('sessionSettings', sessionSettings)
+
+// Session Configuration
+app.use(expressSession(sessionSettings));
 
 i18n.configure({
     locales:['nl', 'en'],
