@@ -147,7 +147,7 @@ app.use(expressSession({
     sameSite: false,
     path: '/'
   },
-  store: new FileStore({ ttl: 3600 * 24 * 31 }),
+  //store: new FileStore({ ttl: 3600 * 24 * 31 }),
 }));
 
 i18n.configure({

@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 const host = process.env.MONGO_DB_HOST || 'localhost';
-const port = 27017;
+const port = process.env.MONGO_DB_PORT ||27017;
 const MongoServer = new mongodb.Server(host, port);
 const mongoBackup = require('mongodb-backup');
 const mongoRestore = require('mongodb-restore');
@@ -139,4 +139,3 @@ exports.import = (dbName, dirname) => {
 
   });
 }
-
