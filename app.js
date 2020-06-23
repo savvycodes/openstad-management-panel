@@ -14,6 +14,7 @@ const app               = express();
 const FileStore         = require('session-file-store')(expressSession);
 const auth              = require('basic-auth');
 const compare           = require('tsscmp');
+const MongoStore        = require('connect-mongo')(expressSession);
 
 //middleware
 const ideaMw            = require('./middleware/idea');
@@ -45,6 +46,20 @@ const ensureUrlHasProtocol = (url) => {
 
   return url;
 }
+
+const mongoCredentials = {
+  host: process.env.MONGO_DB_HOST || 'localhost',
+  port: process.env.MONGO_DB_PORT || 27017,
+}
+
+const url = 'mongodb://'+ mongoCredentials.host +':'+mongoCredentials.port+'/db-sessions';
+
+
+const sessionStore =  new MongoStore({
+    url: url,
+    ttl: 14 * 24 * 60 * 60 // = 14 days. Default
+})
+
 
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;
