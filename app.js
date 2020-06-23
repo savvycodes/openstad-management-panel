@@ -143,7 +143,7 @@ app.use(expressSession({
   cookie            : {
     maxAge:  3600000 * 24 * 7 ,
     secure: false,
-    httpOnly: true,
+    httpOnly: false,
     sameSite: false,
   //  path: '/'
   },
