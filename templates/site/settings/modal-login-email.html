@@ -44,7 +44,7 @@
                  <b> tokenUrl </b>
               </td>
               <td>
-                Url that leads to login 
+                Url that leads to login
               </td>
             </tr>
           </table>
@@ -53,48 +53,44 @@
         This is the default email template
         </p>
 
-        <textarea class="form-control" style="min-height: 400px;">{% raw %}{% extends 'emails/layout.html' %}
+        <textarea class="form-control" style="min-height: 400px;">{% raw %}<h2 style="margin-bottom: 4px; font-size: 25px;">Inloglink aangevraagd</h2>
 
-{% block body %}
-<h2 style="margin-bottom: 4px; font-size: 25px;">Inloglink aangevraagd</h2>
+        {% if firstName %}
+        <br />
+        <b> Beste {{firstName}}, </b>
+        <br />
+        {% endif %}
+        <br />
 
-{% if firstName %}
-<br />
-<b> Beste {{firstName}}, </b>
-<br />
-{% endif %}
-<br />
+        Voor <a href="{{clientUrl}}" target="_blank">{{clientName}}</a>
+        is een inloglink aangevraagd voor dit emailadres.
+        Klik op de knop hieronder om automatisch in te loggen.
+        <br />
+        De knop is 60 minuten geldig.
+        <br />
+        <br />
+        <p align="middle" style="margin: 10px 0;">
+        	<a
+            href="{{tokenUrl}}"
+            style="background-color: #ec0000; color:#fff; font-size: 15px; padding:15px 50px; text-decoration:none"
+            target="_blank"
+          >
+        		<b>Log in</b>
+        	</a>
+        </p>
 
-Voor <a href="{{clientUrl}}" target="_blank">{{clientName}}</a>
-is een inloglink aangevraagd voor dit emailadres.
-Klik op de knop hieronder om automatisch in te loggen.
-<br />
-De knop is 60 minuten geldig.
-<br />
-<br />
-<p align="middle" style="margin: 10px 0;">
-<a
-  href="{{tokenUrl}}"
-  style="background-color: #ec0000; color:#fff; font-size: 15px; padding:15px 50px; text-decoration:none"
-  target="_blank"
->
-	<b>Log in</b>
-</a>
-</p>
-
-<br />
-<p style="font-size:0.7em;font-style:italic;margin-bottom:5em" align="center">
-Of gebruik deze link in je browser:
-<br />
-<a
-  href="{{tokenUrl}}"
-  style="color:#ec0000"
-  target="_blank"
->
-  {{tokenUrl}}
-</a>
-</p>
-{% endblock %}{% endraw %}
+        <br />
+        <p style="font-size:0.7em;font-style:italic;margin-bottom:5em" align="center">
+          Of gebruik deze link in je browser:
+        	<br />
+          <a
+            href="{{tokenUrl}}"
+            style="color:#ec0000"
+            target="_blank"
+          >
+            {{tokenUrl}}
+          </a>
+        </p>{% endraw %}
 </textarea>
       </div>
       <div class="modal-footer">
