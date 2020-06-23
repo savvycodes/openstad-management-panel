@@ -1,8 +1,7 @@
 const rp = require('request-promise');
-const apiUrl = process.env.USER_API;
+const apiUrl = process.env.USER_API + '/api/admin';
 const nestedObjectAssign = require('nested-object-assign');
 const httpBuildQuery = require('../utils/httpBuildQuery')
-
 
 const apiCredentials = {
     client_id:  process.env.USER_API_CLIENT_ID,

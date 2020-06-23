@@ -34,7 +34,6 @@ module.exports = function(app){
    */
   app.get('/admin/site-import',
     siteMw.withAll,
-    userClientMw.withAll,
     (req, res, next) => {
       res.render('site/import-form.html');
     }

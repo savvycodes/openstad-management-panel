@@ -89,7 +89,6 @@ module.exports = function(app){
    */
   app.get('/admin/site',
     siteMw.withAll,
-    userClientMw.withAll,
     (req, res, next) => {
       res.render('site/new-form.html');
     }
