@@ -49,7 +49,8 @@ const fetchUserData = (req, res, next) => {
 }
 
 const ensureRights = (req, res, next) => {
-   //if (req.user && req.user.role === 'admin') {
+   //if (req.user && req.user.role === 'admin')
+   console.log('req.user', req.user)
   if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {

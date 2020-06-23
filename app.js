@@ -142,12 +142,12 @@ app.use(expressSession({
   key               : 'authorization.sid',
   cookie            : {
     maxAge:  3600000 * 24 * 7 ,
-//    secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
-//    httpOnly: true,
+    secure: false,
+    httpOnly: true,
     sameSite: false,
-    path: '/'
+  //  path: '/'
   },
-  //store: new FileStore({ ttl: 3600 * 24 * 31 }),
+  store: new FileStore({ ttl: 3600 * 24 * 31 }),
 }));
 
 i18n.configure({
