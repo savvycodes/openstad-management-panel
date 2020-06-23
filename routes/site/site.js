@@ -17,7 +17,6 @@ const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
-
 //utils
 const pick              = require('../../utils/pick');
 //ENV constants
@@ -142,7 +141,7 @@ module.exports = function(app){
       });
     }
   );
-  
+
   /**
    * Create a new site by copying an old one
    */
