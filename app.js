@@ -145,7 +145,7 @@ app.use(expressSession({
     secure: false,
     httpOnly: false,
     sameSite: false,
-  //  path: '/'
+    path: '/'
   },
   store: new FileStore({ ttl: 3600 * 24 * 31 }),
 }));
