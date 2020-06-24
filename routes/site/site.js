@@ -285,7 +285,7 @@ module.exports = function(app){
                   http: {
                     paths: [{
                       backend: {
-                        serviceName: 'openstad-frontend-service',
+                        serviceName: 'openstad-frontend',
                         servicePort: 4444
                       },
                       path: '/'
