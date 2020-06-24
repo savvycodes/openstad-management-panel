@@ -272,7 +272,13 @@ module.exports = function(app){
             k8sApi.createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, {
               apiVersions: 'networking.k8s.io/v1beta1',
               kind: 'Ingress',
-              metadata: { name: `${dbName}` },
+              metadata: {
+                name: `${dbName}`,
+                annotations: {
+                   'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod',
+                   'kubernetes.io/ingress.class': 'nginx'
+                }
+              },
               spec: {
                 rules: [{
                   host: domain,
