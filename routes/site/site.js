@@ -292,7 +292,10 @@ module.exports = function(app){
                     }]
                   }
                 }],
-                tls: [{ hosts: [domain] }]
+                tls: [{
+                  secretName: dbName,
+                  hosts: [domain]
+                }]
               }
             })
             .then(() => {
