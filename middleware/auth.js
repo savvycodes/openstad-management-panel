@@ -12,7 +12,7 @@ const fetchUserData = (req, res, next) => {
     const fullUrl = req.protocol + '://' + thisHost;
 
     const options = {
-        uri: `${apiUrl}/oauth/site/${siteId}/me?redirectUrl=${fullUrl}`,
+        uri: `${apiUrl}/oauth/site/${siteId}/me`,
         headers: {
             'Accept': 'application/json',
             "X-Authorization" : `Bearer ${jwt}`,
@@ -62,7 +62,7 @@ const ensureRights = (req, res, next) => {
     next();
   } else {
     req.session.destroy(() => {
-      req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
+      //req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
       if (req.originalUrl !== '/admin/login') {
         res.redirect('/admin/login');
       }
