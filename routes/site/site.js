@@ -272,7 +272,7 @@ module.exports = function(app){
             k8sApi.createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, {
               apiVersions: 'networking.k8s.io/v1beta1',
               kind: 'Ingress',
-              metadata: { name: `${siteName}` },
+              metadata: { name: `${dbName}` },
               spec: {
                 rules: [{
                   host: domain,
