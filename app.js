@@ -119,7 +119,7 @@ const dbExists        = require('./services/mongo').dbExists;
 const deleteMongoDb   = require('./services/mongo').deleteDb;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '200mb' }));
 app.use(bodyMw.parseBoolean);
 
 

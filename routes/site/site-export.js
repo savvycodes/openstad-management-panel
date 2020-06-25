@@ -63,6 +63,7 @@ module.exports = function(app){
         .catch(next);
     },
     (req, res, next) => {
+      if (!req.body['choices-guide']) return next();
       // choices-guide
       let promises = [];
       choicesGuideApi
@@ -91,6 +92,7 @@ module.exports = function(app){
         .catch(next);
     },
     (req, res, next) => {
+      if (!req.body['cms-attachments']) return next();
       // cms attachments
       let cmsUrl = 'http://' + ( req.export.site && req.export.site.domain );
       queryDb(req.export.dbName, 'aposDocs').then(result => {
