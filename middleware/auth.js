@@ -11,16 +11,23 @@ const fetchUserData = (req, res, next) => {
     const thisHost = req.headers['x-forwarded-host'] || req.get('host');
     const fullUrl = req.protocol + '://' + thisHost;
 
-    rp({
-        uri: `${apiUrl}/oauth/site/${siteId}/me?redirectUrl=${fullUrl}`,
+    const options = {
+        uri: `${apiUrl}/oauth/site/${siteId}/me`,
         headers: {
             'Accept': 'application/json',
             "X-Authorization" : `Bearer ${jwt}`,
             "Cache-Control": "no-cache"
         },
         json: true // Automatically parses the JSON string in the response
-    })
+    }
+
+    console.log('user options', options)
+
+
+    rp(options)
       .then(function (user) {
+
+        console.log('user fetched', user)
 
         if (user) {
           req.user = user
@@ -49,12 +56,13 @@ const fetchUserData = (req, res, next) => {
 }
 
 const ensureRights = (req, res, next) => {
-   //if (req.user && req.user.role === 'admin') {
+   //if (req.user && req.user.role === 'admin')
+   console.log('req.user', req.user)
   if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {
     req.session.destroy(() => {
-      req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
+      //req.flash('error', { msg: 'Sessie is verlopen of de huidige account heeft geen rechten'});
       if (req.originalUrl !== '/admin/login') {
         res.redirect('/admin/login');
       }

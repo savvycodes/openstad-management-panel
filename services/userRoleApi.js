@@ -1,5 +1,5 @@
 const rp = require('request-promise');
-const apiUrl = process.env.USER_API;
+const apiUrl = process.env.USER_API + '/api/admin';
 const apiCredentials = {
     client_id:  process.env.USER_API_CLIENT_ID,
     client_secret: process.env.USER_API_CLIENT_SECRET,
