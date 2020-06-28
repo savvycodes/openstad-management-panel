@@ -6,7 +6,7 @@ LABEL nl.openstad.container="admin" nl.openstad.version="0.0.1-beta" nl.openstad
 
 ENV PORT=7777
 # site Id from the openstad api
-ENV SITE_ID=1 
+ENV SITE_ID=1
 ENV RODUCTION_SERVER_IP=""
 ENV WILDCARD_HOST=""
 ENV API_URL=""
@@ -21,7 +21,7 @@ ENV BASIC_AUTH_USER=""
 ENV BASIC_AUTH_PASSWORD=""
 
 # Install all base dependencies.
-RUN apk add --no-cache --update g++ make python musl-dev
+RUN apk add --no-cache --update g++ make python musl-dev bash
 
 # Set the working directory to the root of the container
 WORKDIR /home/app

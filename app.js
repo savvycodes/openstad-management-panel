@@ -22,6 +22,7 @@ const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
 const authMw            = require('./middleware/auth');
 const bodyMw            = require('./middleware/body');
+const csurf             = require('csurf');
 
 const userClientApi     = require('./services/userClientApi');
 const siteApi           = require('./services/siteApi');
@@ -164,7 +165,7 @@ const sessionSettings = {
   store: sessionStore
 }
 
-console.log('sessionSettings', sessionSettings)
+
 
 // Session Configuration
 app.use(expressSession(sessionSettings));
@@ -177,6 +178,21 @@ i18n.configure({
 app.use(i18n.init);
 app.use(flash());
 app.use(enrichMw.run);
+
+// add csrf protection and token to global
+app.use(
+  csurf({
+    cookie: {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
+      sameSite: true
+    }
+  }),
+  (req, res, next) => {
+    res.locals.csrfToken=  req.csrfToken();
+    next();
+  }
+);
 
 
 /**

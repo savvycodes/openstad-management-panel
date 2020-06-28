@@ -48,7 +48,14 @@ module.exports = function(app){
     '/admin/site/import',
     siteMw.withAll,
     userClientMw.withAll,
-    upload.single('import_file'),
+
+    (req, res, next) => {
+      if (req.body.packageUrl) {
+        
+      } else {
+        upload.single('import_file');
+      }
+    },
     (req, res, next) => {
       // prepare
       let id = Math.round(new Date().getTime() / 1000);
