@@ -17,7 +17,6 @@ const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
-
 //utils
 const pick              = require('../../utils/pick');
 //ENV constants
@@ -90,7 +89,6 @@ module.exports = function(app){
    */
   app.get('/admin/site',
     siteMw.withAll,
-    userClientMw.withAll,
     (req, res, next) => {
       res.render('site/new-form.html');
     }
@@ -142,7 +140,7 @@ module.exports = function(app){
       });
     }
   );
-  
+
   /**
    * Create a new site by copying an old one
    */
@@ -274,21 +272,30 @@ module.exports = function(app){
             k8sApi.createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, {
               apiVersions: 'networking.k8s.io/v1beta1',
               kind: 'Ingress',
-              metadata: { name: `${siteName}-custom-domain` },
+              metadata: {
+                name: `${dbName}`,
+                annotations: {
+                   'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod',
+                   'kubernetes.io/ingress.class': 'nginx'
+                }
+              },
               spec: {
                 rules: [{
                   host: domain,
                   http: {
                     paths: [{
                       backend: {
-                        serviceName: 'openstad-frontend-service',
+                        serviceName: 'openstad-frontend',
                         servicePort: 4444
                       },
                       path: '/'
                     }]
                   }
                 }],
-                tls: [{ hosts: [domain] }]
+                tls: [{
+                  secretName: dbName,
+                  hosts: [domain]
+                }]
               }
             })
             .then(() => {

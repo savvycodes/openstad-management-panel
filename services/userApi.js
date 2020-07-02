@@ -1,8 +1,9 @@
 const rp = require('request-promise');
-const apiUrl = process.env.USER_API;
+const apiUrl = process.env.USER_API + '/api/admin';
 const nestedObjectAssign = require('nested-object-assign');
-const httpBuildQuery = require('../utils/httpBuildQuery')
+const httpBuildQuery = require('../utils/httpBuildQuery');
 
+console.log('apiUrl', apiUrl)
 
 const apiCredentials = {
     client_id:  process.env.USER_API_CLIENT_ID,
@@ -19,6 +20,9 @@ exports.fetch = (userId) => {
     body: apiCredentials,
     json: true // Automatically parses the JSON string in the response
   }
+
+  console.log('fetch user options', options)
+
 
   return rp(options);
 //  .then(response => response.json());
@@ -37,12 +41,17 @@ exports.fetchAll = (params) => {
     json: true // Automatically parses the JSON string in the response
   }
 
+  console.log('fetchAll user options', options)
+
+
   return rp(options);
 //  .then(response => response.json());
 }
 
 exports.create = (data) => {
   let body = nestedObjectAssign(data, apiCredentials);
+
+
 
   return rp({
       method: 'POST',

@@ -11,9 +11,10 @@ const expressSession    = require('express-session')
 const nunjucks          = require('nunjucks');
 const flash             = require('express-flash');
 const app               = express();
-const FileStore         = require('session-file-store')(expressSession);
+//const FileStore         = require('session-file-store')(expressSession);
 const auth              = require('basic-auth');
 const compare           = require('tsscmp');
+const MongoStore        = require('connect-mongo')(expressSession);
 
 //middleware
 const ideaMw            = require('./middleware/idea');
@@ -21,6 +22,7 @@ const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
 const authMw            = require('./middleware/auth');
 const bodyMw            = require('./middleware/body');
+const csurf             = require('csurf');
 
 const userClientApi     = require('./services/userClientApi');
 const siteApi           = require('./services/siteApi');
@@ -45,6 +47,20 @@ const ensureUrlHasProtocol = (url) => {
 
   return url;
 }
+
+const mongoCredentials = {
+  host: process.env.MONGO_DB_HOST || 'localhost',
+  port: process.env.MONGO_DB_PORT || 27017,
+}
+
+const url = 'mongodb://'+ mongoCredentials.host +':'+mongoCredentials.port+'/db-sessions';
+
+
+const sessionStore =  new MongoStore({
+    url: url,
+    ttl: 14 * 24 * 60 * 60 // = 14 days. Default
+})
+
 
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;
@@ -119,7 +135,7 @@ const dbExists        = require('./services/mongo').dbExists;
 const deleteMongoDb   = require('./services/mongo').deleteDb;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '200mb' }));
 app.use(bodyMw.parseBoolean);
 
 
@@ -133,8 +149,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET, {
   sameSite: false
 }));
 
-// Session Configuration
-app.use(expressSession({
+const sessionSettings = {
   saveUninitialized : true,
   resave            : true,
   secret            : process.env.SESSION_SECRET,
@@ -142,13 +157,18 @@ app.use(expressSession({
   key               : 'authorization.sid',
   cookie            : {
     maxAge:  3600000 * 24 * 7 ,
-//    secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
-//    httpOnly: true,
+    secure: false,
+    httpOnly: false,
     sameSite: false,
     path: '/'
   },
-  store: new FileStore({ ttl: 3600 * 24 * 31 }),
-}));
+  store: sessionStore
+}
+
+
+
+// Session Configuration
+app.use(expressSession(sessionSettings));
 
 i18n.configure({
     locales:['nl', 'en'],
@@ -158,6 +178,21 @@ i18n.configure({
 app.use(i18n.init);
 app.use(flash());
 app.use(enrichMw.run);
+
+// add csrf protection and token to global
+app.use(
+  csurf({
+    cookie: {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
+      sameSite: true
+    }
+  }),
+  (req, res, next) => {
+    res.locals.csrfToken=  req.csrfToken();
+    next();
+  }
+);
 
 
 /**

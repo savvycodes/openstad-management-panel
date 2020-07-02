@@ -27,7 +27,7 @@ exports.withOneForSite = (req, res, next) => {
       next();
     })
     .catch((err) => {
-  //   console.log('==>> err', err);
+    console.log('==>> err', err);
       next();
     });
 }
@@ -76,6 +76,7 @@ exports.withAll = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      next(err);
+      console.log('err =>>', err)
+      next();
     });
 }

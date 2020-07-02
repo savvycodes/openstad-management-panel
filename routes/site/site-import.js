@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const {createReadStream} = require('fs');
 const tar = require('tar');
 const fetch = require('node-fetch');
 
@@ -29,12 +30,12 @@ const siteId            = process.env.SITE_ID;
 const tmpDir = process.env.TMPDIR || './tmp';
 
 module.exports = function(app){
+
   /**
-   * Show new site form
+   * Show form
    */
   app.get('/admin/site-import',
     siteMw.withAll,
-    userClientMw.withAll,
     (req, res, next) => {
       res.render('site/import-form.html');
     }
@@ -47,7 +48,14 @@ module.exports = function(app){
     '/admin/site/import',
     siteMw.withAll,
     userClientMw.withAll,
-    upload.single('import_file'),
+
+    (req, res, next) => {
+      if (req.body.packageUrl) {
+        
+      } else {
+        upload.single('import_file');
+      }
+    },
     (req, res, next) => {
       // prepare
       let id = Math.round(new Date().getTime() / 1000);
@@ -158,18 +166,6 @@ module.exports = function(app){
         .catch(next)
     },
     (req, res, next) => {
-      // cms attachments
-      let cmsUrl = 'http://' + ( req.site && req.site.domain );
-      fs.readdir(req.import.dir + '/attachments')
-        .then(data => {
-          data.forEach((entry) => {
-            // TODO: uploaden naar cms
-          });
-          return next()
-        })
-        .catch(next)
-    },
-    (req, res, next) => {
       // create site in API
       let siteConfig = req.import.site.config;
       siteConfig.cms.dbName = req.import.dbName;
@@ -210,6 +206,40 @@ module.exports = function(app){
           return Promise
             .all(promises)
             .then(res => next())
+        })
+        .catch(next)
+
+    },
+    (req, res, next) => {
+      // cms attachments
+      let cmsUrl = 'http://' + ( req.site && req.site.domain );
+      let paths = [];
+      fs.readdir(req.import.dir + '/attachments')
+        .then(data => {
+
+          if (!data.length) return next();
+
+          const FormData = require('form-data');
+          const formData = new FormData();
+          data.forEach((entry) => {
+            formData.append('files', createReadStream(req.import.dir + '/attachments/' + entry));
+          });
+
+          return fetch(req.import.protocol + '://' + req.import.domain + '/attachment-upload', {
+	          headers: { "X-Authorization": process.env.SITE_API_KEY },
+	          method: 'POST',
+	          body: formData
+          })
+	          .then((response) => {
+		          if (!response.ok) throw Error(response)
+		          return response.json();
+	          })
+	          .then( json => {
+              console.log(json);
+              return next()
+	          })
+            .catch(next)
+
         })
         .catch(next)
 
