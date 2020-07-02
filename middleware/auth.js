@@ -21,13 +21,8 @@ const fetchUserData = (req, res, next) => {
         json: true // Automatically parses the JSON string in the response
     }
 
-    console.log('user options', options)
-
-
     rp(options)
       .then(function (user) {
-
-        console.log('user fetched', user)
 
         if (user) {
           req.user = user
@@ -57,7 +52,6 @@ const fetchUserData = (req, res, next) => {
 
 const ensureRights = (req, res, next) => {
    //if (req.user && req.user.role === 'admin')
-   console.log('req.user', req.user)
   if (req.isAuthenticated && req.user && req.user.role === 'admin') {
     next();
   } else {
@@ -74,7 +68,6 @@ const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated) {
     next();
   } else {
-    console.log('req.path', req.originalUrl)
     if (req.originalUrl !== '/admin/login') {
       res.redirect('/admin/login');
     } else {
