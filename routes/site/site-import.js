@@ -48,16 +48,10 @@ module.exports = function(app){
     '/admin/site/import',
     siteMw.withAll,
     userClientMw.withAll,
-
-    (req, res, next) => {
-      if (req.body.packageUrl) {
-        
-      } else {
-        upload.single('import_file');
-      }
-    },
+    upload.single('import_file'),
     (req, res, next) => {
       // prepare
+      console.log('Import prepare');
       let id = Math.round(new Date().getTime() / 1000);
       req.import = {
         id,
@@ -100,11 +94,12 @@ module.exports = function(app){
     (req, res, next) => {
       // rename
       req.import.dbName = `${req.import.id}${req.import.site.title}`;
-      req.import.dbName = req.import.dbName.replace(/ /, '')
+      req.import.dbName = req.import.dbName.replace(/ |	/g, '')
       return next()
     },
     (req, res, next) => {
       // oauth
+      console.log('Import oauth');
       let oauthConfigs = {};
       return fs.readdir(req.import.dir + '/oauth')
         .then(data => {
@@ -161,12 +156,15 @@ module.exports = function(app){
     },
     (req, res, next) => {
       // create mongo db
+      console.log('Import mongo db');
+      console.log(req.import.dbName);
       importDb(req.import.dbName, req.import.dir + '/mongo')
         .then(next)
         .catch(next)
     },
     (req, res, next) => {
       // create site in API
+      console.log('Import site in API');
       let siteConfig = req.import.site.config;
       siteConfig.cms.dbName = req.import.dbName;
       siteConfig.allowedDomains.push(req.import.domain); // TODO
@@ -177,14 +175,16 @@ module.exports = function(app){
           title: req.import.site.title,
           config: siteConfig,
         })
-        .then((site) => {
-          req.import.site = site;
+        .then(result => {
+          console.log('Site id', result.id);
+          req.import.site = result;
           return next();
         })
         .catch(next);
     },
     (req, res, next) => {
       // choices-guides
+      console.log('Import choices-guides');
       return fs.readdir(req.import.dir + '/api')
         .then(data => {
           let promises = [];
@@ -212,6 +212,7 @@ module.exports = function(app){
     },
     (req, res, next) => {
       // cms attachments
+      console.log('Import cms attachments');
       let cmsUrl = 'http://' + ( req.site && req.site.domain );
       let paths = [];
       fs.readdir(req.import.dir + '/attachments')
@@ -231,7 +232,10 @@ module.exports = function(app){
 	          body: formData
           })
 	          .then((response) => {
-		          if (!response.ok) throw Error(response)
+		          if (!response.ok) {
+                console.log(response);
+                throw Error(JSON.stringify(response))
+              }
 		          return response.json();
 	          })
 	          .then( json => {

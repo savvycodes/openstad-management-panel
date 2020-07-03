@@ -73,7 +73,6 @@ exports.withAll = (req, res, next) => {
   siteApiService
     .fetchAll()
     .then((sites) => {
-      console.log('sites', sites)
       sites = sites.sort((a, b) => {
         if (a.title < b.title) {
           return -1;

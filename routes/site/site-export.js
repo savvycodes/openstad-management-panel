@@ -13,7 +13,6 @@ const userClientMw      = require('../../middleware/userClient');
 
 //services
 const userClientApi     = require('../../services/userClientApi');
-const siteApi           = require('../../services/siteApi');
 const ideaApi           = require('../../services/ideaApi');
 const choicesGuideApi   = require('../../services/choicesGuideApi');
 const exportDb          = require('../../services/mongo').export;
@@ -40,6 +39,7 @@ module.exports = function(app){
     siteMw.addAuthClientId,
     (req, res, next) => {
       // prepare
+      console.log('Export prepare');
       let id = Math.round(new Date().getTime() / 1000);
       req.export = {
         id,
@@ -65,6 +65,7 @@ module.exports = function(app){
     (req, res, next) => {
       if (!req.body['choices-guide']) return next();
       // choices-guide
+      console.log('Export choices-guide');
       let promises = [];
       choicesGuideApi
         .fetchAll(req.session.jwt, req.export.site.id)
@@ -94,20 +95,32 @@ module.exports = function(app){
     (req, res, next) => {
       if (!req.body['cms-attachments']) return next();
       // cms attachments
+      console.log('Export cms attachments');
       let cmsUrl = 'http://' + ( req.export.site && req.export.site.domain );
       queryDb(req.export.dbName, 'aposDocs').then(result => {
-        let promises = [];
+        let files = [];
         result.forEach((entry) => {
-          if (entry.type == 'apostrophe-file' || entry.type == 'apostrophe-image') {
-            promises.push(
-              fetch(cmsUrl + '/uploads/attachments/' + entry.attachment._id + '-'  + entry.attachment.name + '.' + entry.attachment.extension)
-                .then(res => res.buffer())
-                .then(res => {
-                  let filename = entry.attachment._id + '-'  + entry.attachment.name + '.' + entry.attachment.extension;
-                  return fs.writeFile(req.export.dir + '/attachments/' + filename, res)
-                })
-            )
+          if (  entry.published == true && entry.trash == false)  {
+            if (entry.type == 'apostrophe-file' || entry.type == 'apostrophe-image') {
+              files.push(entry.attachment._id + '-'  + entry.attachment.name + '.' + entry.attachment.extension);
+            }
+            if (entry.type == 'apostrophe-image') {
+              ['.full', '.max', '.one-half', '.one-sixth', '.one-third', '.two-thirds'].forEach((size) => {
+                files.push(entry.attachment._id + '-'  + entry.attachment.name + size + '.' + entry.attachment.extension);
+              });
+            }
           }
+        });
+        console.log(files);
+        let promises = [];
+        files.forEach((filename) => {
+          promises.push(
+            fetch(cmsUrl + '/uploads/attachments/' + filename)
+              .then(res => res.buffer())
+              .then(res => {
+                return fs.writeFile(req.export.dir + '/attachments/' + filename, res)
+              })
+          )
         });
         Promise
           .all(promises)
@@ -117,6 +130,7 @@ module.exports = function(app){
     },
     (req, res, next) => {
       // export mongo
+      console.log('Export mongo');
       exportDb(req.export.dbName, req.export.dir)
         .then(res => {
           // rename
@@ -127,6 +141,7 @@ module.exports = function(app){
     },
     (req, res, next) => {
       // export oauth
+      console.log('Export oauth');
       let oauth = req.export.site.config && req.export.site.config.oauth || {};
       let promises = [];
       Object.keys(oauth).forEach((key) => {
@@ -147,6 +162,7 @@ module.exports = function(app){
     },
     (req, res, next) => {
       // site as json
+      console.log('Export site');
       let json = JSON.stringify(req.export.site);
       fs.writeFile(req.export.dir + '/api/site.json', json)
         .then(res => next())
@@ -160,6 +176,7 @@ module.exports = function(app){
     },
     (req, res, next) => {
       // tar
+      console.log('Export tar');
       tar.create(
         {
           gzip: true,

@@ -66,5 +66,7 @@ exports.create = (token, data) => {
     json: true // Automatically parses the JSON string in the response
   };
 
-  return rp(options);
+  return rp(options).then(site => {
+    return site
+  });
 }
