@@ -131,6 +131,7 @@ module.exports = function(app){
                     .create(client)
                     .then(result => {
                       oauthConfigs[key] = {
+                        'id': result.id,
                         'auth-client-id': result.clientId,
                         'auth-client-secret': result.clientSecret,
                       }
@@ -150,9 +151,6 @@ module.exports = function(app){
             .then(res => next())
         })
         .catch(next)
-    },
-    (req, res, next) => {
-      return next()
     },
     (req, res, next) => {
       // create mongo db
@@ -181,6 +179,32 @@ module.exports = function(app){
           return next();
         })
         .catch(next);
+    },
+    (req, res, next) => {
+      // make the current user admin
+      if (!req.import.site.config.oauth.default) return next();
+      const url = process.env.USER_API + '/api/admin/user/' + req.user.externalUserId;
+      let body = {
+        client_id:  process.env.USER_API_CLIENT_ID,
+        client_secret: process.env.USER_API_CLIENT_SECRET,
+        roles: {},
+      }
+      body.roles[req.import.site.config.oauth.default.id] = 1;
+      return fetch(
+        url,
+        {
+	        headers: { "Content-type": "application/json" },
+	        method: 'POST',
+	        body: JSON.stringify(body)
+        })
+        .then((response) => {
+          if (!response.ok) {
+            console.log(response);
+            throw Error('Update user failed');
+          }
+          return next();
+        })
+        .catch(next)
     },
     (req, res, next) => {
       // choices-guides
