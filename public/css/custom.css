@@ -159,3 +159,15 @@ label.error {
   display: inline-block;
     width: auto;
 }
+
+.flex {
+  display: flex;
+}
+
+.col-4 {
+  width: 33%;
+}
+
+.col-4 img {
+  max-width: 100%;
+}

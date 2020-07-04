@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="card card-openstad" style="max-width: 700px; margin: 0 auto;">
-  <form method="POST" action="/admin/site/import" onsubmit="$(this).css({opacity:0.5, 'pointer-events':'none'});">
+  <form method="POST" action="/admin/site" onsubmit="$(this).css({opacity:0.5, 'pointer-events':'none'});">
     <div class="onboarding-slider-w">
       <div class="onboarding-slide">
         <div class="onboarding-side-by-side">
@@ -13,7 +13,7 @@
           </div>
           <div class="onboarding-content with-gradient">
             <h2 class="onboarding-title">
-               Maak een nieuwe site aan
+               Kopieer een site
             </h2>
             <div class="onboarding-text">
               <!--
@@ -35,6 +35,7 @@
                       type="text"
                       value=""
                       name="siteName"
+                      required
                     />
                   </div>
                 </div>
@@ -47,6 +48,7 @@
                       type="text"
                       value=""
                       name="productionUrl"
+                      required
                     />
                   </div>
                 </div>
@@ -61,39 +63,79 @@
           </div>
           <div class="onboarding-content with-gradient">
             <h4 class="onboarding-title">
+              Kies site om te kopieren
+            </h4>
+            <div class="onboarding-text">
+              Kies de standaard website of een andere bestaande site om te kopieren,
+              dit wordt het uitgangspunt van de nieuwe website.
+            </div>
+            <select name="siteIdToCopy" class="form-control">
+            <!--<option value="">Standaard</option>!-->
+              {% for site in sites %}
+              <option value="{{site.id}}">{{site.title}}</option>
+              {% endfor %}
+            </select>
+
+            {#<h4 class="onboarding-title">
               Type website
             </h4>
             <div class="onboarding-text">
-              Install one of the following sites as a starting point.
+              Aan de hand van gekozen type wordt
+              de website gegenereerd.
+              Zowel de content als instellingen kunnen later aangepast worden.
             </div>
-            <div class="flex">
-              {% for externalSite in externalSites %}
-              <div class="col-4">
-                <input
-                  type="radio"
-                  name="fileUrl"
-                  value="{{externalSite.latest.file}}"
-                  id="external-site-{{externalSite.id}}"
-                />
-                <label class="" for="external-site-{{externalSite.id}}" style="font-size: 15px; width: 100%;">
-                  <img src="{{externalSite.images[0]}}" />
-                  <h3>
-                    {{externalSite.name}}
-                  </h3>
-                  <div class="meta">
-                    Version: {{externalSite.latest.number}}
-                    |
-                    Created by: {{externalSite.author}}
-                    |
-                    Maintained by: {{externalSite.maintainer}}
-                  </div>
-                  <p>
-                    {{externalSite.description}}
-                  </p>
+            <div class="row">
+              <div class="col-sm-4">
+                <input type="checkbox" name="type" value="blanco" id="check-type-blanco" />
+                <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-blanco" style="font-size: 15px; width: 100%;">
+                  <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                  <br />
+                  <br />
+                  Standaard
                 </label>
               </div>
-              {% endfor %}
+              <div class="col-sm-4">
+                <input type="checkbox" disabled name="type" value="landing" id="check-type-landing" />
+                <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-landing" style="opacity: 0.3; font-size: 15px;width: 100%;">
+                  <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                  <br />
+                  Landings- <br />pagina
+                </label>
+              </div>
+              <div class="col-sm-4">
+                <input type="checkbox" disabled name="type" value="idea-collection" id="check-type-idea-collection" />
+                <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-idea-collection" style="opacity: 0.3; font-size: 15px;width: 100%;">
+                  <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                  <br />
+                  Ideeën- <br />verzamelen
+                </label>
+              </div>
+              <div class="col-sm-4">
+                <input type="checkbox" disabled name="type" value="idea-vote" id="check-type-idea-vote" />
+                <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-idea-vote" style="opacity: 0.3; font-size: 15px;width: 100%;">
+                  <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                  <br />
+                  Ideeën- <br />stemmen
+                </label>
+              </div>
+              <div class="col-sm-4">
+                <input type="checkbox" disabled name="type" value="info" id="check-type-info" />
+                <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-info" style="opacity: 0.3; font-size: 15px;width: 100%;">
+                  <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                  <br />
+                  Informatieve- <br />site
+                </label>
+              </div>
+              <div class="col-sm-4">
+                <input type="checkbox"  disabled name="type" value="participatory-budget" id="check-type-participatory-budget" />
+                <label class="mr-2 mb-2 btn btn-outline-primary" for="check-type-participatory-budget" style="opacity: 0.3; font-size: 15px;width: 100%;">
+                  <i class="os-icon os-icon-ui-55" style="font-size: 28px;"></i>
+                  <br />
+                  Budget- <br />begroten
+                </label>
+              </div>
             </div>
+            #}
           </div>
         </div>
       </div>

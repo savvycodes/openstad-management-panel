@@ -27,7 +27,8 @@ const pick              = require('../../utils/pick');
 const apiUrl            = process.env.API_URL;
 const appUrl            = process.env.APP_URL;
 const siteId            = process.env.SITE_ID;
-const tmpDir = process.env.TMPDIR || './tmp';
+const tmpDir            = process.env.TMPDIR || './tmp';
+
 
 module.exports = function(app){
 
@@ -49,6 +50,29 @@ module.exports = function(app){
     siteMw.withAll,
     userClientMw.withAll,
     upload.single('import_file'),
+    // check if fileUrl isset then download the file
+    // otherwise assume file is upload and use multer to process local upload
+    (req, res, next) => {
+
+      if (req.body.fileUrl) {
+        const fileUrl = req.body.fileUrl;
+        let id = Math.round(new Date().getTime() / 1000);
+
+        fetch(fileUrl)
+        .then(res => res.buffer())
+        .then(buffer => {
+          req.file = {
+            originalname: id + '.tgz', // get file name from url
+            buffer: buffer
+          }
+
+          next();
+        })
+        .catch(next);
+      } else {
+        return upload.single('import_file')(req, res, next);
+      }
+    },
     (req, res, next) => {
       // prepare
       console.log('Import prepare');
@@ -60,6 +84,7 @@ module.exports = function(app){
         protocol: req.protocol,
         domain: req.body.domain,
       };
+
       fs.mkdir(req.import.dir)
         .then(res => {
           // write upload
@@ -84,6 +109,9 @@ module.exports = function(app){
         .then(data => {
           try {
             req.import.site = JSON.parse(data.toString());
+            console.log('req.import.site', req.import.site)
+            console.log('req.import.site', req.import)
+
           } catch (err) {
             return next('Site not found');
           }
