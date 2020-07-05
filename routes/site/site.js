@@ -10,6 +10,7 @@ const Promise             = require("bluebird");
 
 //middleware
 const ideaMw            = require('../../middleware/idea');
+const externalSiteMw    = require('../../middleware/externalSite');
 const siteMw            = require('../../middleware/site');
 const voteMw            = require('../../middleware/vote');
 const userClientMw      = require('../../middleware/userClient');
@@ -55,42 +56,24 @@ const ensureUrlHasProtocol = (url) => {
 
 module.exports = function(app){
 
-
-  /**
-   *
-  app.get('/admin/site/:siteId/archive-votes',
-    ideaMw.allForSite,
-    siteMw.withOne,
-    voteMw.allForSite,
-    userClientMw.withOneForSite,
-    (req, res, next) => {
-      const promises = [];
-
-      req.ideas.forEach((idea) => {
-        idea.extraData.archivedYes = idea.yes;
-        idea.extraData.archivedNo = idea.no;
-        promises.push(ideaApi.update(req.session.jwt, req.site.id, idea))
-      });
-
-      Promise.all(promises)
-        .then(function (response) {
-          req.flash('success', { msg: 'Ideas update!'});
-          res.redirect('/admin/site/' + req.site.id  || appUrl);
-        })
-        .catch(function (err) {
-          req.flash('error', { msg: 'Error'});
-          res.redirect('/admin/site/' + req.site.id  || appUrl);
-        });
-    }
-  );
-   */
   /**
    * Show new site form
    */
   app.get('/admin/site',
     siteMw.withAll,
+    externalSiteMw.withAll,
     (req, res, next) => {
       res.render('site/new-form.html');
+    }
+  );
+
+  /**
+   * Show copy site form
+   */
+  app.get('/admin/site-copy',
+    siteMw.withAll,
+    (req, res, next) => {
+      res.render('site/copy-form.html');
     }
   );
 

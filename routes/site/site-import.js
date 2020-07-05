@@ -21,13 +21,27 @@ const exportDb          = require('../../services/mongo').export;
 const queryDb           = require('../../services/mongo').query;
 const importDb          = require('../../services/mongo').import;
 
+const cleanUrl = (url) => {
+  return url ? url.replace('http://', '').replace('https://', '').replace(/\/$/, "") : '';
+}
+
+const addHttp = (url) => {
+	if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+    	url = "http://" + url;
+	}
+	return url;
+}
+
+
 //utils
 const pick              = require('../../utils/pick');
 //ENV constants
-const apiUrl            = process.env.API_URL;
-const appUrl            = process.env.APP_URL;
-const siteId            = process.env.SITE_ID;
-const tmpDir = process.env.TMPDIR || './tmp';
+const apiUrl                   = process.env.API_URL;
+const appUrl                   = process.env.APP_URL;
+const defaulFrontendUrl        = process.env.FRONTEND_URL ? process.env.FRONTEND_URL : false;
+const siteId                   = process.env.SITE_ID;
+const tmpDir                   = process.env.TMPDIR || './tmp';
+
 
 module.exports = function(app){
 
@@ -49,17 +63,44 @@ module.exports = function(app){
     siteMw.withAll,
     userClientMw.withAll,
     upload.single('import_file'),
+    // check if fileUrl isset then download the file
+    // otherwise assume file is upload and use multer to process local upload
+    (req, res, next) => {
+
+      if (req.body.fileUrl) {
+        const fileUrl = req.body.fileUrl;
+        let id = Math.round(new Date().getTime() / 1000);
+
+        fetch(fileUrl)
+        .then(res => res.buffer())
+        .then(buffer => {
+          req.file = {
+            originalname: id + '.tgz', // get file name from url
+            buffer: buffer
+          }
+
+          next();
+        })
+        .catch(next);
+      } else {
+        return upload.single('import_file')(req, res, next);
+      }
+    },
     (req, res, next) => {
       // prepare
       console.log('Import prepare');
       let id = Math.round(new Date().getTime() / 1000);
+
+      const cmsDomain  = defaulFrontendUrl ? defaulFrontendUrl : req.body.domain;
+
       req.import = {
         id,
         dir: tmpDir + '/' + id,
         filename: tmpDir + '/' + id + '/' + req.file.originalname,
         protocol: req.protocol,
-        domain: req.body.domain,
+        domain: cleanUrl(cmsDomain)
       };
+
       fs.mkdir(req.import.dir)
         .then(res => {
           // write upload

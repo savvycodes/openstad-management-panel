@@ -31,6 +31,7 @@
     "express": "^4.16.3",
     "express-flash": "0.0.2",
     "express-session": "^1.15.6",
+    "fetch": "^1.1.0",
     "form-data": "^3.0.0",
     "http-proxy-middleware": "^1.0.4",
     "i18n": "^0.8.3",
