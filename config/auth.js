@@ -50,6 +50,7 @@ const types = [
       }
     ]
   },
+  /*
   {
     key: 'Local',
     label: 'Inlog via Wachtwoord',
@@ -63,6 +64,7 @@ const types = [
       },
     ],
   },
+  */
   {
     key: 'Url',
     label: 'E-mail een inloglink',
