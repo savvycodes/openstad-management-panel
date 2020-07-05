@@ -21,13 +21,26 @@ const exportDb          = require('../../services/mongo').export;
 const queryDb           = require('../../services/mongo').query;
 const importDb          = require('../../services/mongo').import;
 
+const cleanUrl = (url) => {
+  return url ? url.replace('http://', '').replace('https://', '').replace(/\/$/, "") : '';
+}
+
+const addHttp = (url) => {
+	if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+    	url = "http://" + url;
+	}
+	return url;
+}
+
+
 //utils
 const pick              = require('../../utils/pick');
 //ENV constants
-const apiUrl            = process.env.API_URL;
-const appUrl            = process.env.APP_URL;
-const siteId            = process.env.SITE_ID;
-const tmpDir            = process.env.TMPDIR || './tmp';
+const apiUrl                   = process.env.API_URL;
+const appUrl                   = process.env.APP_URL;
+const defaulFrontendUrl        = process.env.FRONTEND_URL ? process.env.FRONTEND_URL : false;
+const siteId                   = process.env.SITE_ID;
+const tmpDir                   = process.env.TMPDIR || './tmp';
 
 
 module.exports = function(app){
@@ -77,12 +90,15 @@ module.exports = function(app){
       // prepare
       console.log('Import prepare');
       let id = Math.round(new Date().getTime() / 1000);
+
+      const cmsDomain  = defaulFrontendUrl ? defaulFrontendUrl : req.body.domain;
+
       req.import = {
         id,
         dir: tmpDir + '/' + id,
         filename: tmpDir + '/' + id + '/' + req.file.originalname,
         protocol: req.protocol,
-        domain: req.body.domain,
+        domain: cleanUrl(cmsDomain)
       };
 
       fs.mkdir(req.import.dir)
@@ -109,9 +125,6 @@ module.exports = function(app){
         .then(data => {
           try {
             req.import.site = JSON.parse(data.toString());
-            console.log('req.import.site', req.import.site)
-            console.log('req.import.site', req.import)
-
           } catch (err) {
             return next('Site not found');
           }
