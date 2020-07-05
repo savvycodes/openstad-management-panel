@@ -1,5 +1,5 @@
 const rp = require('request-promise');
-const apiUrl = process.env.USER_API;
+const apiUrl = process.env.USER_API + '/api/admin';
 const httpBuildQuery = require('../utils/httpBuildQuery')
 
 const apiCredentials = {
