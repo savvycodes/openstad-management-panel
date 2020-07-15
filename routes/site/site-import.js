@@ -94,7 +94,7 @@ module.exports = function(app){
         id,
         dir: tmpDir + '/' + id,
         filename: tmpDir + '/' + id + '/' + req.file.originalname,
-        protocol: req.protocol,
+        protocol: process.env.FORCE_HTTP ? 'http' : 'https',  // todo: dit zou met  req.protocol moeten werken maar pas alle proxy headers goed staan,
         domain: cleanUrl(req.body.domain),
         fromEmail: req.body.fromName ? `${req.body.fromName} <${req.body.fromEmail}>` : req.body.fromEmail,
       };
