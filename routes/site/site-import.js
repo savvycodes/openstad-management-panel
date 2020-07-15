@@ -3,6 +3,7 @@ const {createReadStream} = require('fs');
 const tar = require('tar');
 const fetch = require('node-fetch');
 
+const merge            = require('merge');
 const multer            = require('multer');
 const upload            = multer();
 
@@ -22,7 +23,7 @@ const queryDb           = require('../../services/mongo').query;
 const importDb          = require('../../services/mongo').import;
 
 const cleanUrl = (url) => {
-  return url ? url.replace('http://', '').replace('https://', '').replace(/\/$/, "") : '';
+  return url ? url.replace('^https?://', '').replace(/\/$/, "") : '';
 }
 
 const addHttp = (url) => {
@@ -31,7 +32,6 @@ const addHttp = (url) => {
 	}
 	return url;
 }
-
 
 //utils
 const pick              = require('../../utils/pick');
@@ -83,22 +83,20 @@ module.exports = function(app){
         })
         .catch(next);
       } else {
-        return upload.single('import_file')(req, res, next);
+        return next();
       }
     },
     (req, res, next) => {
       // prepare
       console.log('Import prepare');
       let id = Math.round(new Date().getTime() / 1000);
-
-      const cmsDomain  = defaulFrontendUrl ? defaulFrontendUrl : req.body.domain;
-
       req.import = {
         id,
         dir: tmpDir + '/' + id,
         filename: tmpDir + '/' + id + '/' + req.file.originalname,
         protocol: req.protocol,
-        domain: cleanUrl(cmsDomain)
+        domain: cleanUrl(req.body.domain),
+        fromEmail: req.body.fromName ? `${req.body.fromName} <${req.body.fromEmail}>` : req.body.fromEmail,
       };
 
       fs.mkdir(req.import.dir)
@@ -187,7 +185,6 @@ module.exports = function(app){
             .all(promises)
             .then(res => {
               req.import.site.config.oauth = oauthConfigs;
-              console.log(req.import.site.config.oauth);
             })
             .then(res => next())
         })
@@ -196,7 +193,6 @@ module.exports = function(app){
     (req, res, next) => {
       // create mongo db
       console.log('Import mongo db');
-      console.log(req.import.dbName);
       importDb(req.import.dbName, req.import.dir + '/mongo')
         .then(next)
         .catch(next)
@@ -207,6 +203,28 @@ module.exports = function(app){
       let siteConfig = req.import.site.config;
       siteConfig.cms.dbName = req.import.dbName;
       siteConfig.allowedDomains.push(req.import.domain); // TODO
+      siteConfig = merge.recursive(siteConfig, {
+        "email": {
+          siteaddress: req.import.fromEmail,
+          thankyoumail: {
+            from: req.import.fromEmail,
+          }
+        },
+        "notifications": {
+          "from": req.import.fromEmail,
+          "to": req.import.fromEmail
+        },
+        "ideas": {
+          "feedbackEmail": {
+            "from": req.import.fromEmail,
+          }
+        },
+        "newslettersignup": {
+          "confirmationEmail": {
+            "from": req.import.fromEmail,
+          }
+        },
+      });
       return siteApi
         .create(req.session.jwt, {
           domain: req.import.domain,
@@ -215,7 +233,6 @@ module.exports = function(app){
           config: siteConfig,
         })
         .then(result => {
-          console.log('Site id', result.id);
           req.import.site = result;
           return next();
         })
@@ -278,7 +295,9 @@ module.exports = function(app){
     (req, res, next) => {
       // cms attachments
       console.log('Import cms attachments');
-      let cmsUrl = 'http://' + ( req.site && req.site.domain );
+      
+      const cmsDomain  = defaulFrontendUrl ? defaulFrontendUrl : req.import.domain;
+      
       let paths = [];
       fs.readdir(req.import.dir + '/attachments')
         .then(data => {
@@ -291,7 +310,7 @@ module.exports = function(app){
             formData.append('files', createReadStream(req.import.dir + '/attachments/' + entry));
           });
 
-          return fetch(req.import.protocol + '://' + req.import.domain + '/attachment-upload', {
+          return fetch(req.import.protocol + '://' + cmsDomain + '/attachment-upload', {
 	          headers: { "X-Authorization": process.env.SITE_API_KEY },
 	          method: 'POST',
 	          body: formData
@@ -304,7 +323,6 @@ module.exports = function(app){
 		          return response.json();
 	          })
 	          .then( json => {
-              console.log(json);
               return next()
 	          })
             .catch(next)

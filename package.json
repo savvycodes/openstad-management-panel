@@ -38,6 +38,7 @@
     "jest": "^26.0.1",
     "json2csv": "^4.5.1",
     "knex": "^0.15.2",
+    "merge": "^1.2.1",
     "moment-timezone": "^0.5.23",
     "mongodb": "^2.2.33",
     "mongodb-backup-4x": "^3.2.1",

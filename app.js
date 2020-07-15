@@ -180,19 +180,6 @@ app.use(flash());
 app.use(enrichMw.run);
 
 // add csrf protection and token to global
- app.use(
-   csurf({
-     cookie: {
-       httpOnly: true,
-       secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
-       sameSite: true
-     }
-   }),
-   (req, res, next) => {
-     res.locals.csrfToken=  req.csrfToken();
-     next();
-   }
- );
 
 
 /**
