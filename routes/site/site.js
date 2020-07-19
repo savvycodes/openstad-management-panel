@@ -1,10 +1,3 @@
-const fs = require('fs');
-const tar = require('tar');
-const fetch = require('node-fetch');
-
-const multer            = require('multer');
-const upload            = multer();
-
 const slugify             = require('slugify');
 const Promise             = require("bluebird");
 
@@ -18,28 +11,21 @@ const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
-//utils
-const pick              = require('../../utils/pick');
+const siteService = require('../../services/site/siteService');
+const importService = require('../../services/site/importService');
+
 //ENV constants
 const apiUrl            = process.env.API_URL;
 const appUrl            = process.env.APP_URL;
-const siteId            = process.env.SITE_ID;
-
 const siteFields        = [{key: 'title'}];
-const siteConfigFields  = [{key: 'basicAuth'}];
 
-const ideaApi                     = require('../../services/ideaApi');
 const deleteMongoDb               = require('../../services/mongo').deleteDb;
 const dbExists                    = require('../../services/mongo').dbExists;
 const copyDb                      = require('../../services/mongo').copyMongoDb;
-const exportDb                      = require('../../services/mongo').export;
-const queryDb                      = require('../../services/mongo').query;
-const importDb                      = require('../../services/mongo').import;
 const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
 const userApiRequiredFields       = require('../../config/auth').userApiRequiredFields;
 const siteConfigSchema            = require('../../config/site').configSchema;
 
-const tmpDir = process.env.TMPDIR || './tmp';
 
 const cleanUrl = (url) => {
   return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
@@ -53,6 +39,15 @@ const ensureUrlHasProtocol = (url) => {
 
   return url;
 }
+
+const lookupPromise = async (domain) => {
+  return new Promise((resolve, reject) => {
+    dns.lookup(domain, (err, address, family) => {
+      if(err) reject(err);
+      resolve(address);
+    });
+  });
+};
 
 module.exports = function(app){
 
@@ -123,6 +118,58 @@ module.exports = function(app){
       });
     }
   );
+
+
+  app.post('/admin/site/copy',
+    // Todo: remove these middlewares and put them in a service.
+    siteMw.withAll,
+    userClientMw.withAll,
+    async (req, res, next) => {
+
+
+      const siteToCopy = req.sites.find(site => parseInt(req.body.siteIdToCopy, 10) === site.id);
+
+      const choiceGuides = await siteService.getChoicesGuide(req.session.jwt, siteToCopy.id);
+      const attachments = await siteService.getCmsAttachments(siteToCopy.config && siteToCopy.config.cms && siteToCopy.config.cms.dbName);
+      const oauthData = await siteService.getOauthData(siteToCopy.config && siteToCopy.config.oauth || {});
+
+      // Todo: move this to the importService
+      const importId = Math.round(new Date().getTime() / 1000);
+      const tmpPath = process.env.TMPDIR || './tmp';
+      const tmpDir = tmpPath + importId;
+      const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
+      const domain = cleanUrl(req.body.productionUrl);
+      const domainWithProtocol = ensureUrlHasProtocol(domain);
+      const dbName = siteToCopy.title + importId;
+
+      await importService.importChoiceGuides(req.session.jwt, siteToCopy.id, choiceGuides);
+      const cmsDomain  = process.env.FRONTEND_URL || domain;
+      try {
+        const cmsDomainIsUp = await lookupPromise(cmsDomain);
+        await importService.importCmsAttachments(domainWithProtocol, tmpDir, attachments);
+      } catch(error) {
+        console.log('not able to reach the frontend server');
+        // Todo: notify user about not moved cms attachments and create option to retry.
+      }
+
+      await importService.importOauth(domain, protocol, siteToCopy, oauthData);
+      await importService.importSiteData(req.session.jwt, siteToCopy.config, req.body.fromEmail, dbName, domain, siteToCopy.title, importId);
+
+      req.flash('success', { msg: 'Aangemaakt!'});
+      res.redirect('/admin');
+
+      // Todo: create Controller?
+
+      // Todo: create exportSiteService.js
+
+      // Todo: create importSiteService.js
+
+
+      // Todo: catch errors and handle.
+
+    }
+  );
+
 
   /**
    * Create a new site by copying an old one
