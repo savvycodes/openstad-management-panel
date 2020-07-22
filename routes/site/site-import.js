@@ -158,7 +158,7 @@ module.exports = function(app){
                     redirectUrl: data.siteUrl.replace(/^https?:\/\/[^\/]+/, req.import.protocol + '://' + req.import.domain),
                     allowedDomains: [
                       req.import.domain,
-                      process.env.API_URL.replace(/^https?:\/\//, ''),
+                      process.env.API_URL.replace(/^https?:\/\//, '').replace(/\/$/, ''),
                     ],
                     config: data.config,
                   }
