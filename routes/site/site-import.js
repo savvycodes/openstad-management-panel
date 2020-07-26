@@ -63,6 +63,10 @@ module.exports = function(app){
     siteMw.withAll,
     userClientMw.withAll,
     upload.single('import_file'),
+    //Todo: prepareImport
+    //Todo: getData from files
+    //Todo: insertData
+
     // check if fileUrl isset then download the file
     // otherwise assume file is upload and use multer to process local upload
     (req, res, next) => {
@@ -226,7 +230,7 @@ module.exports = function(app){
         },
       });
       return siteApi
-        .create(req.session.jwt, {
+        .create({
           domain: req.import.domain,
           name: req.import.id + req.import.site.title,
           title: req.import.site.title,
@@ -292,12 +296,17 @@ module.exports = function(app){
         .catch(next)
 
     },
-    (req, res, next) => {
+    async (req, res, next) => {
       // cms attachments
       console.log('Import cms attachments');
-      
+
       const cmsDomain  = defaulFrontendUrl ? defaulFrontendUrl : req.import.domain;
-      
+
+      const cmsDomainIsUp = await lookupPromise(cmsDomain);
+      if(! cmsDomainIsUp) {
+        throw new Error('Not able to reach the server');
+      }
+
       let paths = [];
       fs.readdir(req.import.dir + '/attachments')
         .then(data => {
@@ -336,5 +345,14 @@ module.exports = function(app){
       res.redirect('/admin/site/' + req.import.site.id)
     },
   );
-
 }
+
+const dns = require('dns');
+const lookupPromise = async (domain) => {
+  return new Promise((resolve, reject) => {
+    dns.lookup(domain, (err, address, family) => {
+      if(err) reject(err);
+      resolve(address);
+    });
+  });
+};

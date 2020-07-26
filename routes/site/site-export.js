@@ -37,6 +37,9 @@ module.exports = function(app){
     '/admin/site/:siteId/export',
     siteMw.withOne,
     siteMw.addAuthClientId,
+    //Todo: prepareExport
+    //Todo: getData from site
+    //Todo: write data to file.
     (req, res, next) => {
       // prepare
       console.log('Export prepare');

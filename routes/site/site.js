@@ -11,8 +11,8 @@ const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
-const siteService = require('../../services/site/siteService');
-const importService = require('../../services/site/importService');
+const createSiteService = require('../../services/site/createSiteService');
+const getSiteService = require('../../services/site/getSiteService');
 
 //ENV constants
 const apiUrl            = process.env.API_URL;
@@ -26,6 +26,8 @@ const userApiSettingFields        = require('../../config/auth').userApiSettingF
 const userApiRequiredFields       = require('../../config/auth').userApiRequiredFields;
 const siteConfigSchema            = require('../../config/site').configSchema;
 
+//models
+const NewSite = require('../../services/site/models/newSite');
 
 const cleanUrl = (url) => {
   return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
@@ -39,15 +41,6 @@ const ensureUrlHasProtocol = (url) => {
 
   return url;
 }
-
-const lookupPromise = async (domain) => {
-  return new Promise((resolve, reject) => {
-    dns.lookup(domain, (err, address, family) => {
-      if(err) reject(err);
-      resolve(address);
-    });
-  });
-};
 
 module.exports = function(app){
 
@@ -121,52 +114,24 @@ module.exports = function(app){
 
 
   app.post('/admin/site/copy',
-    // Todo: remove these middlewares and put them in a service.
-    siteMw.withAll,
-    userClientMw.withAll,
     async (req, res, next) => {
-
-
-      const siteToCopy = req.sites.find(site => parseInt(req.body.siteIdToCopy, 10) === site.id);
-
-      const choiceGuides = await siteService.getChoicesGuide(req.session.jwt, siteToCopy.id);
-      const attachments = await siteService.getCmsAttachments(siteToCopy.config && siteToCopy.config.cms && siteToCopy.config.cms.dbName);
-      const oauthData = await siteService.getOauthData(siteToCopy.config && siteToCopy.config.oauth || {});
-
-      // Todo: move this to the importService
-      const importId = Math.round(new Date().getTime() / 1000);
-      const tmpPath = process.env.TMPDIR || './tmp';
-      const tmpDir = tmpPath + importId;
-      const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
-      const domain = cleanUrl(req.body.productionUrl);
-      const domainWithProtocol = ensureUrlHasProtocol(domain);
-      const dbName = siteToCopy.title + importId;
-
-      await importService.importChoiceGuides(req.session.jwt, siteToCopy.id, choiceGuides);
-      const cmsDomain  = process.env.FRONTEND_URL || domain;
       try {
-        const cmsDomainIsUp = await lookupPromise(cmsDomain);
-        await importService.importCmsAttachments(domainWithProtocol, tmpDir, attachments);
-      } catch(error) {
-        console.log('not able to reach the frontend server');
-        // Todo: notify user about not moved cms attachments and create option to retry.
+
+        const newSite = new NewSite(req.body.productionUrl, req.body.siteName, req.body.fromEmail);
+
+        const siteData = await getSiteService.getSiteData(newSite, req.body.siteIdToCopy);
+
+        console.log(siteData.oauthData, siteData.oauthData.clients);
+        const site = await createSiteService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);
+
+        req.flash('success', { msg: 'Aangemaakt!'});
+        res.redirect('/admin');
+
+      } catch (error) {
+        console.error(error);
+         // req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken.'});
+         // res.redirect('/admin');
       }
-
-      await importService.importOauth(domain, protocol, siteToCopy, oauthData);
-      await importService.importSiteData(req.session.jwt, siteToCopy.config, req.body.fromEmail, dbName, domain, siteToCopy.title, importId);
-
-      req.flash('success', { msg: 'Aangemaakt!'});
-      res.redirect('/admin');
-
-      // Todo: create Controller?
-
-      // Todo: create exportSiteService.js
-
-      // Todo: create importSiteService.js
-
-
-      // Todo: catch errors and handle.
-
     }
   );
 
@@ -267,7 +232,7 @@ module.exports = function(app){
     const siteName = `${slugify(req.body.siteName)}-${new Date().getTime()}`;
 
      return siteApi
-         .create(req.session.jwt, {
+         .create({
             domain: domain,
             name: siteName,
             title: req.body.siteName,
