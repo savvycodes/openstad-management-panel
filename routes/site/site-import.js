@@ -226,6 +226,7 @@ module.exports = function(app){
         })
         .catch(next);
     },
+    /*
     (req, res, next) => {
       // make the current user admin
       if (!req.import.site.config.oauth.default) return next();
@@ -236,6 +237,7 @@ module.exports = function(app){
         roles: {},
       }
       body.roles[req.import.site.config.oauth.default.id] = 1;
+
       return fetch(
         url,
         {
@@ -252,6 +254,7 @@ module.exports = function(app){
         })
         .catch(next)
     },
+    */
     (req, res, next) => {
       // choices-guides
       console.log('Import choices-guides');
