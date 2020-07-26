@@ -207,6 +207,7 @@ module.exports = function(app){
       let siteConfig = req.import.site.config;
       siteConfig.cms.dbName = req.import.dbName;
       siteConfig.allowedDomains.push(req.import.domain); // TODO
+      
       return siteApi
         .create(req.session.jwt, {
           domain: req.import.domain,
@@ -215,7 +216,7 @@ module.exports = function(app){
           config: siteConfig,
         })
         .then(result => {
-          console.log('Site id', result.id);
+          console.log('Site result', result);
           req.import.site = result;
           return next();
         })
