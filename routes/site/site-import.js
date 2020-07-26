@@ -207,17 +207,21 @@ module.exports = function(app){
       let siteConfig = req.import.site.config;
       siteConfig.cms.dbName = req.import.dbName;
       siteConfig.allowedDomains.push(req.import.domain); // TODO
-      
+
+      req.import.site.domain = req.import.domain;
+      req.import.site.name = req.import.id + req.import.site.title;
+      req.import.site.siteConfig = siteConfig;
+
       return siteApi
         .create(req.session.jwt, {
-          domain: req.import.domain,
-          name: req.import.id + req.import.site.title,
+          domain: req.import.site.domain,
+          name: req.import.site.name,
           title: req.import.site.title,
-          config: siteConfig,
+          config: req.import.site.siteConfig,
         })
         .then(result => {
           console.log('Site result', result);
-          req.import.site = result;
+        //  req.import.site = result;
           return next();
         })
         .catch(next);
