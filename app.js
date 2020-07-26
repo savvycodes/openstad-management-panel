@@ -7,11 +7,11 @@ const isDev             = process.env.ENVIRONMENT === 'development';
 const Site              = require('./models').Site;
 const bodyParser        = require('body-parser');
 const cookieParser      = require('cookie-parser');
-const expressSession    = require('express-session')
+//const expressSession    = require('express-session')
 const nunjucks          = require('nunjucks');
 const flash             = require('express-flash');
 const app               = express();
-//const FileStore         = require('session-file-store')(expressSession);
+const FileStore         = require('session-file-store')(expressSession);
 const auth              = require('basic-auth');
 const compare           = require('tsscmp');
 const MongoStore        = require('connect-mongo')(expressSession);
@@ -55,12 +55,14 @@ const mongoCredentials = {
 
 const url = 'mongodb://'+ mongoCredentials.host +':'+mongoCredentials.port+'/db-sessions';
 
-
+/*
 const sessionStore =  new MongoStore({
     url: url,
     ttl: 14 * 24 * 60 * 60 // = 14 days. Default
 })
-
+*/
+*
+const sessionStore = new FileStore;
 
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;

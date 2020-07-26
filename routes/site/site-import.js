@@ -299,6 +299,7 @@ module.exports = function(app){
           const FormData = require('form-data');
           const formData = new FormData();
           data.forEach((entry) => {
+            
             formData.append('files', createReadStream(req.import.dir + '/attachments/' + entry));
           });
 
