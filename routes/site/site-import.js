@@ -286,7 +286,10 @@ module.exports = function(app){
     (req, res, next) => {
       // cms attachments
       console.log('Import cms attachments');
-      let cmsUrl = 'http://' + ( req.site && req.site.domain );
+    //  let cmsUrl = 'http://' + ( req.site && req.site.domain );
+      console.log('req.import.dir', req.import.dir)
+      console.log('defaulFrontendUrl',defaulFrontendUrl)
+
       let paths = [];
       fs.readdir(req.import.dir + '/attachments')
         .then(data => {
@@ -299,7 +302,7 @@ module.exports = function(app){
             formData.append('files', createReadStream(req.import.dir + '/attachments/' + entry));
           });
 
-          return fetch(req.import.protocol + '://' + req.import.domain + '/attachment-upload', {
+          return fetch(defaulFrontendUrl + '/attachment-upload', {
 	          headers: { "X-Authorization": process.env.SITE_API_KEY },
 	          method: 'POST',
 	          body: formData
