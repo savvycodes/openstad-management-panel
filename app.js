@@ -61,7 +61,7 @@ const sessionStore =  new MongoStore({
     ttl: 14 * 24 * 60 * 60 // = 14 days. Default
 })
 */
-*
+
 const sessionStore = new FileStore;
 
 const apiUrl = process.env.API_URL;
