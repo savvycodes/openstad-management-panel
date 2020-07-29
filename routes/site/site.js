@@ -259,7 +259,15 @@ module.exports = function(app){
                 name: `${dbName}`,
                 annotations: {
                    'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod',
-                   'kubernetes.io/ingress.class': 'nginx'
+                   'kubernetes.io/ingress.class': 'nginx',
+                   'nginx.ingress.kubernetes.io/configuration-snippet': `|
+                      more_set_headers "X-Content-Type-Options: nosniff";
+                      more_set_headers "X-Frame-Options: SAMEORIGIN";
+                      more_set_headers "X-Xss-Protection: 1";
+                      more_set_headers "Referrer-Policy: same-origin";
+                  `,
+                  'nginx.ingress.kubernetes.io/from-to-www-redirect': "true",
+                  'nginx.ingress.kubernetes.io/proxy-body-size': "128m"
                 }
               },
               spec: {
