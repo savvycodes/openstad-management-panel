@@ -1,3 +1,3 @@
 module.exports = (url) => {
-  return url.replace(['http://', 'https://'], '');
+  return url.replace(['http://', 'https://'], '').replace('www.', '');
 };

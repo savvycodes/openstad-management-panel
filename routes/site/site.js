@@ -11,8 +11,7 @@ const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
-const createSiteService = require('../../services/site/createSiteService');
-const getSiteService = require('../../services/site/getSiteService');
+const openstadEnvironmentService = require('../../services/openstad/openstadEnvironmentService');
 
 //ENV constants
 const apiUrl            = process.env.API_URL;
@@ -51,7 +50,7 @@ module.exports = function(app){
     siteMw.withAll,
     externalSiteMw.withAll,
     (req, res, next) => {
-      res.render('site/new-form.html', { externalSites: req.externalSites });
+      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST });
     }
   );
 
@@ -112,29 +111,26 @@ module.exports = function(app){
     }
   );
 
-
   app.post('/admin/site/copy',
+    // Todo: It would be nice if we create a controller for this method.
     async (req, res, next) => {
       try {
+        const newSite = new NewSite(req.body.domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
 
-        const newSite = new NewSite(req.body.productionUrl, req.body.siteName, req.body.fromEmail);
+        const siteData = await openstadEnvironmentService.get(newSite.getUniqueSiteId(), req.body.siteIdToCopy, req.body['choice-guides'], false);
 
-        const siteData = await getSiteService.getSiteData(newSite, req.body.siteIdToCopy);
+        const site = await openstadEnvironmentService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);
 
-        console.log(siteData.oauthData, siteData.oauthData.clients);
-        const site = await createSiteService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);
-
-        req.flash('success', { msg: 'Aangemaakt!'});
-        res.redirect('/admin');
+        req.flash('success', { msg: 'De site is succesvol aangemaakt'});
+        res.redirect('/admin/site/' + site.id)
 
       } catch (error) {
         console.error(error);
-         // req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken.'});
-         // res.redirect('/admin');
+        req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken.'});
+        res.redirect('back');
       }
     }
   );
-
 
   /**
    * Create a new site by copying an old one
