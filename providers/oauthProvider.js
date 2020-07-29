@@ -44,6 +44,11 @@ exports.createOauth = async (newSite, oauthData) => {
   await Promise.all(oauthData.map(async (oauth) => {
     const {data, key} = oauth;
 
+    const authConfig = data.config || {};
+    authConfig.backUrl = newSite.getDomainWithProtocol();
+    authConfig.fromEmail = newSite.getFromEmail();
+    authConfig.fromName = newSite.getFromName();
+
     const client = {
       name: data.name,
       description: data.description,
@@ -56,7 +61,7 @@ exports.createOauth = async (newSite, oauthData) => {
         newSite.getDomain(),
         process.env.API_URL.replace(/^https?:\/\//, ''),
       ],
-      config: data.config,
+      config: authConfig,
     };
 
     if (client.config && client.config.backUrl) {

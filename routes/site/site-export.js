@@ -49,7 +49,7 @@ module.exports = function(app){
         // Get all site data
         const uniqueSiteId = Math.round(new Date().getTime() / 1000);
         const siteData = await openstadEnvironmentService.get(uniqueSiteId, req.params.siteId, req.body['choice-guides'], req.body['cms-attachments']);
-        
+
         const fileName = await exportService.export(siteData, req.export.site.domain, req.body, req.export.dir, req.export.filename);
 
         res.download(fileName);
