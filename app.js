@@ -7,7 +7,7 @@ const isDev             = process.env.ENVIRONMENT === 'development';
 const Site              = require('./models').Site;
 const bodyParser        = require('body-parser');
 const cookieParser      = require('cookie-parser');
-//const expressSession    = require('express-session')
+const expressSession    = require('express-session')
 const nunjucks          = require('nunjucks');
 const flash             = require('express-flash');
 const app               = express();
