@@ -77,21 +77,11 @@ exports.getFromFiles = async(dir) => {
  */
 exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
-  const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
-
-  if (!cmsData.mongoPath) {
-    throw new Error('No mongo path found');
-  }
-  // Todo: check if mongoPath is not empty
-
-  if (!apiData.site || !apiData.site.config) {
-    throw new Error('Site or site config is empty');
-  }
-  if (!oauthData || !oauthData.clients) {
-    throw new Error('No Oauth clients found');
-  }
-
   try {
+    const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
+
+    await validateInput(apiData, oauthData, cmsData);
+
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
@@ -108,8 +98,12 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
       await cmsProvider.importCmsAttachments(newSite.getDomainWithProtocol(), newSite.getTmpDir(), cmsData.attachments);
     }
 
-    // todo: cleanup
-    // Remove import files
+    // Try to remove import files
+    try {
+      await fs.rmdir(newSite.getTmpDir(), {recursive: true});
+    } catch(error) {
+      console.error(error);
+    }
 
     return site;
   } catch (error) {
@@ -121,4 +115,23 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
     console.error(error);
     throw error;
   }
+};
+
+const validateInput = async (apiData, oauthData, cmsData) => {
+  if (!cmsData.mongoPath) {
+    throw new Error('No mongo path found');
+  }
+  const mongoFiles = await fs.readdir(cmsData.mongoPath);
+  if(mongoFiles.length === 0) {
+    throw new Error('No mongo path is empty');
+  }
+
+  if (!apiData.site || !apiData.site.config) {
+    throw new Error('Site or site config is empty');
+  }
+  if (!oauthData || !oauthData.clients) {
+    throw new Error('No Oauth clients found');
+  }
+
+  return true;
 };
