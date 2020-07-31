@@ -10,7 +10,7 @@ const openstadEnvironmentService = require('../../services/openstad/openstadEnvi
 const importService  = require('../../services/openstad/importService');
 
 //models
-const NewSite = require('../../services/site/models/newSite');
+const NewSite = require('../../services/openstad/models/newSite');
 
 module.exports = function(app){
 

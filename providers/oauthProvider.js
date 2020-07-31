@@ -3,6 +3,13 @@ const userClientApi = require('../services/userClientApi');
 
 const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
 
+/**
+ * Get oauth client data
+ *
+ * @param oauthConfig
+ *
+ * @returns {Promise<[{key: string, data} , any , any , any , any , any , any , any , any , any]>}
+ */
 exports.getData = async (oauthConfig) => {
   const promises = Object.keys(oauthConfig).map(async key => {
     return {
@@ -14,6 +21,14 @@ exports.getData = async (oauthConfig) => {
   return await Promise.all(promises)
 };
 
+/**
+ * Create new oauth clients
+ *
+ * @param newSite
+ * @param oauthData
+ *
+ * @returns {Promise<void>}
+ */
 exports.createOauth = async (newSite, oauthData) => {
   const clients = {};
 
@@ -79,6 +94,13 @@ exports.createOauth = async (newSite, oauthData) => {
   return clients;
 };
 
+/**
+ * Make user site admin
+ * @param externalUserId
+ * @param oauthDefaultId
+ *
+ *  @returns {*|Promise}
+ */
 exports.makeUserSiteAdmin = (externalUserId, oauthDefaultId) => {
   const url = process.env.USER_API + '/api/admin/user/' + externalUserId;
   const body = {
@@ -100,4 +122,4 @@ exports.makeUserSiteAdmin = (externalUserId, oauthDefaultId) => {
       method: 'POST',
       body: JSON.stringify(body)
     });
-}
+};

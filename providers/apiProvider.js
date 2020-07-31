@@ -2,6 +2,12 @@ const merge = require('merge');
 const siteApi = require('../services/siteApi');
 const choicesGuideApi = require('../services/choicesGuideApi');
 
+/**
+ * Get choiceGuides by Site Id
+ * @param siteId
+ *
+ * @returns {Promise<[any , any , any , any , any , any , any , any , any , any]>}
+ */
 exports.getChoiceGuides = async (siteId) => {
   const choicesGuides = await choicesGuideApi.fetchAll(siteId);
 
@@ -12,6 +18,15 @@ exports.getChoiceGuides = async (siteId) => {
   return Promise.all(promises);
 };
 
+/**
+ * Create new site
+ *
+ * @param newSite
+ * @param site
+ * @param oauthClients
+ *
+ * @returns {Promise<*>}
+ */
 exports.createSite = async (newSite, site, oauthClients) => {
   // create site in API
   const siteConfig = merge.recursive(site.config, {
@@ -58,6 +73,13 @@ exports.createSite = async (newSite, site, oauthClients) => {
     });
 };
 
+/**
+ * Create choiceGuides
+ * @param siteId
+ * @param choiceGuides
+ *
+ * @returns {Promise<[any , any , any , any , any , any , any , any , any , any]>}
+ */
 exports.createChoiceGuides = (siteId, choiceGuides) => {
   const promises = choiceGuides.map(async (choiceGuide) => {
     return await choicesGuideApi.create(siteId, choiceGuide)

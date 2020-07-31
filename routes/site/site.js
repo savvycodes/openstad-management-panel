@@ -26,7 +26,7 @@ const userApiRequiredFields       = require('../../config/auth').userApiRequired
 const siteConfigSchema            = require('../../config/site').configSchema;
 
 //models
-const NewSite = require('../../services/site/models/newSite');
+const NewSite = require('../../services/openstad/models/newSite');
 
 const cleanUrl = (url) => {
   return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");

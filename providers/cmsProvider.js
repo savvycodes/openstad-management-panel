@@ -4,6 +4,13 @@ const FormData = require('form-data');
 
 const mongoService = require('../services/mongo');
 
+/**
+ * Get Cms Attachments
+ *
+ * @param dbName
+ *
+ * @returns {Promise<Array>}
+ */
 exports.getAttachments = async (dbName) => {
   const aposDocuments = await mongoService.query(dbName, 'aposDocs');
   const aposAttachments = await mongoService.query(dbName, 'aposAttachments');
@@ -34,6 +41,14 @@ exports.getAttachments = async (dbName) => {
   return files;
 };
 
+/**
+ * Export mongo database
+ *
+ * @param uniqueSiteId
+ * @param dbName
+ *
+ * @returns {Promise<string>}
+ */
 exports.exportDatabase = async (uniqueSiteId, dbName) => {
   const tmpDir = process.env.TMPDIR || './tmp';
   const mongoPath = tmpDir + uniqueSiteId;
@@ -42,10 +57,27 @@ exports.exportDatabase = async (uniqueSiteId, dbName) => {
   return `${mongoPath}/${dbName}`;
 };
 
+/**
+ * Import mongo database from directory
+ *
+ * @param newSite
+ * @param mongoPath
+ *
+ * @returns {Promise<void>}
+ */
 exports.importCmsDatabase = async (newSite, mongoPath) => {
   return mongoService.import(newSite.getCmsDatabaseName(), mongoPath)
 };
 
+/**
+ * Import cms attachments to new cms
+ *
+ * @param domain: string
+ * @param dir
+ * @param attachments
+ *
+ * @returns {Promise<void>}
+ */
 exports.importCmsAttachments = async (domain, dir, attachments) => {
   const formData = new FormData();
 

@@ -5,6 +5,16 @@ const fetch = require('node-fetch');
 const lookupDns = require('../../utils/lookupDns');
 const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
 
+/**
+ * Export Openstad environment to a tar file
+ * @param openstadData
+ * @param domain
+ * @param requestBody
+ * @param dir
+ * @param filename
+ *
+ * @returns {Promise<*>}
+ */
 exports.export = async (openstadData, domain, requestBody, dir, filename) => {
 
   // write choiceGuide to file

@@ -6,14 +6,19 @@ const oauthProvider = require('../../providers/oauthProvider');
 
 const siteApi = require('../siteApi');
 
+const SiteData = require('./models/siteData');
+
 const lookupDns = require('../../utils/lookupDns');
 
-function SiteData(site, choiceGuides, cmsAttachments, mongoPath, oauthClients) {
-  this.apiData = {site, choiceGuides};
-  this.cmsData = {attachments: cmsAttachments, mongoPath};
-  this.oauthData = {clients: oauthClients};
-}
-
+/**
+ * Get all Openstad project data
+ * @param uniqueSiteId
+ * @param siteIdToCopy
+ * @param includeChoiceGuide
+ * @param includeCmsAttachments
+ *
+ * @returns {Promise<SiteData>}
+ */
 exports.get = async(uniqueSiteId, siteIdToCopy, includeChoiceGuide, includeCmsAttachments) => {
   const siteToCopy = await siteApi.fetch(siteIdToCopy);
 
@@ -28,6 +33,12 @@ exports.get = async(uniqueSiteId, siteIdToCopy, includeChoiceGuide, includeCmsAt
   return new SiteData(siteToCopy, choiceGuides, attachments, mongoPath, oauthClients);
 };
 
+/**
+ * Get all Openstad project data from import file
+ * @param dir
+ *
+ * @returns {Promise<void>}
+ */
 exports.getFromFiles = async(dir) => {
   const siteData = await fs.readFile(dir + '/api/site.json');
   const siteToCopy = JSON.parse(siteData);
@@ -54,6 +65,16 @@ exports.getFromFiles = async(dir) => {
   return new SiteData(siteToCopy, choiceGuides, cmsAttachments, dir + '/mongo', oauthClients);
 };
 
+/**
+ * Create new Opestad project
+ * @param user
+ * @param newSite
+ * @param apiData
+ * @param cmsData
+ * @param oauthData
+ *
+ * @returns {Promise<*>}
+ */
 exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
   const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
@@ -72,25 +93,18 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
   try {
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
-
-    console.log('import mongo')
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
-
-    console.log('import site')
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
 
     if (apiData.choiceGuides) {
-      console.log('import choice guides')
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
     }
 
     if (apiData.site.config.oauth.default.id) {
-      console.log('make user admin')
       await oauthProvider.makeUserSiteAdmin(user.externalUserId, apiData.site.config.oauth.default.id);
     }
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
-      console.log('import cms attachments ')
       await cmsProvider.importCmsAttachments(newSite.getDomainWithProtocol(), newSite.getTmpDir(), cmsData.attachments);
     }
 

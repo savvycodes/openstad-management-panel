@@ -12,6 +12,13 @@ const ensureUrlHasProtocol = (url) => {
   return url;
 }
 
+/**
+ * New Site model for create, copy, import, export new Openstad resources
+ * @param domain
+ * @param title
+ * @param fromEmail
+ * @param fromName
+ */
 module.exports = function NewSite(domain, title, fromEmail, fromName) {
   this.uniqueSiteId = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '').slice(0,99);
   this.domain = cleanUrl(domain);
