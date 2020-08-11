@@ -159,8 +159,8 @@ const sessionSettings = {
   key               : 'authorization.sid',
   cookie            : {
     maxAge:  3600000 * 24 * 7 ,
-    secure: false,
-    httpOnly: false,
+    secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
+    httpOnly: true,
     sameSite: false,
     path: '/'
   },
