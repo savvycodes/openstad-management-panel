@@ -78,24 +78,41 @@ exports.getFromFiles = async(dir) => {
 exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
   try {
-    const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
 
+    const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
+    console.log('domain is up: ', isDomainUp);
     await validateInput(apiData, oauthData, cmsData);
 
+
+    console.log('creating oauth clients');
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
+    console.log('done');
+
+    console.log('import cms database');
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
+    console.log('done');
+
+    console.log('creating site in api');
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
+    console.log('done');
+
 
     if (apiData.choiceGuides) {
+      console.log('creating choiceguides in api');
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
+      console.log('done');
     }
 
     if (apiData.site.config.oauth.default.id) {
+      console.log('make user site admin');
       await oauthProvider.makeUserSiteAdmin(user.externalUserId, apiData.site.config.oauth.default.id);
+      console.log('done');
     }
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
+      console.log('import cms attachments');
       await cmsProvider.importCmsAttachments(newSite.getDomainWithProtocol(), newSite.getTmpDir(), cmsData.attachments);
+      console.log('done');
     }
 
     // Try to remove import files
@@ -105,6 +122,7 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
       console.error(error);
     }
 
+    console.log('return new site: ', site);
     return site;
   } catch (error) {
     //Todo: rollback created entities?

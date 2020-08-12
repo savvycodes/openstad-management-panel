@@ -44,6 +44,7 @@ module.exports = function(app){
         const siteData = await openstadEnvironmentService.getFromFiles(dir);
         newSite.title = siteData.apiData.site.title;
 
+        console.log('creating new site!');
         const site = await openstadEnvironmentService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);
 
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
