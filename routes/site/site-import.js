@@ -20,7 +20,7 @@ module.exports = function(app){
   app.get('/admin/site-import',
     siteMw.withAll,
     (req, res, next) => {
-      res.render('site/import-form.html');
+      res.render('site/import-form.html', {apiUrl: process.env.API_URL});
     }
   );
 

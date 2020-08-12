@@ -50,7 +50,7 @@ module.exports = function(app){
     siteMw.withAll,
     externalSiteMw.withAll,
     (req, res, next) => {
-      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST });
+      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST, apiUrl: process.env.API_URL });
     }
   );
 
@@ -60,7 +60,7 @@ module.exports = function(app){
   app.get('/admin/site-copy',
     siteMw.withAll,
     (req, res, next) => {
-      res.render('site/copy-form.html');
+      res.render('site/copy-form.html', {apiUrl: process.env.API_URL});
     }
   );
 

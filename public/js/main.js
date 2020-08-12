@@ -25,11 +25,11 @@ $(function () {
     var domainType = $('input[name="domain-type"]:checked').val();
     var wildcardHost = $('input[name="wildcardHost"]').val();
     var domainValue = domainType === 'subdomain' ? value + wildcardHost : value;
-
+    var apiUrl = $('input[name="domain"]').data('api-url');
     if (existingDomains.length === 0) {
       $.ajax({
         method: 'GET',
-        url: '/api/site',
+        url: apiUrl + '/api/site',
         async: false,
         success: function (response) {
           response.forEach(function (site) {
