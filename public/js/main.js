@@ -25,22 +25,7 @@ $(function () {
     var domainType = $('input[name="domain-type"]:checked').val();
     var wildcardHost = $('input[name="wildcardHost"]').val();
     var domainValue = domainType === 'subdomain' ? value + wildcardHost : value;
-    var apiUrl = $('input[name="domain"]').data('api-url');
-    if (existingDomains.length === 0) {
-      $.ajax({
-        method: 'GET',
-        url: apiUrl + '/api/site',
-        async: false,
-        success: function (response) {
-          response.forEach(function (site) {
-            existingDomains.push(site.domain);
-          })
-        },
-        error: function (error) {
-          isValid = false
-        },
-      });
-    }
+    var existingDomains = $('input[name="domain"]').data('existing-domains').split(',');
 
     return existingDomains.indexOf(domainValue.replace('https://', '').replace('http://', '').replace('www.', '')) === -1;
   });
