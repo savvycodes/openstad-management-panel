@@ -121,6 +121,7 @@ const validateInput = async (apiData, oauthData, cmsData) => {
   if (!cmsData.mongoPath) {
     throw new Error('No mongo path found');
   }
+
   const mongoFiles = await fs.readdir(cmsData.mongoPath);
   if(mongoFiles.length === 0) {
     throw new Error('No mongo path is empty');
