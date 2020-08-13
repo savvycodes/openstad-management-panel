@@ -63,7 +63,6 @@ const sessionStore =  new MongoStore({
 */
 
 const sessionStore = new FileStore;
-
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;
 const siteId = process.env.SITE_ID;
