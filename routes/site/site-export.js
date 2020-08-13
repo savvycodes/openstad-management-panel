@@ -95,13 +95,14 @@ module.exports = function(app){
     (req, res, next) => {
       if (!req.body['cms-attachments']) return next();
       // cms attachments
-      console.log('Export cms attachments');
+      console.log('Export cms attachments 1');
       let cmsUrl = 'http://' + ( req.export.site && req.export.site.domain );
       queryDb(req.export.dbName, 'aposDocs').then(result => {
         let files = [];
         result.forEach((entry) => {
           if (  entry.published == true && entry.trash == false)  {
             if (entry.type == 'apostrophe-file' || entry.type == 'apostrophe-image') {
+              console.log(entry.attachment.name);
               files.push(entry.attachment._id + '-'  + entry.attachment.name + '.' + entry.attachment.extension);
             }
             if (entry.type == 'apostrophe-image') {
@@ -111,7 +112,37 @@ module.exports = function(app){
             }
           }
         });
-        console.log(files);
+        let promises = [];
+        files.forEach((filename) => {
+          promises.push(
+            fetch(cmsUrl + '/uploads/attachments/' + filename)
+              .then(res => res.buffer())
+              .then(res => {
+                return fs.writeFile(req.export.dir + '/attachments/' + filename, res)
+              })
+          )
+        });
+        Promise
+          .all(promises)
+          .then(res => next())
+          .catch(next)
+      })
+    },
+    (req, res, next) => {
+      if (!req.body['cms-attachments']) return next();
+      // cms attachments
+      console.log('Export cms attachments 2');
+      let cmsUrl = 'http://' + ( req.export.site && req.export.site.domain );
+      queryDb(req.export.dbName, 'aposAttachments').then(result => {
+        let files = [];
+        result.forEach((entry) => {
+          files.push(entry._id + '-'  + entry.name + '.' + entry.extension);
+          if (entry.extension.toLowerCase().match(/jpe?g|svg|png|gif/)) {
+            ['.full', '.max', '.one-half', '.one-sixth', '.one-third', '.two-thirds'].forEach((size) => {
+              files.push(entry._id + '-'  + entry.name + size + '.' + entry.extension);
+            });
+          }
+        });
         let promises = [];
         files.forEach((filename) => {
           promises.push(

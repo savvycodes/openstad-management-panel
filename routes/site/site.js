@@ -59,11 +59,11 @@ module.exports = function(app){
   /**
    * Show new site form
    */
-  app.get('/admin/site',
+  app.get('/admin/site-new',
     siteMw.withAll,
     externalSiteMw.withAll,
     (req, res, next) => {
-      res.render('site/new-form.html');
+      res.render('site/new-form.html', { externalSites: req.externalSites });
     }
   );
 

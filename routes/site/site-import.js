@@ -3,6 +3,7 @@ const {createReadStream} = require('fs');
 const tar = require('tar');
 const fetch = require('node-fetch');
 
+const merge            = require('merge');
 const multer            = require('multer');
 const upload            = multer();
 
@@ -22,7 +23,7 @@ const queryDb           = require('../../services/mongo').query;
 const importDb          = require('../../services/mongo').import;
 
 const cleanUrl = (url) => {
-  return url ? url.replace('http://', '').replace('https://', '').replace(/\/$/, "") : '';
+  return url ? url.replace('^https?://', '').replace(/\/$/, "") : '';
 }
 
 const addHttp = (url) => {
@@ -31,7 +32,6 @@ const addHttp = (url) => {
 	}
 	return url;
 }
-
 
 //utils
 const pick              = require('../../utils/pick');
@@ -83,22 +83,20 @@ module.exports = function(app){
         })
         .catch(next);
       } else {
-        return upload.single('import_file')(req, res, next);
+        return next();
       }
     },
     (req, res, next) => {
       // prepare
       console.log('Import prepare');
       let id = Math.round(new Date().getTime() / 1000);
-
-      const cmsDomain  = defaulFrontendUrl ? defaulFrontendUrl : req.body.domain;
-
       req.import = {
         id,
         dir: tmpDir + '/' + id,
         filename: tmpDir + '/' + id + '/' + req.file.originalname,
-        protocol: req.protocol,
-        domain: cleanUrl(cmsDomain)
+        protocol: process.env.FORCE_HTTP ? 'http' : 'https',  // todo: dit zou met  req.protocol moeten werken maar pas alle proxy headers goed staan,
+        domain: cleanUrl(req.body.domain),
+        fromEmail: req.body.fromName ? `${req.body.fromName} <${req.body.fromEmail}>` : req.body.fromEmail,
       };
 
       fs.mkdir(req.import.dir)
@@ -160,7 +158,7 @@ module.exports = function(app){
                     redirectUrl: data.siteUrl.replace(/^https?:\/\/[^\/]+/, req.import.protocol + '://' + req.import.domain),
                     allowedDomains: [
                       req.import.domain,
-                      process.env.API_URL.replace(/^https?:\/\//, ''),
+                      process.env.API_URL.replace(/^https?:\/\//, '').replace(/\/$/, ''),
                     ],
                     config: data.config,
                   }
@@ -187,7 +185,6 @@ module.exports = function(app){
             .all(promises)
             .then(res => {
               req.import.site.config.oauth = oauthConfigs;
-              console.log(req.import.site.config.oauth);
             })
             .then(res => next())
         })
@@ -196,7 +193,6 @@ module.exports = function(app){
     (req, res, next) => {
       // create mongo db
       console.log('Import mongo db');
-      console.log(req.import.dbName);
       importDb(req.import.dbName, req.import.dir + '/mongo')
         .then(next)
         .catch(next)
@@ -207,26 +203,41 @@ module.exports = function(app){
       let siteConfig = req.import.site.config;
       siteConfig.cms.dbName = req.import.dbName;
       siteConfig.allowedDomains.push(req.import.domain); // TODO
-
-      req.import.site.domain = req.import.domain;
-      req.import.site.name = req.import.id + req.import.site.title;
-      req.import.site.siteConfig = siteConfig;
-
+      siteConfig = merge.recursive(siteConfig, {
+        "email": {
+          siteaddress: req.import.fromEmail,
+          thankyoumail: {
+            from: req.import.fromEmail,
+          }
+        },
+        "notifications": {
+          "from": req.import.fromEmail,
+          "to": req.import.fromEmail
+        },
+        "ideas": {
+          "feedbackEmail": {
+            "from": req.import.fromEmail,
+          }
+        },
+        "newslettersignup": {
+          "confirmationEmail": {
+            "from": req.import.fromEmail,
+          }
+        },
+      });
       return siteApi
         .create(req.session.jwt, {
-          domain: req.import.site.domain,
-          name: req.import.site.name,
+          domain: req.import.domain,
+          name: req.import.id + req.import.site.title,
           title: req.import.site.title,
-          config: req.import.site.siteConfig,
+          config: siteConfig,
         })
         .then(result => {
-          console.log('Site result', result);
-        //  req.import.site = result;
+          req.import.site = result;
           return next();
         })
         .catch(next);
     },
-    /*
     (req, res, next) => {
       // make the current user admin
       if (!req.import.site.config.oauth.default) return next();
@@ -237,7 +248,6 @@ module.exports = function(app){
         roles: {},
       }
       body.roles[req.import.site.config.oauth.default.id] = 1;
-
       return fetch(
         url,
         {
@@ -254,7 +264,6 @@ module.exports = function(app){
         })
         .catch(next)
     },
-    */
     (req, res, next) => {
       // choices-guides
       console.log('Import choices-guides');
@@ -286,10 +295,9 @@ module.exports = function(app){
     (req, res, next) => {
       // cms attachments
       console.log('Import cms attachments');
-    //  let cmsUrl = 'http://' + ( req.site && req.site.domain );
-      console.log('req.import.dir', req.import.dir)
-      console.log('defaulFrontendUrl',defaulFrontendUrl)
-
+      
+      const cmsDomain  = defaulFrontendUrl ? defaulFrontendUrl : req.import.domain;
+      
       let paths = [];
       fs.readdir(req.import.dir + '/attachments')
         .then(data => {
@@ -299,11 +307,10 @@ module.exports = function(app){
           const FormData = require('form-data');
           const formData = new FormData();
           data.forEach((entry) => {
-            
             formData.append('files', createReadStream(req.import.dir + '/attachments/' + entry));
           });
 
-          return fetch(defaulFrontendUrl + '/attachment-upload', {
+          return fetch(req.import.protocol + '://' + cmsDomain + '/attachment-upload', {
 	          headers: { "X-Authorization": process.env.SITE_API_KEY },
 	          method: 'POST',
 	          body: formData
@@ -316,7 +323,6 @@ module.exports = function(app){
 		          return response.json();
 	          })
 	          .then( json => {
-              console.log(json);
               return next()
 	          })
             .catch(next)

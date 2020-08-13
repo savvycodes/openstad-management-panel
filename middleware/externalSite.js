@@ -4,12 +4,20 @@ exports.withAll = (req, res, next) => {
   siteApiService
     .fetchAll()
     .then((externalSites) => {
-      req.externalSites = externalSites;
+      if (typeof externalSites == 'string') {
+        try {
+          req.externalSites = JSON.parse(externalSites);
+        } catch(err) {}
+      } else {
+        req.externalSites = externalSites;
+      }
       res.locals.externalSites = req.externalSites;
-      next();
+      return next();
     })
     .catch((err) => {
       console.log('err', err);
-      next(err);
+      req.externalSites = [];
+      res.locals.externalSites = req.externalSites;
+      next();
     });
 }
