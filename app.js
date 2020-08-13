@@ -167,8 +167,6 @@ const sessionSettings = {
   store: sessionStore
 }
 
-
-
 // Session Configuration
 app.use(expressSession(sessionSettings));
 
