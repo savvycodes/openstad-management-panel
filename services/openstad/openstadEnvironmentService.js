@@ -10,6 +10,7 @@ const k8Ingress = require('../k8/ingress');
 const SiteData = require('./models/siteData');
 
 const lookupDns = require('../../utils/lookupDns');
+const removeFolderRecursive = require('../../utils/removeFolderRecursive');
 
 /**
  * Get all Openstad project data
@@ -119,7 +120,7 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     // Try to remove import files
     try {
-      await fs.rmdir(newSite.getTmpDir(), {recursive: true});
+      removeFolderRecursive(newSite.getTmpDir());
     } catch(error) {
       console.error(error);
     }
