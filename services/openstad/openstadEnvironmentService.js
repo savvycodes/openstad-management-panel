@@ -5,6 +5,7 @@ const cmsProvider = require('../../providers/cmsProvider');
 const oauthProvider = require('../../providers/oauthProvider');
 
 const siteApi = require('../siteApi');
+const k8Ingress = require('../k8/ingress');
 
 const SiteData = require('./models/siteData');
 
@@ -111,7 +112,8 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
       console.log('import cms attachments');
-      await cmsProvider.importCmsAttachments(newSite.getDomainWithProtocol(), newSite.getTmpDir(), cmsData.attachments);
+      const frontendUploadDomain = process.env.FRONTEND_URL; // Use the default frontend url for now because the new site doesn't have an ingress yet
+      await cmsProvider.importCmsAttachments(frontendUploadDomain, newSite.getTmpDir(), cmsData.attachments);
       console.log('done');
     }
 
@@ -120,6 +122,14 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
       await fs.rmdir(newSite.getTmpDir(), {recursive: true});
     } catch(error) {
       console.error(error);
+    }
+
+    if (process.env.KUBERNETES_NAMESPACE) {
+      // Todo: Move this to the a cronjob (api or admin).
+      const domainIp = await lookupDns(newSite.getDomain(), 2000);
+      if(k8Ingress.getExternalIps().some(ip => ip === domainIp)) {
+        await k8Ingress.add(newSite);
+      }
     }
 
     console.log('return new site: ', site);
@@ -150,6 +160,14 @@ const validateInput = async (apiData, oauthData, cmsData) => {
   }
   if (!oauthData || !oauthData.clients) {
     throw new Error('No Oauth clients found');
+  }
+
+  // Todo: check if there are images and the frontend url is available
+  if(cmsData.attachments && cmsData.attachments.length > 0) {
+    const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 2000);
+    if(frontendIsUp === false) {
+      throw new Error(`Frontend url (${process.env.FRONTEND_URL}) is not reachable`);
+    }
   }
 
   return true;
