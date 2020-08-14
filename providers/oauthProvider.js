@@ -30,6 +30,7 @@ exports.getData = async (oauthConfig) => {
  * @returns {Promise<void>}
  */
 exports.createOauth = async (newSite, oauthData) => {
+  console.log('creating oauth clients');
   const clients = {};
 
   if (oauthData.length === 0) {
@@ -102,6 +103,7 @@ exports.createOauth = async (newSite, oauthData) => {
  *  @returns {*|Promise}
  */
 exports.makeUserSiteAdmin = (externalUserId, oauthDefaultId) => {
+  console.log('make user site admin');
   const url = process.env.USER_API + '/api/admin/user/' + externalUserId;
   const body = {
     client_id: process.env.USER_API_CLIENT_ID,

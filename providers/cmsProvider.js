@@ -66,6 +66,7 @@ exports.exportDatabase = async (uniqueSiteId, dbName) => {
  * @returns {Promise<void>}
  */
 exports.importCmsDatabase = async (newSite, mongoPath) => {
+  console.log('import cms database');
   return mongoService.import(newSite.getCmsDatabaseName(), mongoPath)
 };
 
@@ -79,6 +80,7 @@ exports.importCmsDatabase = async (newSite, mongoPath) => {
  * @returns {Promise<void>}
  */
 exports.importCmsAttachments = async (domain, dir, attachments) => {
+  console.log('import cms attachments');
   const formData = new FormData();
 
   attachments.forEach(function(attachment) {

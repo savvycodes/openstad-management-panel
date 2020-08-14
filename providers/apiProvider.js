@@ -28,6 +28,8 @@ exports.getChoiceGuides = async (siteId) => {
  * @returns {Promise<*>}
  */
 exports.createSite = async (newSite, site, oauthClients) => {
+  console.log('creating site in api');
+
   // create site in API
   const siteConfig = merge.recursive(site.config, {
     allowedDomains: [...site.config.allowedDomains, newSite.getDomain()],
@@ -81,6 +83,7 @@ exports.createSite = async (newSite, site, oauthClients) => {
  * @returns {Promise<[any , any , any , any , any , any , any , any , any , any]>}
  */
 exports.createChoiceGuides = (siteId, choiceGuides) => {
+  console.log('creating choiceguides in api');
   const promises = choiceGuides.map(async (choiceGuide) => {
     return await choicesGuideApi.create(siteId, choiceGuide)
   });
