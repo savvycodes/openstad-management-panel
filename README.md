@@ -21,6 +21,7 @@ SITE_ID=6 #site Id from the openstad api
 SITE_API_KEY=xxxxxxx #site Id from the api
 BASIC_AUTH_USER= #basic auth pass, whatever you prefer
 BASIC_AUTH_PASSWORD=
+PUBLIC_IP=
 ```
 
 stijnvdvegt
