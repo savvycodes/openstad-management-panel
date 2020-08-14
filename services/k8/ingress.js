@@ -41,18 +41,3 @@ exports.add = async (newSite) => {
     }
   });
 };
-
-/**
- *
- * @returns {Promise<Array<string>>}
- */
-exports.getExternalIps = async() => {
-  const kc = new k8s.KubeConfig();
-  kc.loadFromCluster();
-
-  const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
-
-  const response = await k8sApi.readNamespacedService('nginx-ingress-controller', 'default');
-
-  return response.body.spec.externalIPs;
-};

@@ -126,10 +126,15 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
     }
 
     if (process.env.KUBERNETES_NAMESPACE) {
-      // Todo: Move this to the a cronjob (api or admin).
-      const domainIp = await lookupDns(newSite.getDomain(), 2000);
-      if(k8Ingress.getExternalIps().some(ip => ip === domainIp)) {
-        await k8Ingress.add(newSite);
+      try {
+        // Todo: Move this to the a cronjob (api or admin).
+        const domainIp = await lookupDns(newSite.getDomain(), 2000);
+
+        if(process.env.PUBLIC_IP === domainIp) {
+          await k8Ingress.add(newSite);
+        }
+      } catch(error) {
+        console.error(error);
       }
     }
 
