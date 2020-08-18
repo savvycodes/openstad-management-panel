@@ -2,7 +2,7 @@ const rp = require('request-promise');
 const apiUrl = process.env.API_URL;
 const siteApiKey =  process.env.SITE_API_KEY;
 
-exports.fetchAll = (token, siteId) => {
+exports.fetchAll = (siteId) => {
   return rp({
     method: 'GET',
     uri:  `${apiUrl}/api/site/${siteId}/choicesguide`,
@@ -15,7 +15,7 @@ exports.fetchAll = (token, siteId) => {
   });
 }
 
-exports.fetch = (token, siteId, choicesGuideId) => {
+exports.fetch = (siteId, choicesGuideId) => {
   return rp({
     method: 'GET',
     uri:  `${apiUrl}/api/site/${siteId}/choicesguide/${choicesGuideId}?includeChoices=1&includeQuestions=1`,
@@ -28,7 +28,8 @@ exports.fetch = (token, siteId, choicesGuideId) => {
   });
 }
 
-exports.create = (token, siteId, json) => {
+// Todo: refactor this method
+exports.create = (siteId, json) => {
 
   let promises = [];
 
@@ -71,7 +72,7 @@ exports.create = (token, siteId, json) => {
         promises.push(
           rp(options)
         );
-      });      
+      });
 
       questiongroups.forEach((questiongroup) => {
         let choices = questiongroup.choices || [];
@@ -110,7 +111,7 @@ exports.create = (token, siteId, json) => {
                 subpromises.push(
                   rp(options)
                 );
-              });      
+              });
               questions.forEach((question) => {
                 delete question.id;
                 question.questionGroupId = questionGroupId;
@@ -134,7 +135,7 @@ exports.create = (token, siteId, json) => {
               return Promise
                 .all(subpromises)
             })
-          
+
         );
       });
       return promises;

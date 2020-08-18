@@ -5,7 +5,7 @@ const moment = require('moment-timezone');
 
 exports.withOne = (req, res, next) => {
   siteApiService
-    .fetch(req.session.jwt, req.params.siteId)
+    .fetch(req.params.siteId)
     .then((site) => {
       req.site = site;
       req.siteData = site;

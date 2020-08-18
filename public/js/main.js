@@ -16,6 +16,43 @@ function initHideFlash() {
 
 $(function () {
 
+  // # CREATE SITE FORM VALIDATION
+  var existingDomains = [];
+
+  $.validator.addMethod("uniqueDomain", function (value, element) {
+    var isValid = false;
+
+    var domainType = $('input[name="domain-type"]:checked').val();
+    var wildcardHost = $('input[name="wildcardHost"]').val();
+    var domainValue = domainType === 'subdomain' ? value + wildcardHost : value;
+    var existingDomains = $('input[name="domain"]').data('existing-domains').split(',');
+
+    return existingDomains.indexOf(domainValue.replace('https://', '').replace('http://', '').replace('www.', '')) === -1;
+  });
+
+  $('.domain-type').change(function (event) {
+    var domainType = $('input[name="domain-type"]:checked').val();
+
+    if (domainType === 'domain') {
+      $('.wildcardHost').addClass('d-none');
+    } else {
+      $('.wildcardHost').removeClass('d-none');
+    }
+  });
+
+  $('#create-site-form').validate({
+    rules: {
+      domain: {
+        uniqueDomain: true,
+        required: true
+      }
+    },
+    messages: {
+      domain: {
+        uniqueDomain: 'Domain already exists'
+      }
+    }
+  });
 
   // #3. FORM VALIDATION
 

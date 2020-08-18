@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="card card-openstad" style="max-width: 700px; margin: 0 auto;">
-  <form method="POST" action="/admin/site" onsubmit="$(this).css({opacity:0.5, 'pointer-events':'none'});">
+  <form method="POST" id="create-site-form" action="/admin/site/copy">
     <div class="onboarding-slider-w">
       <div class="onboarding-slide">
         <div class="onboarding-side-by-side">
@@ -41,15 +41,43 @@
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label for="">Domeinnaam </label>
-                    <input
-                      class="form-control"
-                      placeholder="Bijv. javabrug.amsterdam.nl"
-                      type="text"
-                      value=""
-                      name="productionUrl"
-                      required
-                    />
+                    <label for="domain">Domeinnaam: </label>
+                    <div class="form-check">
+                      <input type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" checked />
+                      <label for="subdomain-type" class="form-check-label" >Sub domain</label>
+                    </div>
+                    <div class="form-check">
+                      <input type="radio" class="form-check-input domain-type" id="domain-type" name="domain-type" required value="domain"/>
+                      <label for="domain-type" class="form-check-label">Full domain</label>
+                    </div>
+
+                    <div class="form-row">
+
+                      <div class="col col-domain">
+                        <input
+                                class="form-control"
+                                id="domain"
+                                placeholder="Bijv. javabrug.amsterdam.nl"
+                                type="text"
+                                value=""
+                                name="domain"
+                                data-existing-domains="{{existingDomains}}"
+                                required
+                        />
+                      </div>
+                      <div class="col-auto wildcardHost">
+                        <input
+                                class="form-control"
+                                id="wildcardHost"
+                                type="text"
+                                value=".{{wildcardHost}}"
+                                name="wildcardHost"
+                                required
+                                readonly
+                        />
+
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -75,6 +103,69 @@
               <option value="{{site.id}}">{{site.title}}</option>
               {% endfor %}
             </select>
+
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">
+                These elements will always be exported
+              </label>
+              <div class="col-sm-8">
+
+                <div class="row">
+                  <div class="col-sm-8">
+                    <input id="checkbox-auth-mongodb" type="checkbox" name="mongodb" value="true" checked disabled="true" />
+                    <label for="checkbox-auth-mongodb">
+                      Mongo database
+                    </label>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-8">
+                    <input id="checkbox-auth-site" type="checkbox" name="site" value="true" checked disabled="true" />
+                    <label for="checkbox-auth-site">
+                      Site object
+                    </label>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-8">
+                    <input id="checkbox-auth-oauth" type="checkbox" name="oauth" value="true" checked disabled="true" />
+                    <label for="checkbox-auth-oauth">
+                      Oauth
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label col-sm-4" for="">
+                Select extra elements to be exported
+              </label>
+              <div class="col-sm-8">
+
+                <div class="row">
+                  <div class="col-sm-8">
+                    <input id="checkbox-auth-ideas" type="checkbox" name="choice-guides" value="true" />
+                    <label for="checkbox-auth-ideas">
+                      Choices Guides
+                    </label>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-8">
+                    <input id="checkbox-site-ideas" type="checkbox" name="ideas" value="true" />
+                    <label for="checkbox-site-ideas">
+                      Ideas (todo)
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
 
             {#<h4 class="onboarding-title">
               Type website

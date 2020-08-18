@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="card card-openstad" style="max-width: 700px; margin: 0 auto;">
-  <form method="POST" action="/admin/site/import" onsubmit="$(this).css({opacity:0.5, 'pointer-events':'none'});">
+  <form method="POST" id="create-site-form" action="/admin/site/import">
     <div class="onboarding-slider-w">
       <div class="onboarding-slide">
         <div class="onboarding-side-by-side">
@@ -35,19 +35,50 @@
                       type="text"
                       value=""
                       name="siteName"
+                      minlength="2"
+                      required
                     />
                   </div>
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label for="">Domeinnaam </label>
-                    <input
-                      class="form-control"
-                      placeholder="Bijv. javabrug.amsterdam.nl"
-                      type="text"
-                      value=""
-                      name="domain"
-                    />
+                    <label for="domain">Domeinnaam: </label>
+                    <div class="form-check">
+                      <input type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" checked />
+                      <label for="subdomain-type" class="form-check-label" >Sub domain</label>
+                    </div>
+                    <div class="form-check">
+                      <input type="radio" class="form-check-input domain-type" id="domain-type" name="domain-type" required value="domain"/>
+                      <label for="domain-type" class="form-check-label">Full domain</label>
+                    </div>
+
+                    <div class="form-row">
+
+                      <div class="col col-domain">
+                        <input
+                          class="form-control"
+                          id="domain"
+                          placeholder="Bijv. javabrug.amsterdam.nl"
+                          type="text"
+                          value=""
+                          name="domain"
+                          data-existing-domains="{{existingDomains}}"
+                          required
+                        />
+                      </div>
+                      <div class="col-auto wildcardHost">
+                        <input
+                                class="form-control"
+                                id="wildcardHost"
+                                type="text"
+                                value=".{{wildcardHost}}"
+                                name="wildcardHost"
+                                required
+                                readonly
+                        />
+
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -74,6 +105,7 @@
                   name="fileUrl"
                   value="{{externalSite.latest.file}}"
                   id="external-site-{{externalSite.id}}"
+                  required
                 />
                 <label class="" for="external-site-{{externalSite.id}}" style="font-size: 15px; width: 100%;">
                   <img src="{{externalSite.images[0]}}" />
@@ -118,9 +150,10 @@
                 <input
                   class="form-control"
                   placeholder="Bijv. javabrug@amsterdam.nl"
-                  type="text"
+                  type="email"
                   value=""
                   name="fromEmail"
+                  required
                 />
               </div>
               <div ">
@@ -132,6 +165,7 @@
                     type="text"
                     value=""
                     name="fromName"
+                    required
                   />
                 </div>
               </div>

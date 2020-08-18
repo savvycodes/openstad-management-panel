@@ -2,7 +2,7 @@ const rp = require('request-promise');
 const apiUrl = process.env.API_URL + '/api';
 const siteApiKey =  process.env.SITE_API_KEY;
 
-exports.fetch = (token, siteId) => {
+exports.fetch = (siteId) => {
   return rp({
     method: 'GET',
     uri: `${apiUrl}/site/${siteId}`,
@@ -54,7 +54,7 @@ exports.update = (token, siteId, data) => {
 }
 
 
-exports.create = (token, data) => {
+exports.create = (data) => {
   const options = {
     method: 'POST',
     uri: `${apiUrl}/site`,
