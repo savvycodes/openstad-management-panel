@@ -64,7 +64,7 @@ exports.createOauth = async (newSite, oauthData) => {
     authConfig.backUrl = newSite.getDomainWithProtocol();
     authConfig.fromEmail = newSite.getFromEmail();
     authConfig.fromName = newSite.getFromName();
-
+    authConfig.authTypes = authConfig.authTypes ? authConfig.authTypes : {};
 
     const client = {
       name: newSite.getTitle() + ' ' + key,
