@@ -168,6 +168,10 @@ label.error {
   width: 33%;
 }
 
+.col-66 {
+  width: 66%;
+}
+
 .col-4 img {
   max-width: 100%;
 }

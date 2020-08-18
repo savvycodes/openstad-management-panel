@@ -35,6 +35,7 @@ module.exports = function(app){
     // Todo: It would be nice if we create a controller for this method.
     async (req, res, next) => {
       try {
+        console.log('req.body', req.body);
 
         const domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
         const newSite = new NewSite(domain, '', req.body.fromEmail, req.body.fromName);
@@ -42,7 +43,7 @@ module.exports = function(app){
         const dir = await importService.handleImportFile(newSite, req.file, req.body.fileUrl);
 
         const siteData = await openstadEnvironmentService.getFromFiles(dir);
-        newSite.title = siteData.apiData.site.title;
+        newSite.title = req.body.siteName;
 
         console.log('creating new site!');
         const site = await openstadEnvironmentService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);

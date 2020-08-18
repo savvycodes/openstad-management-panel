@@ -65,8 +65,9 @@ exports.createOauth = async (newSite, oauthData) => {
     authConfig.fromEmail = newSite.getFromEmail();
     authConfig.fromName = newSite.getFromName();
 
+
     const client = {
-      name: data.name,
+      name: newSite.getTitle() + ' ' + key,
       description: data.description,
       authTypes: data.authTypes,
       requiredUserFields: data.requiredUserFields,

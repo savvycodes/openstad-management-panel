@@ -35,9 +35,9 @@ exports.createSite = async (newSite, site, oauthClients) => {
     allowedDomains: [...site.config.allowedDomains, newSite.getDomain()],
     basicAuth: {
       //check if set, default to true
-      active: site.config.basicAuth && site.config.basicAuth.active ? site.config.basicAuth.active : true,
-      user: site.config.basicAuth && site.config.basicAuth.user  ?  site.config.basicAuth.user : 'openstad_' + Math.random().toString(36).slice(-3),
-      password: site.config.basicAuth && site.config.basicAuth.password ?  site.config.basicAuth.password : Math.random().toString(36).slice(-10),
+      active: true,
+      user: 'openstad_' + Math.random().toString(36).slice(-3),
+      password: Math.random().toString(36).slice(-10),
     },
     cms: {
       dbName: newSite.getCmsDatabaseName(),
