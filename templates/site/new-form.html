@@ -58,7 +58,7 @@
                         <input
                           class="form-control"
                           id="domain"
-                          
+
                           type="text"
                           value=""
                           name="domain"
@@ -97,32 +97,34 @@
             <div class="onboarding-text">
               Install one of the following sites as a starting point.
             </div>
-            <div class="flex">
+            <div class="row">
               {% for externalSite in externalSites %}
               <div class="col-4">
-                <input
-                  type="radio"
-                  name="fileUrl"
-                  value="{{externalSite.latest.file}}"
-                  id="external-site-{{externalSite.id}}"
-                  required
-                />
-                <label class="" for="external-site-{{externalSite.id}}" style="font-size: 15px; width: 100%;">
-                  <img src="{{externalSite.images[0]}}" />
-                  <h3>
-                    {{externalSite.name}}
-                  </h3>
-                  <div class="meta">
-                    Version: {{externalSite.latest.number}}
-                    |
-                    Created by: {{externalSite.author}}
-                    |
-                    Maintained by: {{externalSite.maintainer}}
-                  </div>
-                  <p>
-                    {{externalSite.description}}
-                  </p>
-                </label>
+                <div class="card-selector">
+                  <input
+                    type="radio"
+                    name="fileUrl"
+                    value="{{externalSite.latest.file}}"
+                    id="external-site-{{externalSite.id}}"
+                    required
+                  />
+                  <label class="" for="external-site-{{externalSite.id}}" style="font-size: 15px; width: 100%;">
+                    <img src="{{externalSite.images[0]}}" />
+                    <h3>
+                      {{externalSite.name}}
+                    </h3>
+                    <div class="meta">
+                      Version: {{externalSite.latest.number}}
+                      |
+                      Created by: {{externalSite.author}}
+                      |
+                      Maintained by: {{externalSite.maintainer}}
+                    </div>
+                    <p>
+                      {{externalSite.description}}
+                    </p>
+                  </label>
+                </div>
               </div>
               {% endfor %}
             </div>
