@@ -176,6 +176,22 @@ exports.configSchema = {
       label: 'Should voting again replace previous vote? Or give an error?'
     },
     {
+      key: 'requiredUserRole',
+      type: 'select',
+      values: [
+        {
+          value: 'anonymous',
+          label: 'Anonymous',
+        },
+        {
+          value: 'member',
+          label: 'Member',
+        }
+      ],
+      default: 'member',
+      label: 'For what user should voting be allowed?'
+    },
+    {
       key: 'voteType',
       type: 'select',
       values: [
