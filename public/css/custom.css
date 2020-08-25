@@ -177,6 +177,16 @@ label.error {
 }
 
 .card-selector {
-  border: 3px solid #cae0f5;
-  border-radius: 10px;
+  border: 1px solid #61717f;
+  border-radius: 3px;
+  padding: 10px;
+  height: 400px;
+  margin: 10px 0;
+  padding: 20px;
+  -webkit-box-shadow: 0 0px 9px 0 rgba(42, 18, 18, 0.09);
+  box-shadow: 0 0px 9px 0 rgba(42, 18, 18, 0.09);
+  background: white;
+  border-color: #fff;
+  margin: 0 0 40px;
+  overflow: hidden;
 }
