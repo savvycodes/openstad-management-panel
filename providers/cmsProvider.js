@@ -80,7 +80,7 @@ exports.importCmsDatabase = async (newSite, mongoPath) => {
  * @returns {Promise<void>}
  */
 exports.importCmsAttachments = async (domain, dir, attachments) => {
-  console.log('import cms attachments');
+  console.log('import cms attachments', domain);
   const formData = new FormData();
 
   attachments.forEach(function(attachment) {
