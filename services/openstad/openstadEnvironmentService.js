@@ -84,7 +84,7 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
     const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
 
     console.log('domain is up2: ', isDomainUp, process.env.FRONTEND_URL);
-    
+
     await validateInput(apiData, oauthData, cmsData);
 
     console.log('create oauth: ');
@@ -151,19 +151,28 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 };
 
 const validateInput = async (apiData, oauthData, cmsData) => {
+  console.log('validateInput', apiData, oauthData, cmsData);
+
   if (!cmsData.mongoPath) {
+    console.log('No mongo path found');
     throw new Error('No mongo path found');
   }
 
   const mongoFiles = await fs.readdir(cmsData.mongoPath);
   if(mongoFiles.length === 0) {
+    console.log('No mongo path empty');
+
     throw new Error('No mongo path is empty');
   }
 
   if (!apiData.site || !apiData.site.config) {
+    console.log('Site or site config is empty');
+
     throw new Error('Site or site config is empty');
   }
   if (!oauthData || !oauthData.clients) {
+    console.log('No Oauth clients found');
+
     throw new Error('No Oauth clients found');
   }
 
@@ -172,6 +181,8 @@ const validateInput = async (apiData, oauthData, cmsData) => {
     const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 2000);
 
     if(frontendIsUp === false) {
+      console.log('Frontend url (${process.env.FRONTEND_URL}) is not reachable');
+
       throw new Error(`Frontend url (${process.env.FRONTEND_URL}) is not reachable`);
     }
   }
