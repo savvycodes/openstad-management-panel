@@ -3,7 +3,7 @@ const cleanUrl = require('./cleanUrl');
 
 module.exports = async (domain, timeout) => {
   return new Promise((resolve, reject) => {
-    console.log('domain 1', domain)
+    console.log('domain 1', domain, cleanUrl)
 
     let cleanDomain = cleanUrl(domain);
     console.log('domain 2', cleanDomain);
