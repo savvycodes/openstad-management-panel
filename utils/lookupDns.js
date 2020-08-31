@@ -6,13 +6,14 @@ module.exports = async (domain, timeout) => {
     console.log('domain 1', domain)
 
     domain = cleanUrl(domain);
-    console.log('domain 2', domain)
-    setTimeout(() => {
+    console.log('domain 2', domain);
+
+    setTimeout(function(){
       console.log('custom DNS timeout')
       resolve(false);
     }, timeout);
 
-    dns.lookup(, (err, address, family) => {
+    dns.lookup(domain, (err, address, family) => {
       console.log('err', err)
       if(err) resolve(false);
       resolve(address);
