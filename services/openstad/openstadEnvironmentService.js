@@ -82,17 +82,27 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
   try {
 
     const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
-    console.log('domain is up: ', isDomainUp);
+
+    console.log('domain is up2: ', isDomainUp, process.env.FRONTEND_URL);
+    
     await validateInput(apiData, oauthData, cmsData);
 
     console.log('create oauth: ');
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
+    console.log('keuze wijzer');
+
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
+
+    console.log('keuze wijzer');
+
 
     if (apiData.choiceGuides) {
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
     }
+
+
+    console.log('make user admin');
 
     if (apiData.site.config.oauth.default.id) {
       await oauthProvider.makeUserSiteAdmin(user.externalUserId, apiData.site.config.oauth.default.id);
@@ -160,6 +170,7 @@ const validateInput = async (apiData, oauthData, cmsData) => {
   // Todo: check if there are images and the frontend url is available
   if(cmsData.attachments && cmsData.attachments.length > 0) {
     const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 2000);
+
     if(frontendIsUp === false) {
       throw new Error(`Frontend url (${process.env.FRONTEND_URL}) is not reachable`);
     }
