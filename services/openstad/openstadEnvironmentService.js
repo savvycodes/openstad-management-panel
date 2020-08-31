@@ -178,7 +178,7 @@ const validateInput = async (apiData, oauthData, cmsData) => {
 
   // Todo: check if there are images and the frontend url is available
   if(cmsData.attachments && cmsData.attachments.length > 0) {
-    const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 2000);
+    const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 10000);
 
     if(frontendIsUp === false) {
       console.log('Frontend url (${process.env.FRONTEND_URL}) is not reachable');

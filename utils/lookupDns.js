@@ -4,6 +4,7 @@ module.exports = async (domain, timeout) => {
     setTimeout(() => resolve(false), timeout);
 
     dns.lookup(domain, (err, address, family) => {
+      console.log('err')
       if(err) resolve(false);
       resolve(address);
     });
