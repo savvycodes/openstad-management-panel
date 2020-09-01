@@ -1,4 +1,5 @@
 const userMw = require('../middleware/user');
+const siteMw = require('../middleware/site');
 const clientMw = require('../middleware/userClient');
 const roleMw = require('../middleware/role');
 const userApiService = require('../services/userApi');
@@ -41,15 +42,29 @@ module.exports = function(app){
    */
   app.get('/admin/user/:userId',
     clientMw.withAll,
+    siteMw.withAll,
     roleMw.withAll,
     userMw.withOne,
     (req, res) => {
       const userRoles = req.editUser.roles;
+      const userApiClients = [];
 
-      // iteriate through every client to add which role the user
-      const userApiClients = req.userApiClients.map((client) => {
-        client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
-        return client;
+      req.sites.forEach((site) => {
+        if (site.config && site.config.oauth) {
+          const defaultClientCredentials = site.config.oauth.default ? site.config.oauth.default : site.config.oauth;
+
+          if (defaultClientCredentials && defaultClientCredentials["auth-client-id"]) {
+            const clientId = defaultClientCredentials["auth-client-id"];
+            const client = req.userApiClients.find(client => client.clientId === clientId);
+
+            if (client) {
+              // get user role for clien
+              client.site = site;
+              client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
+              userApiClients.push(client);
+            }
+          }
+        }
       });
 
       res.render('users/form.html', {
