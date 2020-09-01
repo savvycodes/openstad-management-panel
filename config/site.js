@@ -69,6 +69,24 @@ exports.configSchema = {
       label: "Maximum length of description"
     },
   ],
+  widgetDisplaySettings: [
+    {
+      parentKey: 'cms',
+      key: 'beta',
+      type: 'boolean', // todo: add type email/list of emails
+      default: false,
+      label: "Display beta widgets?"
+    },
+    {
+      parentKey: 'cms',
+      key: 'deprecated',
+      type: 'boolean', // todo: add type email/list of emails
+      default: false,
+      label: "Display deprecated widgets?"
+    },
+  ],
+
+
   feedbackEmail: [
     {
       parentKey: 'ideas',

@@ -1,6 +1,7 @@
 {% set fullWidthLayout = true %}
 
 {% extends 'user-layout.html' %}
+{% from 'partials/fields.html' import renderFields %}
 
 {% block body %}
 <div class="card-container">
@@ -106,7 +107,31 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 </form>
       </div>
+
+
 #}
+
+    <div class="card card-openstad">
+      <form method="POST" action="/admin/site/{{site.id}}">
+        <fieldset>
+            <legend><span>{{ __('Widget settings') }}</span></legend>
+            <br />
+            <small> Log in and out of the site to see widget changes </small>
+            {{ renderFields(siteConfigSchema.widgetDisplaySettings, site.config.cms.widgetDisplaySettings, 'config[widgetDisplaySettings]') }}
+
+        <div class="form-buttons-w">
+          <button class="btn btn-outline-primary" type="submit">Opslaan</button>
+        </div>
+        </fieldset>
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    </form>
+    </div>
+</div>
+
+
+
+
+
       <div class="card card-openstad">
         <form method="POST" action="/admin/site/{{site.id}}/delete">
             <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')">Verwijder</button>
