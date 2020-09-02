@@ -35,7 +35,6 @@ module.exports = function(app){
     // Todo: It would be nice if we create a controller for this method.
     async (req, res, next) => {
       try {
-        console.log('req.body', req.body);
 
         const domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
         const newSite = new NewSite(domain, '', req.body.fromEmail, req.body.fromName);

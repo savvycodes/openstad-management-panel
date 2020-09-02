@@ -115,7 +115,10 @@ module.exports = function(app){
     // Todo: It would be nice if we create a controller for this method.
     async (req, res, next) => {
       try {
-        const newSite = new NewSite(req.body.domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
+
+        const domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
+
+        const newSite = new NewSite(domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
 
         const siteData = await openstadEnvironmentService.get(newSite.getUniqueSiteId(), req.body.siteIdToCopy, req.body['choice-guides'], false);
 
@@ -156,8 +159,6 @@ module.exports = function(app){
           fields.forEach((field) => {
             if (req.body.config[siteConfigField]) {
               let value = req.body.config[siteConfigField][field.key];
-
-              console.log('value', value);
 
               //check if not set (can be false in case of boolean)
               if (value || value === false) {
