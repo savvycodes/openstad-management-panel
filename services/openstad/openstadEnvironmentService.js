@@ -82,17 +82,27 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
   try {
 
     const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
-    console.log('domain is up: ', isDomainUp);
+
+    console.log('domain is up2: ', isDomainUp, process.env.FRONTEND_URL);
+
     await validateInput(apiData, oauthData, cmsData);
 
-
+    console.log('create oauth: ');
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
+    console.log('keuze wijzer');
+
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
+
+    console.log('keuze wijzer');
+
 
     if (apiData.choiceGuides) {
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
     }
+
+
+    console.log('make user admin');
 
     if (apiData.site.config.oauth.default.id) {
       await oauthProvider.makeUserSiteAdmin(user.externalUserId, apiData.site.config.oauth.default.id);
@@ -100,11 +110,15 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
       const frontendUploadDomain = process.env.FRONTEND_URL; // Use the default frontend url for now because the new site doesn't have an ingress yet
+      console.log('frontendUploadDomain: ', frontendUploadDomain);
+
       await cmsProvider.importCmsAttachments(frontendUploadDomain, newSite.getTmpDir(), cmsData.attachments);
     }
 
     // Try to remove import files
     try {
+      console.log('removeFolderRecursive:');
+
       removeFolderRecursive(newSite.getTmpDir());
     } catch(error) {
       console.error(error);
@@ -137,26 +151,38 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 };
 
 const validateInput = async (apiData, oauthData, cmsData) => {
+  console.log('validateInput', apiData, oauthData, cmsData);
+
   if (!cmsData.mongoPath) {
+    console.log('No mongo path found');
     throw new Error('No mongo path found');
   }
 
   const mongoFiles = await fs.readdir(cmsData.mongoPath);
   if(mongoFiles.length === 0) {
+    console.log('No mongo path empty');
+
     throw new Error('No mongo path is empty');
   }
 
   if (!apiData.site || !apiData.site.config) {
+    console.log('Site or site config is empty');
+
     throw new Error('Site or site config is empty');
   }
   if (!oauthData || !oauthData.clients) {
+    console.log('No Oauth clients found');
+
     throw new Error('No Oauth clients found');
   }
 
   // Todo: check if there are images and the frontend url is available
   if(cmsData.attachments && cmsData.attachments.length > 0) {
-    const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 2000);
+    const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 10000);
+
     if(frontendIsUp === false) {
+      console.log('Frontend url (${process.env.FRONTEND_URL}) is not reachable');
+
       throw new Error(`Frontend url (${process.env.FRONTEND_URL}) is not reachable`);
     }
   }

@@ -1,9 +1,20 @@
 const dns = require('dns');
+const cleanUrl = require('./cleanUrl');
+
 module.exports = async (domain, timeout) => {
   return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(false), timeout);
+    console.log('domain 1', domain, cleanUrl)
 
-    dns.lookup(domain, (err, address, family) => {
+    let cleanDomain = cleanUrl(domain);
+    console.log('domain 2', cleanDomain);
+
+    setTimeout(function(){
+      console.log('custom DNS timeout')
+      resolve(false);
+    }, timeout);
+
+    dns.lookup(cleanDomain, (err, address, family) => {
+      console.log('err', err)
       if(err) resolve(false);
       resolve(address);
     });
