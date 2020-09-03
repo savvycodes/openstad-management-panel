@@ -69,7 +69,7 @@ exports.createSite = async (newSite, site, oauthClients) => {
   return siteApi
     .create({
       domain: newSite.getDomain(),
-      name: newSite.getUniqueSiteId() + newSite.getTitle(),
+      name: newSite.getUniqueSiteId(),
       title: newSite.getTitle(),
       config: siteConfig,
     });

@@ -20,7 +20,8 @@ const ensureUrlHasProtocol = (url) => {
  * @param fromName
  */
 module.exports = function NewSite(domain, title, fromEmail, fromName) {
-  this.uniqueSiteId = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '').slice(0,99);
+  //also used for mongodb db name, so don't add longer then 64 chars
+  this.uniqueSiteId = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '').slice(0,62);
   this.domain = cleanUrl(domain);
   this.domainWithProtocol = ensureUrlHasProtocol(this.domain);
   this.cmsDatabaseName = (this.uniqueSiteId + title).replace(/ |	/g, '').replace(/[^0-9a-zA-Z]+/g, '');// Remove spaces and special characters
