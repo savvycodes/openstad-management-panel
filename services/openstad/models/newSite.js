@@ -39,6 +39,6 @@ module.exports = function NewSite(domain, title, fromEmail, fromName) {
   this.getTmpDir = () => this.tmpDir;
   this.getFromEmail = () => this.fromEmail;
   this.getFormattedFromEmail = () => this.formattedFromEmail;
-  this.getFromName = () => this.fromEmail;
+  this.getFromName = () => this.fromName;
   this.getTitle = () => this.title;
 };
