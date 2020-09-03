@@ -26,7 +26,9 @@ module.exports = function NewSite(domain, title, fromEmail, fromName) {
   this.domainWithProtocol = ensureUrlHasProtocol(this.domain);
   this.cmsDatabaseName = (this.uniqueSiteId + title).replace(/ |	/g, '').replace(/[^0-9a-zA-Z]+/g, '');// Remove spaces and special characters
   this.tmpDir = tmpPath + this.uniqueSiteId;
-  this.fromEmail = fromName ? `${fromName} <${fromEmail}>` : fromEmail;
+  this.fromEmail = fromEmail;
+
+  this.formattedFromEmail = fromName ? `${fromName} <${fromEmail}>` : fromEmail;
   this.fromName = fromName;
   this.title = title;
 
@@ -36,6 +38,7 @@ module.exports = function NewSite(domain, title, fromEmail, fromName) {
   this.getCmsDatabaseName = () => this.cmsDatabaseName;
   this.getTmpDir = () => this.tmpDir;
   this.getFromEmail = () => this.fromEmail;
+  this.getFormattedFromEmail = () => this.formattedFromEmail;
   this.getFromName = () => this.fromEmail;
   this.getTitle = () => this.title;
 };

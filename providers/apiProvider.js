@@ -47,21 +47,21 @@ exports.createSite = async (newSite, site, oauthClients) => {
     email: {
       siteaddress: newSite.getFromEmail(),
       thankyoumail: {
-        from: newSite.getFromEmail(),
+        from: newSite.getFormattedFromEmail(),
       }
     },
     notifications: {
-      from: newSite.getFromEmail(),
-      to: newSite.getFromEmail()
+      from: newSite.getFormattedFromEmail(),
+      to: newSite.getFormattedFromEmail()
     },
     ideas: {
       feedbackEmail: {
-        from: newSite.getFromEmail(),
+        from: newSite.getFormattedFromEmail(),
       }
     },
     newslettersignup: {
       confirmationEmail: {
-        from: newSite.getFromEmail(),
+        from: newSite.getFormattedFromEmail(),
       }
     },
     oauth: oauthClients
