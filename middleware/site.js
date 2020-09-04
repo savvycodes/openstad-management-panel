@@ -37,7 +37,9 @@ exports.addStats = (req, res, next) => {
       totalVoteCount = req.votes.filter(vote => (vote.checked === true || vote.checked === null) ).length;
 
       let usersVoted = {};
-      let votesPerDay = {}
+      votesPerDay = {};
+
+
       if (req.votes) {
         req.votes.forEach((vote) => {
           if (!usersVoted[vote.userId] && (vote.checked === true || vote.checked === null)) {
