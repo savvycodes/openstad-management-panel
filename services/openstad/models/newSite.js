@@ -24,7 +24,7 @@ module.exports = function NewSite(domain, title, fromEmail, fromName) {
   this.uniqueSiteId = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '').slice(0,62);
   this.domain = cleanUrl(domain);
   this.domainWithProtocol = ensureUrlHasProtocol(this.domain);
-  this.cmsDatabaseName = (this.uniqueSiteId + title).replace(/ |	/g, '').replace(/[^0-9a-zA-Z]+/g, '');// Remove spaces and special characters
+  this.cmsDatabaseName = this.uniqueSiteId;// Remove spaces and special characters
   this.tmpDir = tmpPath + this.uniqueSiteId;
   this.fromEmail = fromEmail;
 
