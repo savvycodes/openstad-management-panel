@@ -1,5 +1,6 @@
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const apiUrl = process.env.API_URL;
+const qs = require('qs');
 
 module.exports = function(app){
 
@@ -25,10 +26,7 @@ module.exports = function(app){
            let body = req.body;
            delete req.body;
 
-           // turn body object  back into a string
-           let newBody = Object.keys( body ).map(function( key ) {
-               return encodeURIComponent( key ) + '=' + encodeURIComponent( body[ key ])
-           }).join('&');
+           let newBody = qs.stringify(body)
 
            // Update header
            proxyReq.setHeader( 'content-type', 'application/x-www-form-urlencoded' );
