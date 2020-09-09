@@ -49,23 +49,46 @@ module.exports = function(app){
       const userRoles = req.editUser.roles;
       const userApiClients = [];
 
+      // first add admin panel at the top
+      //
+
+      const adminSiteId = process.env.SITE_ID;
+      const adminClientId = process.env.USER_API_CLIENT_ID
+      const adminClientSecret = process.env.USER_API_CLIENT_SECRET
+
+
+      // add the admin client
+
       req.sites.forEach((site) => {
-        if (site.config && site.config.oauth) {
-          const defaultClientCredentials = site.config.oauth.default ? site.config.oauth.default : site.config.oauth;
+        const isAdminSite = parseInt(adminSiteId, 10) === site.id;
 
-          if (defaultClientCredentials && defaultClientCredentials["auth-client-id"]) {
-            const clientId = defaultClientCredentials["auth-client-id"];
-            const client = req.userApiClients.find(client => client.clientId === clientId);
 
-            if (client) {
+        if (isAdminSite || site.config && site.config.oauth) {
+          const defaultClientCredentials = !isAdminSite && site.config.oauth.default ? site.config.oauth.default : site.config.oauth;
+
+          if (isAdminSite || defaultClientCredentials && defaultClientCredentials["auth-client-id"]) {
+            const clientId = isAdminSite ? adminClientId : defaultClientCredentials["auth-client-id"];
+            const originalClient = req.userApiClients.find(client => client.clientId === clientId);
+
+            if (originalClient) {
+              //copy so multiple clients will not have same title becasue of reference
+              const client = {...originalClient}
               // get user role for clien
-              client.site = site;
+              //make sure correct title;
+              client.siteTitle =  isAdminSite ? 'Admin panel' : site.title;
+              client.siteDomain =  site.domain;
               client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
+
+              delete client.config;
+
               userApiClients.push(client);
+
             }
           }
         }
       });
+
+
 
       res.render('users/form.html', {
         userApiClients: userApiClients
