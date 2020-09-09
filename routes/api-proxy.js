@@ -1,6 +1,5 @@
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const apiUrl = process.env.API_URL;
-const qs = require('query-string');
 
 module.exports = function(app){
 
@@ -21,15 +20,12 @@ module.exports = function(app){
 
         //bodyParser middleware parses the body into an object
         //for proxying to worl we need to turn it back into a string
-        if ( req.method == "POST" && req.body ) {
+        if ( (req.method == "POST" ||req.method == "PUT")  && req.body ) {
            // emit event
            let body = req.body;
            delete req.body;
 
-           let newBody = qs.stringify(body)
-
-           // Update header
-           proxyReq.setHeader( 'content-type', 'application/x-www-form-urlencoded' );
+           let newBody = JSON.stringify(body);
            proxyReq.setHeader( 'content-length', newBody.length );
            proxyReq.write( newBody );
            proxyReq.end();
