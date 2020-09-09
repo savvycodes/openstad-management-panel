@@ -1,6 +1,6 @@
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const apiUrl = process.env.API_URL;
-const qs = require('qs');
+const qs = require('query-string');
 
 module.exports = function(app){
 
