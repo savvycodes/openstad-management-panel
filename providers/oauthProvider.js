@@ -67,7 +67,7 @@ exports.createOauth = async (newSite, oauthData) => {
     authConfig.authTypes = authConfig.authTypes ? authConfig.authTypes : {};
 
     const client = {
-      name: newSite.getTitle() + ' ' + key,
+      name: newSite.getTitle(),
       description: data.description,
       authTypes: data.authTypes,
       requiredUserFields: data.requiredUserFields,
