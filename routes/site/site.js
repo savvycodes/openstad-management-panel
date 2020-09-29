@@ -233,6 +233,7 @@ module.exports = function(app){
       if (siteData.config.cms) {
         siteData.config.cms.url = domainWithProtocol;
         siteData.config.cms.domain =  domain;
+        siteData.config.cms.hostname =  domain;
       }
 
       promises.push(siteApi.update(req.session.jwt, req.params.siteId, siteData));
