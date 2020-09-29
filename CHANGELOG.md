@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.3 (2020-09-29)
+* Update hostname in CMS config on url update
+
 ## 0.7.2 (2020-09-29)
 * Hide old idea import & export buttons
 
