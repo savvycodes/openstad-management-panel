@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.4 (2020-09-29)
+* Fix mistakes in explanations for idea thank you email
+
 ## 0.7.3 (2020-09-29)
 * Update hostname in CMS config on url update
 

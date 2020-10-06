@@ -44,7 +44,7 @@
                  <b> idea.id </b>
               </td>
               <td>
-                 The id of the send in submission
+                 The id of a submitted idea
               </td>
             </tr>
             <tr>
@@ -52,7 +52,7 @@
                  <b> idea.title </b>
               </td>
               <td>
-                 The id of the send in submission
+                 The title of a submitted idea
               </td>
             </tr>
 
@@ -74,13 +74,13 @@ Deze is goed ontvangen.
 	Team {{SITENAME}}
 </p>{% endraw %}</textarea>
         <br />
-        <h3> How to add link to the submission? </h3>
+        <h3> How to link to the page of submitted idea? </h3>
         You can add a link to your website on the page where submissions are shown and add the ID to it.
-        For instance for westbegroot.nl has the plan page for submission so a link will to an submitted idea:
+        For instance for westbegroot.nl has the plan page for submission so a link to the page of a submitted idea is structured as follows:
         https://www.westbegroot.nl/plan/10
         This a working example for Westbegroot.nl:
-        <textarea class="form-control" style="min-height: 150px;">{% raw %}<a href="https://www.westbegroot.nl/plan/{{site.id}}">
-        {{site.title}}
+        <textarea class="form-control" style="min-height: 150px;">{% raw %}<a href="https://www.westbegroot.nl/plan/{{idea.id}}">
+        {{idea.title}}
 </a>{% endraw %}</textarea>
         <br />
         <h3> How to add an image? </h3>
