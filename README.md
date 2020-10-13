@@ -21,10 +21,10 @@ SITE_ID=6 #site Id from the openstad api
 SITE_API_KEY=xxxxxxx #site Id from the api
 BASIC_AUTH_USER= #basic auth pass, whatever you prefer
 BASIC_AUTH_PASSWORD=
+EXTERNAL_SITE_REPO=API_URL/api/repo
+FRONTEND_URL=http://cms.staging.amsterdam.nl
 PUBLIC_IP=
 ```
-
-stijnvdvegt
 
 #### 2. Run NPM install
 
