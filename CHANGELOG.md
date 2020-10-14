@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.5 (2020-09-29)
+* Update openstad logo
+
 ## 0.7.4 (2020-09-29)
 * Fix mistakes in explanations for idea thank you email
 
