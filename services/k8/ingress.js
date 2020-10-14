@@ -75,4 +75,4 @@ exports.edit = async (databaseName, newDomain) => {
  */
 exports.delete = async (databaseName) => {
   return getK8sApi().deleteNamespacedIngress(databaseName, process.env.KUBERNETES_NAMESPACE);
-}
+};
