@@ -248,34 +248,21 @@ module.exports = function(app){
 
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
+      
+      if (process.env.KUBERNETES_NAMESPACE) {
+        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
+      }
 
       /**
        * Import all promises
        */
       Promise.all(promises)
         .then(async function (response) {
-          
-          if (process.env.KUBERNETES_NAMESPACE) {
-            console.log('patch ingress:');
-            
-            try {
-              await k8Ingress.edit(siteData.config.cms.dbName, domain);
-              
-              
-              req.flash('success', { msg: 'Url aangepast!'});
-              res.redirect(req.header('Referer')  || appUrl);
-            } catch(error) {
-              console.error(error);
-              req.flash('error', { msg: 'Er gaat iets mis!'});
-              res.redirect(req.header('Referer')  || appUrl);
-            }
-          } else {
-            req.flash('success', { msg: 'Url aangepast!'});
-            res.redirect(req.header('Referer')  || appUrl);
-          }
-          
+          req.flash('success', { msg: 'Url aangepast!'});
+          res.redirect(req.header('Referer')  || appUrl);
         })
         .catch(function (err) {
+          console.error(err);
           req.flash('error', { msg: 'Er gaat iets mis!'});
           res.redirect(req.header('Referer')  || appUrl);
         });
