@@ -1,5 +1,14 @@
 const k8s = require('@kubernetes/client-node');
 
+const getK8sApi = () => {
+  const kc = new k8s.KubeConfig();
+  kc.loadFromCluster();
+  
+  return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
+}
+
+
+
 /**
  * Return the body to create / replace a namespaced ingress through the API
  *
@@ -8,7 +17,6 @@ const k8s = require('@kubernetes/client-node');
  * @returns {{metadata: {name: *, annotations: {"cert-manager.io/cluster-issuer": string, "kubernetes.io/ingress.class": string}}, apiVersions: string, kind: string, spec: {rules: [{host: *, http: {paths: [{path: string, backend: {servicePort: number, serviceName: string}}]}}], tls: [{secretName: *, hosts: [*]}]}}}
  */
 const getIngressBody = (databaseName, domain) => {
-
   return {
     apiVersions: 'networking.k8s.io/v1beta1',
     kind: 'Ingress',
@@ -38,7 +46,6 @@ const getIngressBody = (databaseName, domain) => {
       }]
     }
   }
-
 };
 
 /**
@@ -47,12 +54,7 @@ const getIngressBody = (databaseName, domain) => {
  * @returns {Promise<{response: http.IncomingMessage; body: NetworkingV1beta1Ingress}>}
  */
 exports.add = async (newSite) => {
-  const kc = new k8s.KubeConfig();
-  kc.loadFromCluster();
-
-  const k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
-
-  return k8sApi.createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getCmsDatabaseName(), newSite.getDomain()));
+  return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getCmsDatabaseName(), newSite.getDomain()));
 };
 
 /**
@@ -62,10 +64,15 @@ exports.add = async (newSite) => {
  * @returns {Promise<*>}
  */
 exports.edit = async (databaseName, newDomain) => {
-  const kc = new k8s.KubeConfig();
-  kc.loadFromCluster();
-
-  const k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
-
-  return k8sApi.replaceNamespacedIngress(databaseName, process.env.KUBERNETES_NAMESPACE, getIngressBody(databaseName, newDomain));
+  return getK8sApi().replaceNamespacedIngress(databaseName, process.env.KUBERNETES_NAMESPACE, getIngressBody(databaseName, newDomain));
 };
+
+
+/**
+ *
+ * @param databaseName
+ * @returns {Promise<*>}
+ */
+exports.delete = async (databaseName) => {
+  return getK8sApi().deleteNamespacedIngress(databaseName, process.env.KUBERNETES_NAMESPACE);
+}

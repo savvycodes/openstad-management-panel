@@ -287,6 +287,10 @@ module.exports = function(app){
 
       if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
         deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
+        
+        if (process.env.KUBERNETES_NAMESPACE) {
+          deleteActions.push(k8Ingress.delete(req.site.config.cms.dbName));
+        }
       }
 
       Promise.all(deleteActions)
