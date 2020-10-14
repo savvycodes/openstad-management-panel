@@ -41,3 +41,43 @@ exports.add = async (newSite) => {
     }
   });
 };
+
+exports.edit = async (cmsDatabaseName, newDomain) => {
+  
+  console.log ('edit ingress', cmsDatabaseName, newDomain);
+  
+  const kc = new k8s.KubeConfig();
+  kc.loadFromCluster();
+
+  const k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
+
+  return k8sApi.patchNamespacedIngress(cmsDatabaseName, process.env.KUBERNETES_NAMESPACE, {
+    apiVersions: 'networking.k8s.io/v1beta1',
+    kind: 'Ingress',
+    metadata: {
+      name: cmsDatabaseName,
+      annotations: {
+        'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod', // Todo: make this configurable
+        'kubernetes.io/ingress.class': 'nginx'
+      }
+    },
+    spec: {
+      rules: [{
+        host: newDomain,
+        http: {
+          paths: [{
+            backend: {
+              serviceName: 'openstad-frontend', // Todo: make this configurable
+              servicePort: 4444 // Todo: make this configurable
+            },
+            path: '/'
+          }]
+        }
+      }],
+      tls: [{
+        secretName: cmsDatabaseName,
+        hosts: [newDomain]
+      }]
+    }
+  });
+};

@@ -12,6 +12,7 @@ const userClientMw      = require('../../middleware/userClient');
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
 const openstadEnvironmentService = require('../../services/openstad/openstadEnvironmentService');
+const k8Ingress = require('../../services/k8/ingress');
 
 //ENV constants
 const apiUrl            = process.env.API_URL;
@@ -252,9 +253,27 @@ module.exports = function(app){
        * Import all promises
        */
       Promise.all(promises)
-        .then(function (response) {
-          req.flash('success', { msg: 'Url aangepast!'});
-          res.redirect(req.header('Referer')  || appUrl);
+        .then(async function (response) {
+          
+          if (process.env.KUBERNETES_NAMESPACE) {
+            console.log('patch ingress:');
+            
+            try {
+              await k8Ingress.edit(siteData.config.cms.dbName, domain);
+              
+              
+              req.flash('success', { msg: 'Url aangepast!'});
+              res.redirect(req.header('Referer')  || appUrl);
+            } catch(error) {
+              console.error(error);
+              req.flash('error', { msg: 'Er gaat iets mis!'});
+              res.redirect(req.header('Referer')  || appUrl);
+            }
+          } else {
+            req.flash('success', { msg: 'Url aangepast!'});
+            res.redirect(req.header('Referer')  || appUrl);
+          }
+          
         })
         .catch(function (err) {
           req.flash('error', { msg: 'Er gaat iets mis!'});
