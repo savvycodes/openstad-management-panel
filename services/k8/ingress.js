@@ -51,7 +51,7 @@ exports.edit = async (cmsDatabaseName, newDomain) => {
 
   const k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
 
-  return k8sApi.patchNamespacedIngress(cmsDatabaseName, process.env.KUBERNETES_NAMESPACE, {
+  return k8sApi.replaceNamespacedIngress(cmsDatabaseName, process.env.KUBERNETES_NAMESPACE, {
     apiVersions: 'networking.k8s.io/v1beta1',
     kind: 'Ingress',
     metadata: {
