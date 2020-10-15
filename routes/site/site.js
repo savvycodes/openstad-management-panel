@@ -257,7 +257,7 @@ module.exports = function(app){
        * Import all promises
        */
       Promise.all(promises)
-        .then(async function (response) {
+        .then(function (response) {
           req.flash('success', { msg: 'Url aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
         })
