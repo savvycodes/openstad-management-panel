@@ -12,6 +12,7 @@ const userClientMw      = require('../../middleware/userClient');
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
 const openstadEnvironmentService = require('../../services/openstad/openstadEnvironmentService');
+const k8Ingress = require('../../services/k8/ingress');
 
 //ENV constants
 const apiUrl            = process.env.API_URL;
@@ -247,6 +248,10 @@ module.exports = function(app){
 
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
+      
+      if (process.env.KUBERNETES_NAMESPACE) {
+        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
+      }
 
       /**
        * Import all promises
@@ -257,6 +262,7 @@ module.exports = function(app){
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch(function (err) {
+          console.error(err);
           req.flash('error', { msg: 'Er gaat iets mis!'});
           res.redirect(req.header('Referer')  || appUrl);
         });
@@ -281,6 +287,10 @@ module.exports = function(app){
 
       if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
         deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
+        
+        if (process.env.KUBERNETES_NAMESPACE) {
+          deleteActions.push(k8Ingress.delete(req.site.config.cms.dbName));
+        }
       }
 
       Promise.all(deleteActions)
