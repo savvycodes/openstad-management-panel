@@ -26,6 +26,7 @@ module.exports = function(app){
            delete req.body;
 
            let newBody = JSON.stringify(body);
+           proxyReq.setHeader( 'content-length', Buffer.byteLength(newBody, 'utf8'));
            proxyReq.write( newBody );
            proxyReq.end();
          }

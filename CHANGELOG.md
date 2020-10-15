@@ -1,7 +1,7 @@
 # Changelog
 
 ## UNRELEASED
-* Remove content-length for body api proxy, this breaks with special characters
+* Set content-length with Bufferlength for body api proxy, otherwise it breaks with special characters
 * Add slash to formatting tmp directory in site export  
 * Update corresponding ingress when site URL is changed
 * Delete corresponding ingress when a site is deleted
