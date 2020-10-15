@@ -25,7 +25,7 @@ module.exports = function NewSite(domain, title, fromEmail, fromName) {
   this.domain = cleanUrl(domain);
   this.domainWithProtocol = ensureUrlHasProtocol(this.domain);
   this.cmsDatabaseName = this.uniqueSiteId;// Remove spaces and special characters
-  this.tmpDir = tmpPath + this.uniqueSiteId;
+  this.tmpDir = tmpPath + '/' + this.uniqueSiteId;
   this.fromEmail = fromEmail;
 
   this.formattedFromEmail = fromName ? `${fromName} <${fromEmail}>` : fromEmail;

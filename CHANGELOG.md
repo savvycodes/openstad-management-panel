@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+* Remove content-length for body api proxy, this breaks with special characters
+* Add slash to formatting tmp directory in site export  
+
 ## 0.7.5 (2020-09-29)
 * Update openstad logo
 

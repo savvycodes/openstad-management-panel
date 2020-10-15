@@ -51,7 +51,7 @@ exports.getAttachments = async (dbName) => {
  */
 exports.exportDatabase = async (uniqueSiteId, dbName) => {
   const tmpDir = process.env.TMPDIR || './tmp';
-  const mongoPath = tmpDir + uniqueSiteId;
+  const mongoPath = tmpDir + '/' + uniqueSiteId;
   await mongoService.export(dbName, mongoPath);
 
   return `${mongoPath}/${dbName}`;
