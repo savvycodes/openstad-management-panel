@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.6 (2020-10-14)
+* Update corresponding ingress when site URL is changed
+* Delete corresponding ingress when a site is deleted
+
 ## 0.7.5 (2020-09-29)
 * Update openstad logo
 
