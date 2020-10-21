@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+* Update NPM modules for security
+
 ## v0.8.0-PRERLEASE (2020-17-07)
 * Set content-length with Bufferlength for body api proxy, otherwise it breaks with special characters
 * Add slash to formatting tmp directory in site export  
