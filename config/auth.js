@@ -185,10 +185,22 @@ const userApiSettingFields = [
   },
   {
     key: 'defaultRoleId',
-    type: 'number',
-    default: '2',
-    label: "Default Role Id"
-  },
+    type: 'select',
+    values: [
+      {
+        value: 2,
+        label: 'Member',
+      },
+      {
+        value:3,
+        label: 'Anonymous',
+      },
+    ],
+    default: 2,
+    label: "Default role a user gets when registering the first time"
+  }
+
+
 ];
 
 const userApiRequiredFields = [
