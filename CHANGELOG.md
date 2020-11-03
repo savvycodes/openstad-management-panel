@@ -1,6 +1,7 @@
 # Changelog
 
-## UNRELEASED
+## v0.8.2 (2020-11-03)
+* Update react-admin
 * Update NPM modules for security
 * Select for setting defaultRoleId in admin panel
 
