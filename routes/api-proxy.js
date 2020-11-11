@@ -20,19 +20,13 @@ module.exports = function(app){
 
         //bodyParser middleware parses the body into an object
         //for proxying to worl we need to turn it back into a string
-        if ( req.method == "POST" && req.body ) {
+        if ( (req.method == "POST" ||req.method == "PUT")  && req.body ) {
            // emit event
            let body = req.body;
            delete req.body;
 
-           // turn body object  back into a string
-           let newBody = Object.keys( body ).map(function( key ) {
-               return encodeURIComponent( key ) + '=' + encodeURIComponent( body[ key ])
-           }).join('&');
-
-           // Update header
-           proxyReq.setHeader( 'content-type', 'application/x-www-form-urlencoded' );
-           proxyReq.setHeader( 'content-length', newBody.length );
+           let newBody = JSON.stringify(body);
+           proxyReq.setHeader( 'content-length', Buffer.byteLength(newBody, 'utf8'));
            proxyReq.write( newBody );
            proxyReq.end();
          }

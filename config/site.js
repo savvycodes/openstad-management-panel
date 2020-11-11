@@ -69,6 +69,24 @@ exports.configSchema = {
       label: "Maximum length of description"
     },
   ],
+  widgetDisplaySettings: [
+    {
+      parentKey: 'cms',
+      key: 'beta',
+      type: 'boolean', // todo: add type email/list of emails
+      default: false,
+      label: "Display beta widgets?"
+    },
+    {
+      parentKey: 'cms',
+      key: 'deprecated',
+      type: 'boolean', // todo: add type email/list of emails
+      default: false,
+      label: "Display deprecated widgets?"
+    },
+  ],
+
+
   feedbackEmail: [
     {
       parentKey: 'ideas',
@@ -129,6 +147,26 @@ exports.configSchema = {
       label: 'From e-mail address'
     },
   ],
+  vimeo : [
+    {
+      key: 'clientId',
+      type: 'string',
+      default: '',
+      label: 'Vimeo client id'
+    },
+    {
+      key: 'secret',
+      type: 'string',
+      default: '',
+      label: 'Vimeo secret id'
+    },
+    {
+      key: 'accessToken',
+      type: 'string',
+      default: '',
+      label: 'Access Token'
+    },
+  ],
   votes: [
     {
       key: 'isViewable',
@@ -174,6 +212,22 @@ exports.configSchema = {
       ],
       default: 'error',
       label: 'Should voting again replace previous vote? Or give an error?'
+    },
+    {
+      key: 'requiredUserRole',
+      type: 'select',
+      values: [
+        {
+          value: 'anonymous',
+          label: 'Anonymous',
+        },
+        {
+          value: 'member',
+          label: 'Member',
+        }
+      ],
+      default: 'member',
+      label: 'For what user should voting be allowed?'
     },
     {
       key: 'voteType',

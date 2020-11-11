@@ -3,30 +3,23 @@ var dotenv = require('dotenv');
 dotenv.load();
 const express           = require('express');
 const i18n              = require("i18n");
-const isDev             = process.env.ENVIRONMENT === 'development';
-const Site              = require('./models').Site;
 const bodyParser        = require('body-parser');
 const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session')
 const nunjucks          = require('nunjucks');
 const flash             = require('express-flash');
 const app               = express();
-//const FileStore         = require('session-file-store')(expressSession);
+const FileStore         = require('session-file-store')(expressSession);
 const auth              = require('basic-auth');
 const compare           = require('tsscmp');
 const MongoStore        = require('connect-mongo')(expressSession);
 
 //middleware
-const ideaMw            = require('./middleware/idea');
 const siteMw            = require('./middleware/site');
 const enrichMw          = require('./middleware/enrich');
 const authMw            = require('./middleware/auth');
 const bodyMw            = require('./middleware/body');
 const csurf             = require('csurf');
-
-const userClientApi     = require('./services/userClientApi');
-const siteApi           = require('./services/siteApi');
-
 
 const dateFilter                  = require('./nunjucks/dateFilter');
 const currencyFilter              = require('./nunjucks/currency');
@@ -35,45 +28,25 @@ const jsonFilter                  = require('./nunjucks/json');
 const timestampFilter             = require('./nunjucks/timestamp');
 const replaceIdeaVariablesFilter  = require('./nunjucks/replaceIdeaVariables');
 
-const cleanUrl = (url) => {
-  return url.replace(['http://', 'https://'], '');
-}
-
-const ensureUrlHasProtocol = (url) => {
-  if (!url.startsWith('http://') || !url.startsWith('https://')) {
-    // if no protocol, assume https
-    url = 'https://' + url;
-  }
-
-  return url;
-}
-
 const mongoCredentials = {
   host: process.env.MONGO_DB_HOST || 'localhost',
   port: process.env.MONGO_DB_PORT || 27017,
-}
+};
 
 const url = 'mongodb://'+ mongoCredentials.host +':'+mongoCredentials.port+'/db-sessions';
 
-
+/*
 const sessionStore =  new MongoStore({
     url: url,
     ttl: 14 * 24 * 60 * 60 // = 14 days. Default
 })
+*/
 
+const sessionStore = new FileStore;
 
 const apiUrl = process.env.API_URL;
 const appUrl = process.env.APP_URL;
 const siteId = process.env.SITE_ID;
-
-const slugify = (text) => {
-  return text.toString().toLowerCase()
-    .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-    .replace(/^-+/, '')             // Trim - from start of text
-    .replace(/-+$/, '');            // Trim - from end of text
-}
 
 //app.set('views', __dirname + '/templates');
 
@@ -81,6 +54,8 @@ const nunjucksEnv = nunjucks.configure('templates', {
   autoescape: true,
   express: app
 });
+
+app.set('trust proxy', true);
 
 const health = require('@cloudnative/health-connect');
 let healthcheck = new health.HealthChecker();
@@ -94,7 +69,6 @@ app.get('/', (req, res) => {
 });
 
 // redirect the index page to the admin section
-
 app.use('/admin', (req, res, next) => {
   const unauthorized = (req, res) => {
       var challengeString = 'Basic realm=Openstad';
@@ -132,12 +106,10 @@ app.use((req, res, next) => {
 
 const copyDb          = require('./services/mongo').copyMongoDb;
 const dbExists        = require('./services/mongo').dbExists;
-const deleteMongoDb   = require('./services/mongo').deleteDb;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '200mb' }));
 app.use(bodyMw.parseBoolean);
-
 
 app.use(express.static('public'));
 
@@ -157,15 +129,13 @@ const sessionSettings = {
   key               : 'authorization.sid',
   cookie            : {
     maxAge:  3600000 * 24 * 7 ,
-    secure: false,
-    httpOnly: false,
+    secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
+    httpOnly: true,
     sameSite: false,
     path: '/'
   },
   store: sessionStore
-}
-
-
+};
 
 // Session Configuration
 app.use(expressSession(sessionSettings));
@@ -180,20 +150,19 @@ app.use(flash());
 app.use(enrichMw.run);
 
 // add csrf protection and token to global
-// app.use(
-//   csurf({
-//     cookie: {
-//       httpOnly: true,
-//       secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
-//       sameSite: true
-//     }
-//   }),
-//   (req, res, next) => {
-//     res.locals.csrfToken=  req.csrfToken();
-//     next();
-//   }
-// );
-
+app.use(
+  csurf({
+    cookie: {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE_OFF === 'yes' ? false : true,
+      sameSite: true
+    }
+  }),
+  (req, res, next) => {
+    res.locals.csrfToken=  req.csrfToken();
+    next();
+  }
+);
 
 /**
  * Check if user is isAuthenticated and fetch data

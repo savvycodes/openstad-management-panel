@@ -19,6 +19,7 @@ ENV SESSION_SECRET=""
 ENV SITE_API_KEY=""
 ENV BASIC_AUTH_USER=""
 ENV BASIC_AUTH_PASSWORD=""
+ENV PUBLIC_IP=""
 
 # Install all base dependencies.
 RUN apk add --no-cache --update g++ make python musl-dev bash

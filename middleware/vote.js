@@ -1,8 +1,17 @@
-const rp = require('request-promise');
-const apiUrl = process.env.API_URL;
+const rp                = require('request-promise');
+const apiUrl            = process.env.API_URL;
+const cache             = require('../services/cache').cache;
+const cacheLifespan     = 10*60;   // set lifespan of 10 minutes;
 
 exports.allForSite = (req, res, next) => {
-  if (req.site.config.admin && req.site.config.admin.displayStats) {
+  let voteKey = 'votesForSite' + req.params.siteId;
+  let votesForSite = cache.get(voteKey);
+
+  if (votesForSite) {
+    req.votes = votesForSite;
+    res.locals.votes = votesForSite;
+    next();
+  } else {
     var options = {
         uri: `${apiUrl}/api/site/${req.params.siteId}/vote`,
         headers: {
@@ -18,14 +27,12 @@ exports.allForSite = (req, res, next) => {
          const userVotedCount = votes;
          req.votes = allVotes;
          res.locals.votes = allVotes;
+         cache.set(voteKey, allVotes, { life: cacheLifespan });
          next();
       })
       .catch(function (err) {
         console.log('-->>>> err', err);
         next();
       });
-  } else {
-    req.votes = [];
-    next();
+    }
   }
-}

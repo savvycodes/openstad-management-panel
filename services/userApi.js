@@ -6,7 +6,7 @@ const httpBuildQuery = require('../utils/httpBuildQuery');
 console.log('apiUrl', apiUrl)
 
 const apiCredentials = {
-    client_id:  process.env.USER_API_CLIENT_ID,
+    client_id: process.env.USER_API_CLIENT_ID,
     client_secret: process.env.USER_API_CLIENT_SECRET,
 }
 

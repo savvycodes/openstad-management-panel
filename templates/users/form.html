@@ -31,7 +31,6 @@
           action="/admin/user"
           {% endif %}
         >
-          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for=""> First name </label>
             <div class="col-sm-8">
@@ -82,7 +81,8 @@
 
                   <tr>
                     <td>
-                      <b> {{client.name}} </b>
+                      <b> {{client.siteTitle}} (#{{client.id}}) </b> <br />
+                      <small> {{client.siteDomain}} </small>
                     </td>
                     {% for role in roles %}
 
@@ -126,8 +126,8 @@
               Create user
               {% endif %}
             </button>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          </form>
       </div>
     </div>
   </div>

@@ -8,6 +8,7 @@
       <h6 class="section-header">
         {{ __('Overview') }}  {{site.title}}
       </h6>
+      <small> <em> Statistics get refreshed every 10 minutes </em></small>
       {% if voteStatsActive %}
       <div class="row pt-4">
         <div class="col-sm-12">
@@ -20,7 +21,7 @@
                     <div class="tablos">
                       <div class="row mb-xl-2 mb-xxl-3">
                         <div class="col-sm-6">
-                          <span class="card card-openstad el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+                          <span class="card stats-card card-openstad el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
                             <div class="value">
                               {{ideas.length}}
                             </div>
@@ -33,7 +34,7 @@
                           </span>
                         </div>
                         <div class="col-sm-6">
-                          <span class="card card-openstad el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+                          <span class="card stats-card card-openstad el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
                             <div class="value">
                               {{totalVoteCount}}
                             </div>
@@ -45,7 +46,7 @@
                       </div>
                       <div class="row">
                         <div class="col-sm-6">
-                          <span class="card card-openstad el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
+                          <span class="card stats-card card-openstad el-tablo centered trend-in-corner padded bold-label" href="apps_support_index.html">
                             <div class="value">
                               {{totalVotesByUser}}
                             </div>

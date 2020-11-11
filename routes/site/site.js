@@ -1,10 +1,3 @@
-const fs = require('fs');
-const tar = require('tar');
-const fetch = require('node-fetch');
-
-const multer            = require('multer');
-const upload            = multer();
-
 const slugify             = require('slugify');
 const Promise             = require("bluebird");
 
@@ -18,28 +11,23 @@ const userClientMw      = require('../../middleware/userClient');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
-//utils
-const pick              = require('../../utils/pick');
+const openstadEnvironmentService = require('../../services/openstad/openstadEnvironmentService');
+const k8Ingress = require('../../services/k8/ingress');
+
 //ENV constants
 const apiUrl            = process.env.API_URL;
 const appUrl            = process.env.APP_URL;
-const siteId            = process.env.SITE_ID;
-
 const siteFields        = [{key: 'title'}];
-const siteConfigFields  = [{key: 'basicAuth'}];
 
-const ideaApi                     = require('../../services/ideaApi');
 const deleteMongoDb               = require('../../services/mongo').deleteDb;
 const dbExists                    = require('../../services/mongo').dbExists;
 const copyDb                      = require('../../services/mongo').copyMongoDb;
-const exportDb                      = require('../../services/mongo').export;
-const queryDb                      = require('../../services/mongo').query;
-const importDb                      = require('../../services/mongo').import;
 const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
 const userApiRequiredFields       = require('../../config/auth').userApiRequiredFields;
 const siteConfigSchema            = require('../../config/site').configSchema;
 
-const tmpDir = process.env.TMPDIR || './tmp';
+//models
+const NewSite = require('../../services/openstad/models/newSite');
 
 const cleanUrl = (url) => {
   return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
@@ -59,11 +47,11 @@ module.exports = function(app){
   /**
    * Show new site form
    */
-  app.get('/admin/site',
+  app.get('/admin/site-new',
     siteMw.withAll,
     externalSiteMw.withAll,
     (req, res, next) => {
-      res.render('site/new-form.html');
+      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST, existingDomains: req.sites.map(site => site.domain).join(',') });
     }
   );
 
@@ -73,7 +61,7 @@ module.exports = function(app){
   app.get('/admin/site-copy',
     siteMw.withAll,
     (req, res, next) => {
-      res.render('site/copy-form.html');
+      res.render('site/copy-form.html', {existingDomains: req.sites.map(site => site.domain).join(',')});
     }
   );
 
@@ -124,184 +112,29 @@ module.exports = function(app){
     }
   );
 
-  /**
-   * Create a new site by copying an old one
-   */
-  app.post('/admin/site',
-    siteMw.withAll,
-    userClientMw.withAll,
-    (req, res, next) => {
-    let clientDefault, clientAnonymous;
-    /**
-     * Create client in mijnopenstad oAuth API
-     */
-     const domain = cleanUrl(req.body.productionUrl);
-     const apiDomain = cleanUrl(apiUrl);
-     const domainWithProtocol = ensureUrlHasProtocol(domain);
-     const siteName = req.body.siteName;
-     // add time to make the name unique
-     // max amount of 120 bytes for name is 125 in mongodb, cut short at 100
-     const dbName = Math.round(new Date().getTime() / 1000) + domain.replace(/\./g, '').slice(0,99);
-     const siteToCopy = req.sites.find(site => parseInt(req.body.siteIdToCopy, 10) === site.id);
-     const authClientIdDefault = siteToCopy && siteToCopy.config && siteToCopy.config.oauth && siteToCopy.config.oauth.default ? siteToCopy.config.oauth.default["auth-client-id"]  : false;
-     const authClientId  = authClientIdDefault ? authClientIdDefault : (siteToCopy.config && siteToCopy.config.oauth ? siteToCopy.config.oauth["auth-client-id"] : false);
-     const authApiConfigCopy = req.userApiClients.find(client => client.clientId === authClientId);
+  app.post('/admin/site/copy',
+    // Todo: It would be nice if we create a controller for this method.
+    async (req, res, next) => {
+      try {
 
-     //copy the config but overwrite specific values entered by the user
-     const authConfig = authApiConfigCopy.config ? JSON.parse(authApiConfigCopy.config) : {};
-     authConfig.backUrl = domainWithProtocol;
-     authConfig.fromEmail = req.body.fromEmail;
-     authConfig.fromName = req.body.fromName;
+        const domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
 
-     const formattedAuthConfigDefault = {
-       name: siteName,
-       siteUrl: domainWithProtocol,
-       redirectUrl: domainWithProtocol,
-       description: authApiConfigCopy ? authApiConfigCopy.description : '',
-       authTypes: authApiConfigCopy && authApiConfigCopy.authTypes? JSON.parse(authApiConfigCopy.authTypes) : ['Url'],
-       requiredUserFields: authApiConfigCopy && authApiConfigCopy.authTypes ? JSON.parse(authApiConfigCopy.requiredUserFields) : ["firstName", "lastName", "email"],
-       allowedDomains: [domain, apiDomain],
-       config: authConfig
-    };
+        const newSite = new NewSite(domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
 
-    let dbToCopy = siteToCopy &&  siteToCopy.config &&  siteToCopy.config.cms ? siteToCopy.config.cms.dbName : false;
-    let siteId;
+        const siteData = await openstadEnvironmentService.get(newSite.getUniqueSiteId(), req.body.siteIdToCopy, req.body['choice-guides'], false);
 
-    // create the default oAuth client API
-    userClientApi.create(formattedAuthConfigDefault)
-     .then((defaultResponse) => {
-       clientDefault = defaultResponse;
-       formattedAuthConfigDefault.authTypes = ['Anonymous'];
-       formattedAuthConfigDefault.name = formattedAuthConfigDefault.name + ' ' + 'Anonymous';
+        const site = await openstadEnvironmentService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);
 
-       // for anonymous "authenticating" only require the postcode
-       formattedAuthConfigDefault.requiredUserFields = ['postcode'];
+        req.flash('success', { msg: 'De site is succesvol aangemaakt'});
+        res.redirect('/admin/site/' + site.id)
 
-       // create the anonymous oAuth client API for voting without authenticating
-       return userClientApi.create(formattedAuthConfigDefault);
-     })
-     .then((anonymousResponse) => {
-       clientAnonymous = anonymousResponse;
-
-      /**
-       * Create Site in openstad API
-       */
-      const siteConfig = Object.assign(siteToCopy.config, {
-          allowedDomains: [domain],
-          basicAuth: {
-            //check if set, default to true
-            active: req.body.basicAuthActive ? req.body.basicAuthActive === 'yes' : true,
-            user: req.body.basicAuthUser ? req.body.basicAuthUser : 'openstad_' + Math.random().toString(36).slice(-3),
-            password: req.body.basicAuthPassword ? req.body.basicAuthPassword : Math.random().toString(36).slice(-10),
-          },
-          cms: {
-            dbName: dbName,
-            url: domainWithProtocol,
-            hostname: domain,
-          },
-          oauth: {
-            default : {
-              "auth-client-id": clientDefault.clientId,
-              "auth-client-secret":  clientDefault.clientSecret,
-            },
-            anonymous: {
-              "auth-client-id": clientAnonymous.clientId,
-              "auth-client-secret":  clientAnonymous.clientSecret,
-            }
-          },
-          email: {
-            siteaddress: req.body.fromEmail,
-            thankyoumail: {
-              from: req.body.fromEmail,
-            }
-          }
-      });
-
-    const siteName = `${slugify(req.body.siteName)}-${new Date().getTime()}`;
-
-     return siteApi
-         .create(req.session.jwt, {
-            domain: domain,
-            name: siteName,
-            title: req.body.siteName,
-            config: siteConfig
-         })
-       })
-       .then((site) => {
-         return dbExists(dbToCopy);
-       })
-       .then((exists) => {
-         /**
-          * Copy mongodb database for CMS from chosen site, or if empty get the default DB
-          */
-         dbToCopy = exists ? dbToCopy : process.env.DEFAULT_DB;
-         return copyDb(dbToCopy, dbName);
-       })
-       .then(() => {
-         const successAction = () => {
-           req.flash('success', { msg: 'Aangemaakt!'});
-           res.redirect('/admin');
-         }
-
-         // kubernetes namespace is available
-         if (process.env.KUBERNETES_NAMESPACE) {
-            const k8s = require('@kubernetes/client-node')
-            const kc = new k8s.KubeConfig()
-            kc.loadFromCluster();
-
-            const k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api)
-            const clientIdentifier = 'openstad'
-
-            k8sApi.createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, {
-              apiVersions: 'networking.k8s.io/v1beta1',
-              kind: 'Ingress',
-              metadata: {
-                name: `${dbName}`,
-                annotations: {
-                   'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod',
-                   'kubernetes.io/ingress.class': 'nginx'
-                }
-              },
-              spec: {
-                rules: [{
-                  host: domain,
-                  http: {
-                    paths: [{
-                      backend: {
-                        serviceName: 'openstad-frontend',
-                        servicePort: 4444
-                      },
-                      path: '/'
-                    }]
-                  }
-                }],
-                tls: [{
-                  secretName: dbName,
-                  hosts: [domain]
-                }]
-              }
-            })
-            .then(() => {
-              //@todo: improve succes message, will take a few min to have a lets encrypt
-              console.log('Succesfully added ',domain, ' to ingress files');
-              successAction();
-            })
-            .catch((e) => {
-              console.log('Error while trying to add domain ',domain, ' to ingress files:', e);
-              //@todo, how to deal with failure? Add a route to retry?
-              successAction();
-            })
-         } else {
-           successAction();
-         }
-
-
-       })
-       .catch((e) => {
-         console.log(e);
-         res.status(500).json({ error: 'An error occured: ' + e.msg });
-       });
-  });
+      } catch (error) {
+        console.error(error);
+        req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken.'});
+        res.redirect('back');
+      }
+    }
+  );
 
   /**
    * Edit config value of the site
@@ -327,8 +160,6 @@ module.exports = function(app){
           fields.forEach((field) => {
             if (req.body.config[siteConfigField]) {
               let value = req.body.config[siteConfigField][field.key];
-
-              console.log('value', value);
 
               //check if not set (can be false in case of boolean)
               if (value || value === false) {
@@ -403,6 +234,7 @@ module.exports = function(app){
       if (siteData.config.cms) {
         siteData.config.cms.url = domainWithProtocol;
         siteData.config.cms.domain =  domain;
+        siteData.config.cms.hostname =  domain;
       }
 
       promises.push(siteApi.update(req.session.jwt, req.params.siteId, siteData));
@@ -416,6 +248,10 @@ module.exports = function(app){
 
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
+      
+      if (process.env.KUBERNETES_NAMESPACE) {
+        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
+      }
 
       /**
        * Import all promises
@@ -426,6 +262,7 @@ module.exports = function(app){
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch(function (err) {
+          console.error(err);
           req.flash('error', { msg: 'Er gaat iets mis!'});
           res.redirect(req.header('Referer')  || appUrl);
         });
@@ -450,6 +287,10 @@ module.exports = function(app){
 
       if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
         deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
+        
+        if (process.env.KUBERNETES_NAMESPACE) {
+          deleteActions.push(k8Ingress.delete(req.site.config.cms.dbName));
+        }
       }
 
       Promise.all(deleteActions)

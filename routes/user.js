@@ -1,4 +1,5 @@
 const userMw = require('../middleware/user');
+const siteMw = require('../middleware/site');
 const clientMw = require('../middleware/userClient');
 const roleMw = require('../middleware/role');
 const userApiService = require('../services/userApi');
@@ -41,16 +42,53 @@ module.exports = function(app){
    */
   app.get('/admin/user/:userId',
     clientMw.withAll,
+    siteMw.withAll,
     roleMw.withAll,
     userMw.withOne,
     (req, res) => {
       const userRoles = req.editUser.roles;
+      const userApiClients = [];
 
-      // iteriate through every client to add which role the user
-      const userApiClients = req.userApiClients.map((client) => {
-        client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
-        return client;
+      // first add admin panel at the top
+      //
+
+      const adminSiteId = process.env.SITE_ID;
+      const adminClientId = process.env.USER_API_CLIENT_ID
+      const adminClientSecret = process.env.USER_API_CLIENT_SECRET
+
+
+      // add the admin client
+
+      req.sites.forEach((site) => {
+        const isAdminSite = parseInt(adminSiteId, 10) === site.id;
+
+
+        if (isAdminSite || site.config && site.config.oauth) {
+          const defaultClientCredentials = !isAdminSite && site.config.oauth.default ? site.config.oauth.default : site.config.oauth;
+
+          if (isAdminSite || defaultClientCredentials && defaultClientCredentials["auth-client-id"]) {
+            const clientId = isAdminSite ? adminClientId : defaultClientCredentials["auth-client-id"];
+            const originalClient = req.userApiClients.find(client => client.clientId === clientId);
+
+            if (originalClient) {
+              //copy so multiple clients will not have same title becasue of reference
+              const client = {...originalClient}
+              // get user role for clien
+              //make sure correct title;
+              client.siteTitle =  isAdminSite ? 'Admin panel' : site.title;
+              client.siteDomain =  site.domain;
+              client.userRole =  userRoles ? userRoles.find(userRole => userRole.clientId === client.id) : {};
+
+              delete client.config;
+
+              userApiClients.push(client);
+
+            }
+          }
+        }
       });
+
+
 
       res.render('users/form.html', {
         userApiClients: userApiClients

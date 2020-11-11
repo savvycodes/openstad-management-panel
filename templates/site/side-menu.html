@@ -30,7 +30,7 @@
   {% endif %}
   {% if site.config.cms.dbName %}
   <li class="nav-item">
-    <a class="nav-link" href="https://{{site.domain}}" target="_blank">
+    <a class="nav-link" href="//{{site.domain}}" target="_blank">
       <span data-feather="layers"></span>
       <span> {{ __('Edit site') }} ↗</span>
     </a>
@@ -53,18 +53,6 @@
     <span data-feather="layers"></span>
     <span> {{ __('Newsletter subscribers') }} </span>
   </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="/admin/site/{{site.id}}/submissions">
-      <span data-feather="layers"></span>
-      <span> {{ __('Submissions') }} </span>
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="/admin/site/{{site.id}}/arguments">
-      <span data-feather="layers"></span>
-      <span> {{ __('Arguments') }}  </span>
-    </a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="/admin/site/{{site.id}}/export">
