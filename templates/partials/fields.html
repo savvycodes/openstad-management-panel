@@ -1,5 +1,4 @@
 {% macro renderField(field, data, prefixName) %}
-
   {% if prefixName %}
   {% set fieldName = prefixName + '['+field.key+']' %}
   {% set fieldValue = data[field.key] %}

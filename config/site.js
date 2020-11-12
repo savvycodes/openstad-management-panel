@@ -147,6 +147,26 @@ exports.configSchema = {
       label: 'From e-mail address'
     },
   ],
+  vimeo : [
+    {
+      key: 'clientId',
+      type: 'string',
+      default: '',
+      label: 'Vimeo client id'
+    },
+    {
+      key: 'secret',
+      type: 'string',
+      default: '',
+      label: 'Vimeo secret id'
+    },
+    {
+      key: 'accessToken',
+      type: 'string',
+      default: '',
+      label: 'Access Token'
+    },
+  ],
   votes: [
     {
       key: 'isViewable',

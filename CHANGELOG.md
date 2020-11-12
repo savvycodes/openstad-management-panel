@@ -1,7 +1,13 @@
 # Changelog
 
 ## UNRELEASED
+* When creating a user, in the role editing table also display the site domain next to the client ID
+
+
+## v0.8.2 (2020-11-03)
+* Update react-admin
 * Update NPM modules for security
+* Select for setting defaultRoleId in admin panel
 
 ## v0.8.0-PRERLEASE (2020-17-07)
 * Set content-length with Bufferlength for body api proxy, otherwise it breaks with special characters
