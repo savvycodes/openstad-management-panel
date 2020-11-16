@@ -1,8 +1,8 @@
 # Changelog
 
-## UNRELEASED
-* When creating a user, in the role editing table also display the site domain next to the client ID
 
+## v0.9.0 (UNRELEASED)
+* When creating a user, in the role editing table also display the site domain next to the client ID
 
 ## v0.8.2 (2020-11-03)
 * Update react-admin
