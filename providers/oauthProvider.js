@@ -30,7 +30,7 @@ exports.getData = async (oauthConfig) => {
  * @returns {Promise<void>}
  */
 exports.createOauth = async (newSite, oauthData) => {
-  console.log('creating oauth clients');
+  console.log('creating oauth clients',  newSite.getTitle());
   const clients = {};
 
   if (oauthData.length === 0) {
