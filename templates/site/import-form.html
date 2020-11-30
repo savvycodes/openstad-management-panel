@@ -19,10 +19,25 @@
 
           </div>
 
+
           <div class="row">
             <div class="col-sm-12">
               <div class="form-group">
-                <label for="">Selecteer file</label>
+                <label for="">Naam van de website</label>
+                <input
+                  class="form-control"
+                  placeholder="Bijv. Javabrug"
+                  type="text"
+                  value=""
+                  name="siteName"
+                  maxlength="62"
+                  minlength="2"
+                  required
+                />
+              </div>
+              
+              <div class="form-group">
+                <label for="">Selecteer bestand</label>
                 <input type="file" name="import_file" class="form-control" required />
               </div>
             </div>
