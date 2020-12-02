@@ -2,7 +2,7 @@
 
 ## UNRELEASED
 * When creating a user, in the role editing table also display the site domain next to the client ID
-
+* Only allow alphanumeric characters in the uniqueidentifier otherwise will cause issues with copying sites
 
 ## v0.8.2 (2020-11-03)
 * Update react-admin
