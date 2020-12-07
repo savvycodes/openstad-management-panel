@@ -1,4 +1,8 @@
 # Changelog
+
+## pre-v0.10.0 (UNRELEASED)
+* Only allow alphanumeric characters in the uniqueidentifier otherwise will cause issues with copying sites
+
 ## v0.9.0 (2020-11-17)
 * When creating a user, in the role editing table also display the site domain next to the client ID
 * Bugfix: fix importing site by adding site name field
@@ -7,6 +11,7 @@
 * Update react-admin
 * Update NPM modules for security
 * Select for setting defaultRoleId in admin panel
+
 
 ## v0.8.2 (2020-11-03)
 * Update react-admin
