@@ -1,6 +1,6 @@
 # Changelog
 
-## pre-v0.10.0 (UNRELEASED)
+## v0.10.0 (2020-12-09)
 * Only allow alphanumeric characters in the uniqueidentifier otherwise will cause issues with copying sites
 
 ## v0.9.0 (2020-11-17)
