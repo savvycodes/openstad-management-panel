@@ -28,9 +28,19 @@ module.exports = function(app) {
     userClientMw.withOneForSite,
     (req, res, next) => {
       let data = req.userApiClient;
+      const authTypes = req.body.authTypes ? req.body.authTypes : [];
+      const requiredFields = req.body.requiredUserFields ? req.body.requiredUserFields : [];
+
+      const emailAuthTypesEnabled = authTypes.indexOf('Url') !== -1 ||authTypes.indexOf('Local') !== -1;
+      const emailRequired = requiredFields.indexOf('email') !== -1;
 
       if (!req.body.authTypes) {
         req.flash('error', { msg: 'At least one authentication method is required'});
+        res.redirect(req.header('Referer')  || appUrl);
+
+      // only allow emailRequired if email is validated through an auth type like email url of password
+      } else if (emailRequired && !emailAuthTypesEnabled) {
+        req.flash('error', { msg: 'Select an authentication method that uses e-mail if you want to make e-mail an required field.'});
         res.redirect(req.header('Referer')  || appUrl);
       } else {
         data.requiredUserFields = req.body.requiredUserFields ? req.body.requiredUserFields : [];
