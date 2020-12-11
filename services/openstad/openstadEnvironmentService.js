@@ -100,14 +100,18 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
       const frontendUploadDomain = process.env.FRONTEND_URL; // Use the default frontend url for now because the new site doesn't have an ingress yet
-      await cmsProvider.importCmsAttachments(frontendUploadDomain, newSite.getTmpDir(), cmsData.attachments);
+      try {
+        let response = await cmsProvider.importCmsAttachments(frontendUploadDomain, newSite.getTmpDir(), cmsData.attachments);;
+      } catch(err) {
+        console.log('Error while uploading the images', err); // TypeError: failed to fetch
+      }
     }
 
     // Try to remove import files
     try {
       removeFolderRecursive(newSite.getTmpDir());
     } catch(error) {
-      console.error(error);
+      console.error('Error removing tmp dir for uploading', error);
     }
 
     if (process.env.KUBERNETES_NAMESPACE) {

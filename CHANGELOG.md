@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.1 (2020-12-09)
+* Log errors while uploading images
+
 ## v0.10.0 (2020-12-09)
 * Only allow alphanumeric characters in the uniqueidentifier otherwise will cause issues with copying sites
 
