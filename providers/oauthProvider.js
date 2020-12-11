@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const userClientApi = require('../services/userClientApi');
-
+const {memberRoleId, anonymousRoleId} = require('../config/auth');
 const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
 
 /**
@@ -43,6 +43,7 @@ exports.createOauth = async (newSite, oauthData) => {
           authTypes: ['Url'],
           description: '',
           requiredUserFields: ["firstName", "lastName", "email"],
+          defaultRoleId: memberRoleId
         }
       },
       {
@@ -52,6 +53,7 @@ exports.createOauth = async (newSite, oauthData) => {
           authTypes: ['Anonymous'],
           description: '',
           requiredUserFields: ["postcode"],
+          defaultRoleId: anonymousRoleId
         }
       }
     ]
@@ -65,6 +67,7 @@ exports.createOauth = async (newSite, oauthData) => {
     authConfig.fromEmail = newSite.getFromEmail();
     authConfig.fromName = newSite.getFromName();
     authConfig.authTypes = authConfig.authTypes ? authConfig.authTypes : {};
+    authConfig.defaultRoleId = data.defaultRoleId;
 
     const client = {
       name: newSite.getTitle(),

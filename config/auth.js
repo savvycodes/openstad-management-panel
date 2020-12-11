@@ -238,6 +238,8 @@ const get = (key) => {
   return types.find(type => type.key === key);
 }
 
+exports.memberRoleId  = process.env.MEMBER_ROLE_ID ? process.env.MEMBER_ROLE_ID : 2;
+exports.anonymousRoleId = process.env.ANONYMOUS_ROLE_ID ? process.env.ANONYMOUS_ROLE_ID : 3;
 exports.userFields = userFields;
 exports.types = types;
 exports.get = get;
