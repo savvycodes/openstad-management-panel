@@ -83,26 +83,16 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
 
-    console.log('domain is up2: ', isDomainUp, process.env.FRONTEND_URL);
-
     await validateInput(apiData, oauthData, cmsData);
 
-    console.log('create oauth: ');
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
-    console.log('keuze wijzer');
 
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
 
-    console.log('keuze wijzer');
-
-
     if (apiData.choiceGuides) {
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
     }
-
-
-    console.log('make user admin');
 
     if (apiData.site.config.oauth.default.id) {
       await oauthProvider.makeUserSiteAdmin(user.externalUserId, apiData.site.config.oauth.default.id);
@@ -110,23 +100,21 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
       const frontendUploadDomain = process.env.FRONTEND_URL; // Use the default frontend url for now because the new site doesn't have an ingress yet
-      console.log('frontendUploadDomain: ', frontendUploadDomain);
-
-      await cmsProvider.importCmsAttachments(frontendUploadDomain, newSite.getTmpDir(), cmsData.attachments);
+      try {
+        let response = await cmsProvider.importCmsAttachments(frontendUploadDomain, newSite.getTmpDir(), cmsData.attachments);;
+      } catch(err) {
+        console.log('Error while uploading the images', err); // TypeError: failed to fetch
+      }
     }
 
     // Try to remove import files
     try {
-      console.log('removeFolderRecursive:');
-
       removeFolderRecursive(newSite.getTmpDir());
     } catch(error) {
-      console.error(error);
+      console.error('Error removing tmp dir for uploading', error);
     }
 
     if (process.env.KUBERNETES_NAMESPACE) {
-      console.log('create ingress:');
-
       try {
         await k8Ingress.add(newSite);
         // Todo: Move this to the a cronjob (api or admin).
