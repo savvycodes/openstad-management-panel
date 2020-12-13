@@ -82,6 +82,8 @@ exports.importCmsDatabase = async (newSite, mongoPath) => {
 exports.importCmsAttachments = async (domain, dir, attachments) => {
   console.log('import cms attachments', domain);
   const formData = new FormData();
+  console.log('Attachemnts', attachments)
+  console.log('dir', dir)
 
   attachments.forEach(function(attachment) {
     formData.append('files', createReadStream(dir + '/attachments/' + attachment));
