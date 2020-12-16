@@ -167,6 +167,34 @@ exports.configSchema = {
       label: 'Access Token'
     },
   ],
+  smtp: [
+    {
+      key: 'port',
+      type: 'string',
+      default: '465',
+      label: "Username"
+    },
+    {
+      key: 'host',
+      type: 'string',
+      default: 'smtp.sendgrid.net',
+      label: "Host"
+    },
+    {
+      parentKey: 'auth',
+      key: 'user',
+      type: 'string',
+      default: '',
+      label: "User"
+    },
+    {
+      parentKey: 'auth',
+      key: 'pass',
+      type: 'string',
+      default: '',
+      label: "Password"
+    }
+  ],
   votes: [
     {
       key: 'isViewable',

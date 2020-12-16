@@ -1,0 +1,33 @@
+{% set fullWidthLayout = true %}
+
+{% extends 'user-layout.html' %}
+
+{% block body %}
+<div class="card-container">
+  {% from 'partials/fields.html' import renderFields %}
+  <div class="row">
+    <div class="col-sm-12">
+      <h6 class="section-header">
+        {{ __('Site settings') }}
+      </h6>
+    </div>
+    <div class="col-sm-3">
+      {% include 'site/settings/menu.html' %}
+    </div>
+    <div class="col-sm-9">
+      <div class="card-container">
+        <div class="card card-openstad">
+          <form method="POST" action="/admin/site/{{site.id}}/smtp">
+            {{ renderFields(siteConfigSchema.smtp, site.config.smtp, 'config[smtp]') }}
+            <div class="form-buttons-w">
+              <button class="btn btn-outline-primary" type="submit">Opslaan</button>
+            </div>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+</form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

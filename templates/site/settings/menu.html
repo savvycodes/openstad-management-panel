@@ -4,6 +4,7 @@
     <li class="nav-item" {% if pageName === 'ideas'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/ideas" class="nav-link">{{ __('Ideas') }}</a> </li>
     <li class="nav-item" {% if pageName === 'voting'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/voting" class="nav-link">{{ __('Voting') }}</a> </li>
     <li class="nav-item"  {% if pageName === 'basic-auth'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/basic-auth" class="nav-link">{{ __('Password protection') }}</a> </li>
+    <li class="nav-item" {% if pageName === 'themes-areas'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/smtp" class="nav-link">{{ __('SMTP'}}</a> </li>
 
     <li class="nav-item" {% if pageName === 'themes-areas'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/themes-areas" class="nav-link">{{ __('Themes & areas') }}</a> </li>
     <li class="nav-item" {% if pageName === 'notifications'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/notifications" class="nav-link">{{ __('Admin notifications') }}</a> </li>
