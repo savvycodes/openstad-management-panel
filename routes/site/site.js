@@ -248,7 +248,7 @@ module.exports = function(app){
 
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
-      
+
       if (process.env.KUBERNETES_NAMESPACE) {
         promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
       }
@@ -259,6 +259,49 @@ module.exports = function(app){
       Promise.all(promises)
         .then(function (response) {
           req.flash('success', { msg: 'Url aangepast!'});
+          res.redirect(req.header('Referer')  || appUrl);
+        })
+        .catch(function (err) {
+          console.error(err);
+          req.flash('error', { msg: 'Er gaat iets mis!'});
+          res.redirect(req.header('Referer')  || appUrl);
+        });
+
+    }
+  );
+
+
+  /**
+   * Edit url of the website, this has specific route because it needs to happen at specific points
+   * @type {[type]}
+   */
+  app.post('/admin/site/:siteId/smtp',
+    siteMw.withOne,
+    userClientMw.withOneForSite,
+    (req, res, next) => {
+
+      const clientConfig =  clientData.config;
+
+      const smtpSettings = {
+
+      }
+
+      clientConfig.smtp = smtpSettings;
+      clientData
+
+      promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
+
+
+      if (process.env.KUBERNETES_NAMESPACE) {
+        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
+      }
+
+      /**
+       * Import all promises
+       */
+      Promise.all(promises)
+        .then(function (response) {
+          req.flash('success', { msg: 'Aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch(function (err) {
@@ -287,7 +330,7 @@ module.exports = function(app){
 
       if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
         deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
-        
+
         if (process.env.KUBERNETES_NAMESPACE) {
           deleteActions.push(k8Ingress.delete(req.site.config.cms.dbName));
         }
