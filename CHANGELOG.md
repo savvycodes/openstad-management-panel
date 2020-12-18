@@ -1,7 +1,8 @@
 # Changelog
 
-## UNRELEASED
-* For default site don't allow editing of basic auth or delete
+## v0.10.3-pre-release (2020-12-16)
+* Only allow to select an authentication method that uses e-mail if the user wants to make e-mail a required field.
+* For default site don't allow editing of basic auth or delete.
 
 ## v0.10.2 (2020-12-09)
 * Only allow to select an authentication method that uses e-mail if the user wants to make e-mail an required field.
