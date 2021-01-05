@@ -41,6 +41,7 @@ module.exports = function(app){
 
         // add protocol so in development environments http is allowed
         domain = req.body.protocol + cleanUrl(domain);
+        domain = domain.toLowerCase();
 
         const newSite = new NewSite(domain, '', req.body.fromEmail, req.body.fromName);
 

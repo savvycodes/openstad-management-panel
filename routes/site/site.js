@@ -212,14 +212,13 @@ module.exports = function(app){
     (req, res, next) => {
 
       const siteData = req.site;
-      const domain = cleanUrl(req.body.productionUrl);
+      const domain = cleanUrl(req.body.productionUrl).toLowerCase();
       const apiDomain = cleanUrl(apiUrl);
 
       // sites can run on domain.com/site1, but when checking domain should be only base domain
       const baseDomain = formatBaseDomain(domain);
 
-      const domainWithProtocol = ensureUrlHasProtocol(req.body.productionUrl);
-
+      const domainWithProtocol = ensureUrlHasProtocol(req.body.productionUrl).toLowerCase();
 
       const promises = [];
 
