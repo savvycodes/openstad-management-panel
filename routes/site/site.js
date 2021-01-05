@@ -29,18 +29,9 @@ const siteConfigSchema            = require('../../config/site').configSchema;
 //models
 const NewSite = require('../../services/openstad/models/newSite');
 
-const cleanUrl = (url) => {
-  return url.replace('http://', '').replace('https://', '').replace(/\/$/, "");
-}
-
-const ensureUrlHasProtocol = (url) => {
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    // if no protocol, assume https
-    url = 'https://' + url;
-  }
-
-  return url;
-}
+const cleanUrl                = require('../../utils/cleanUrl');
+const ensureUrlHasProtocol    = require('../../utils/ensureUrlHasProtocol');
+const formatBaseDomain        = require('../../utils/formatBaseDomain');
 
 module.exports = function(app){
 
@@ -117,7 +108,8 @@ module.exports = function(app){
     async (req, res, next) => {
       try {
 
-        const domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
+        let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
+        domain = req.body.protocol + cleanUrl(domain);
 
         const newSite = new NewSite(domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
 
@@ -222,13 +214,23 @@ module.exports = function(app){
       const siteData = req.site;
       const domain = cleanUrl(req.body.productionUrl);
       const apiDomain = cleanUrl(apiUrl);
+
+      // sites can run on domain.com/site1, but when checking domain should be only base domain
+      const baseDomain = formatBaseDomain(domain);
+
       const domainWithProtocol = ensureUrlHasProtocol(req.body.productionUrl);
+
+
       const promises = [];
 
       // set domain to site api
+      // this probably should be changed names in future, since sites can also run under domain.com/subdir
+      // url would be more fitting
       siteData.domain = domain;
     ///  siteData.config.cms.url = siteData.config.cms.url ? [domain] : [];
-      siteData.config.allowedDomains = siteData.config.allowedDomains ? [domain] : [];
+
+
+      siteData.config.allowedDomains = baseDomain ? [baseDomain] : [];
 
       // update CMS urls
       if (siteData.config.cms) {

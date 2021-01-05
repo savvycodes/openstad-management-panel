@@ -32,7 +32,7 @@ exports.createSite = async (newSite, site, oauthClients) => {
 
   // create site in API
   const siteConfig = merge.recursive(site.config, {
-    allowedDomains: [...site.config.allowedDomains, newSite.getDomain()],
+    allowedDomains: [...site.config.allowedDomains, newSite.getBaseDomain()],
     basicAuth: {
       //check if set, default to true
       active: true,
