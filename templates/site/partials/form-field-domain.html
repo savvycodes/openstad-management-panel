@@ -9,33 +9,48 @@
     <label for="domain-type" class="form-check-label">Full domain</label>
   </div>
 
+
   <div class="form-row">
-    <div class="col-auto"> 
-
+    <div class="col-auto" style="width: 100px">
+      {% if allowHttpUrls %}
+      <select
+        class="form-control"
+        name="protocol"
+        required
+      >
+        <option selected value="https://">https://</option>
+        <option value="http://"> http:// </option>
+      </select>
+      {% else %}
+      <input
+        class="form-control"
+        type="text"
+        value="https://"
+        name="protocol"
+        disabled
+      />
+      {% endif %}
     </div>
-
     <div class="col col-domain">
       <input
-              class="form-control valid-domain-character"
-              id="domain"
-
-              type="text"
-              value=""
-              name="domain"
-              required
+        class="form-control valid-domain-character"
+        id="domain"
+        type="text"
+        value=""
+        name="domain"
+        required
       />
     </div>
-    <div class="col-auto wildcardHost col-66">
+    <div class="col col-auto wildcardHost">
       <input
-              class="form-control valid-domain-character"
-              id="wildcardHost"
-              type="text"
-              value=".{{wildcardHost}}"
-              name="wildcardHost"
-              required
-              readonly
+        class="form-control valid-domain-character"
+        id="wildcardHost"
+        type="text"
+        value=".{{wildcardHost}}"
+        name="wildcardHost"
+        required
+        readonly
       />
-
     </div>
   </div>
 </div>

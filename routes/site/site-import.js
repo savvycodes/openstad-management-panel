@@ -11,6 +11,7 @@ const importService  = require('../../services/openstad/importService');
 
 //models
 const NewSite = require('../../services/openstad/models/newSite');
+const cleanUrl                = require('../../utils/cleanUrl');
 
 module.exports = function(app){
 
@@ -36,15 +37,21 @@ module.exports = function(app){
     async (req, res, next) => {
       try {
 
-        const domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
+        let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
+
+        // add protocol so in development environments http is allowed
+        domain = req.body.protocol + cleanUrl(domain);
+
         const newSite = new NewSite(domain, '', req.body.fromEmail, req.body.fromName);
 
         const dir = await importService.handleImportFile(newSite, req.file, req.body.fileUrl);
 
         const siteData = await openstadEnvironmentService.getFromFiles(dir);
+
         newSite.title = req.body.siteName;
 
-        console.log('creating new site!');
+        console.log('creating new site :', newSite.title );
+
         const site = await openstadEnvironmentService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);
 
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});

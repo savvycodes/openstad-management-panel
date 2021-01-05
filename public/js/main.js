@@ -59,7 +59,7 @@ $(function () {
       var key = event.which;
       var keychar = String.fromCharCode(key).toLowerCase();
 
-      if ((("abcdefghijklmnopqrstuvwxyz0123456789.").indexOf(keychar) == -1)) {
+      if ((("abcdefghijklmnopqrstuvwxyz0123456789.:").indexOf(keychar) == -1)) {
          event.preventDefault();
          return false;
       }
@@ -67,8 +67,6 @@ $(function () {
 
   $(".valid-domain-character").on('input', function(event) {
     //also enfore lowercase
-    console.log('lower case')
-
     var lowercaseValue = $(this).val().toLowerCase();
     $(this).val(lowercaseValue);
   });
