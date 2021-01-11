@@ -84,7 +84,7 @@ app.use('/admin', (req, res, next) => {
     var user = auth(req);
 
     console.log('basicAuthUser', basicAuthUser);
-    console.log('BASIC_AUTH_PASSWORD', BASIC_AUTH_PASSWORD);
+    console.log('BASIC_AUTH_PASSWORD', basicAuthPassword);
     console.log('user', user);
 
     if (!user || !compare(user.name, basicAuthUser) || ! compare(user.pass, basicAuthPassword)) {
