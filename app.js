@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
 // redirect the index page to the admin section
 app.use('/admin', (req, res, next) => {
   const unauthorized = (req, res) => {
-      var challengeString = 'Basic realm=Openstad';
+      var challengeString = 'Basic realm=OpenstadAdmin';
       res.set('WWW-Authenticate', challengeString);
       return res.status(401).send('Authentication required.');
   }
