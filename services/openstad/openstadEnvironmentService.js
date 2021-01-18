@@ -81,17 +81,20 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
   try {
 
-    //const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
-    const isDomainUp = false;
+    const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
+  //  const isDomainUp = true;
     console.error('Validate Input');
 
     await validateInput(apiData, oauthData, cmsData);
 
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
 
-    console.error('Import Cms Database');
+    console.error('Import Cms Database', cmsData.mongoPath);
 
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
+    
+    console.error('Create new site', newSite);
+
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
 
     if (apiData.choiceGuides) {
