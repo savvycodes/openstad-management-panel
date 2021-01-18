@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.10.3-pre-release (2020-12-16)
+## UNRELEASED
+* Allowing to set ALLOW_HTTP_URLS to ON will allow http:// edit
+* Allowing site with urls with subdirectories like domain.com/site1 domain.com/site2 
+
+## v0.10.3 (2020-12-16)
 * Only allow to select an authentication method that uses e-mail if the user wants to make e-mail a required field.
 * For default site don't allow editing of basic auth or delete.
 

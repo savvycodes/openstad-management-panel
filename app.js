@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
 // redirect the index page to the admin section
 app.use('/admin', (req, res, next) => {
   const unauthorized = (req, res) => {
-      var challengeString = 'Basic realm=Openstad';
+      var challengeString = 'Basic realm=OpenstadAdmin';
       res.set('WWW-Authenticate', challengeString);
       return res.status(401).send('Authentication required.');
   }
@@ -79,8 +79,13 @@ app.use('/admin', (req, res, next) => {
   const basicAuthUser = process.env.BASIC_AUTH_USER;
   const basicAuthPassword = process.env.BASIC_AUTH_PASSWORD;
 
+
   if (basicAuthUser && basicAuthPassword) {
     var user = auth(req);
+
+    console.log('basicAuthUser', basicAuthUser);
+    console.log('BASIC_AUTH_PASSWORD', basicAuthPassword);
+    console.log('user', user);
 
     if (!user || !compare(user.name, basicAuthUser) || ! compare(user.pass, basicAuthPassword)) {
       unauthorized(req, res);
