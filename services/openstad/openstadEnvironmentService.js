@@ -82,8 +82,7 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
   try {
 
     //const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
-    const isDomainUp = true;
-    
+    const isDomainUp = false;
     console.error('Validate Input');
 
     await validateInput(apiData, oauthData, cmsData);
