@@ -60,7 +60,7 @@ module.exports = function(app){
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id);
       } catch(error) {
-        console.error(error);
+        console.error('Error ---', error);
         req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken'});
         res.redirect('back');
       }

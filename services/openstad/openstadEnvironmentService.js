@@ -83,20 +83,29 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
 
+    console.error('Validate Input');
+
     await validateInput(apiData, oauthData, cmsData);
 
     const oauthClients = await oauthProvider.createOauth(newSite, oauthData.clients);
+
+    console.error('Import Cms Database');
 
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
 
     if (apiData.choiceGuides) {
+      console.error('Create choiceGuides');
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
     }
+
+    console.error('Make users admin');
 
     if (apiData.site.config.oauth.default.id) {
       await oauthProvider.makeUserSiteAdmin(user.externalUserId, apiData.site.config.oauth.default.id);
     }
+
+    console.error('Upload images');
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
       const frontendUploadDomain = process.env.FRONTEND_URL; // Use the default frontend url for now because the new site doesn't have an ingress yet
@@ -136,7 +145,7 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
     // Get api site and remove if exists
     // Get choiceguides and remove if exists
 
-    console.error(error);
+    console.error('Error on create', error);
     throw error;
   }
 };
