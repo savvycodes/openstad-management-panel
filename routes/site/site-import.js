@@ -38,9 +38,11 @@ module.exports = function(app){
       try {
 
         let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
+        const protocol = req.body.protocol ? req.body.protocol : 'https://';
 
         // add protocol so in development environments http is allowed
-        domain = req.body.protocol + cleanUrl(domain);
+        domain = protocol + cleanUrl(domain);
+
         domain = domain.toLowerCase();
 
         const newSite = new NewSite(domain, '', req.body.fromEmail, req.body.fromName);
