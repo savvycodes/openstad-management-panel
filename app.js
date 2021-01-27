@@ -83,10 +83,6 @@ app.use('/admin', (req, res, next) => {
   if (basicAuthUser && basicAuthPassword) {
     var user = auth(req);
 
-    console.log('basicAuthUser', basicAuthUser);
-    console.log('BASIC_AUTH_PASSWORD', basicAuthPassword);
-    console.log('user', user);
-
     if (!user || !compare(user.name, basicAuthUser) || ! compare(user.pass, basicAuthPassword)) {
       unauthorized(req, res);
     } else {
