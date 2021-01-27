@@ -4,6 +4,16 @@ const moment            = require('moment-timezone');
 const cacheLifespan     = 10*60;   // set lifespan of 5 minutes;
 const cache             = require('../services/cache').cache;
 
+const removeProtocol = (url) => {
+  return url ? url.replace('http://', '').replace('https://', '').replace(/\/$/, "") : '';
+}
+
+const removeWww = (url) => {
+  return url ? url.replace('www.', '') : '';
+}
+
+const defaultDomain  = removeWww(removeProtocol(process.env.FRONTEND_URL));
+
 exports.withOne = (req, res, next) => {
   siteApiService
     .fetch(req.params.siteId)
@@ -11,6 +21,11 @@ exports.withOne = (req, res, next) => {
       req.site = site;
       req.siteData = site;
       res.locals.site = req.siteData;
+
+      if (site.domain === defaultDomain) {
+        res.locals.isDefaultSite = true;
+      }
+
       next();
     })
     .catch((err) => {

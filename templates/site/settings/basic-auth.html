@@ -19,9 +19,14 @@
     <div class="card-container">
       <div class="card card-openstad">
 
+
             <form method="POST" action="/admin/site/{{site.id}}">
               <fieldset>
                 <legend><span>{{ __('Password protect website') }}</span></legend>
+
+                {% if isDefaultSite %}
+                  <em> Default site currently can't be password protected </em>
+                {% else %}
 
                 {{ renderFields(siteConfigSchema.basicAuth, site.config.basicAuth, 'config[basicAuth]') }}
 
@@ -78,9 +83,11 @@
                     {{__('Save') }}
                   </button>
                 </div>
+
+                {% endif %}
               </fieldset>
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
+          </form>
       </div>
     </div>
   </div>

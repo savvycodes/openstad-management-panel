@@ -75,7 +75,7 @@ exports.createOauth = async (newSite, oauthData) => {
       siteUrl: newSite.getDomainWithProtocol(),
       redirectUrl: newSite.getDomainWithProtocol(),
       allowedDomains: [
-        newSite.getDomain(),
+        newSite.getBaseDomain(),
         process.env.API_URL.replace(/^https?:\/\//, ''),
       ],
       config: authConfig,

@@ -41,6 +41,8 @@ RUN npm config set unsafe-perm true
 # Install all npm packages
 RUN npm install
 
+RUN npm install -g nodemon
+
 # Remove unused packages only used for building.
 RUN apk del g++ make && rm -rf /var/cache/apk/*
 

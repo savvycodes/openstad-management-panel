@@ -12,6 +12,7 @@ exports.run = (req, res, next) => {
   res.locals.appUrl               = process.env.APP_URL;
   res.locals.apiUrl               = process.env.API_URL;
   res.locals.emailAssetsUrl       = process.env.EMAIL_ASSETS_URL;
+  res.locals.allowHttpUrls        = process.env.ALLOW_HTTP_URLS === 'ON';
   res.locals.authTypes            = authTypes;
   res.locals.authUserFields       = authUserFields;
   res.locals.config               = { openStadMap: mapConfig }

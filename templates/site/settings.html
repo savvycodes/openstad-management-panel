@@ -38,7 +38,7 @@
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">URL</label>
             <div class="col-sm-8">
-              <input class="form-control" placeholder="" type="text" name="productionUrl" value="{{site.domain}}">
+              <input class="form-control valid-domain-character" placeholder="" type="text" name="productionUrl" value="{{site.config.cms.url}}">
             </div>
           </div>
           <div class="form-buttons-w">
@@ -132,9 +132,10 @@
 
       <div class="card card-openstad">
         <form method="POST" action="/admin/site/{{site.id}}/delete">
-            <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')">Verwijder</button>
+            <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')" {{ 'disabled' if isDefaultSite }} >Verwijder</button>
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
         </form>
+        {% if isDefaultSite %} <em> Cannot delete the default site </em> {% endif %}
       </div>
     </div>
   </div>
