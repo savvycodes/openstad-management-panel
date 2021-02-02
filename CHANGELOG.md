@@ -1,5 +1,9 @@
 # Changelog
 
+
+## v0.11.1 (2020-02-02)
+* Remove publish button, not needed anymore happens automatically
+
 ## v0.11.0 (2020-01-27)
 * Allowing to set ALLOW_HTTP_URLS to ON will allow http:// edit
 * Allowing site with urls with subdirectories like domain.com/site1 domain.com/site2
