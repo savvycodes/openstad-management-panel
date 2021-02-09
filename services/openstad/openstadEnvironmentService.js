@@ -81,7 +81,8 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
   try {
 
-    const isDomainUp = await lookupDns(newSite.getDomain(), 3000);
+    // in case localhost domain skip the DNS lookup, will otherwise fail
+    const isDomainUp = newSite.getDomain().includes('localhost') ? true : await lookupDns(newSite.getDomain(), 3000);
 
     await validateInput(apiData, oauthData, cmsData);
 
@@ -100,6 +101,7 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
       const frontendUploadDomain = process.env.FRONTEND_URL; // Use the default frontend url for now because the new site doesn't have an ingress yet
+
       try {
         let response = await cmsProvider.importCmsAttachments(frontendUploadDomain, newSite.getTmpDir(), cmsData.attachments);;
       } catch(err) {
@@ -117,6 +119,7 @@ exports.create = async (user, newSite, apiData, cmsData, oauthData) => {
     if (process.env.KUBERNETES_NAMESPACE) {
       try {
         await k8Ingress.add(newSite);
+
         // Todo: Move this to the a cronjob (api or admin).
         //const domainIp = await lookupDns(newSite.getDomain(), 2000);
 
@@ -169,7 +172,8 @@ const validateInput = async (apiData, oauthData, cmsData) => {
 
   // Todo: check if there are images and the frontend url is available
   if(cmsData.attachments && cmsData.attachments.length > 0) {
-    const frontendIsUp = await lookupDns(process.env.FRONTEND_URL, 10000);
+    // in case of localhost, skip the DNS check, will fail
+    const frontendIsUp = process.env.FRONTEND_URL.includes('localhost') ? true : await lookupDns(process.env.FRONTEND_URL, 10000);
 
     if(frontendIsUp === false) {
       console.log('Frontend url (${process.env.FRONTEND_URL}) is not reachable');
