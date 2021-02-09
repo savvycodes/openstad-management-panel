@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+* Make URL in table overview table a link to the url
+
 ## v0.11.1 (2020-02-02)
 * Remove publish button, not needed anymore happens automatically
 
