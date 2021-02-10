@@ -3,6 +3,7 @@
 ## UNRELEASED
 * Make URL in table overview table a link to the url
 * For localhost skip DNS test, allowing development environments to create sites
+* React admin via jsdelivr
 
 ## v0.11.1 (2020-02-02)
 * Remove publish button, not needed anymore happens automatically
