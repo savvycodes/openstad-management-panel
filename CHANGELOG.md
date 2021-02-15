@@ -1,11 +1,17 @@
 # Changelog
 
+## UNRELEASED
+* Make URL in table overview table a link to the url
+* For localhost skip DNS test, allowing development environments to create sites
+* React admin via jsdelivr
+
 ## v0.11.1 (2020-02-02)
 * Remove publish button, not needed anymore happens automatically
 
-## v0.11.0 (2020-01-26)
+## v0.11.0 (2020-01-27)
 * Allowing to set ALLOW_HTTP_URLS to ON will allow http:// edit
 * Allowing site with urls with subdirectories like domain.com/site1 domain.com/site2
+
 
 ## v0.10.3 (2020-12-16)
 * Only allow to select an authentication method that uses e-mail if the user wants to make e-mail a required field.
