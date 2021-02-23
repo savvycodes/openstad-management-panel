@@ -68,7 +68,13 @@
                     min-width: 170px;
                     display: block;
                     font-size: 11px;
-                    ">{{site.domain}}</span>
+                    ">
+                    {% if site.config.cms.url %}
+                    <a href="{{site.config.cms.url}}" target="_blank">{{site.domain}}</a>
+                    {% else %}
+                    {{site.domain}}
+                    {% endif %}
+                  </span>
                 </td>
                 <td >
                   {{site.createdAt}}

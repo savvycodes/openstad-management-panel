@@ -51,8 +51,6 @@ exports.fetchAll = (params) => {
 exports.create = (data) => {
   let body = nestedObjectAssign(data, apiCredentials);
 
-
-
   return rp({
       method: 'POST',
       uri: `${apiUrl}/user`,
