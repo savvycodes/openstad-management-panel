@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## v0.12.0 (2020-02-23)
 * Make URL in table overview table a link to the url
 * For localhost skip DNS test, allowing development environments to create sites
 * React admin via jsdelivr
