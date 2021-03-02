@@ -6,7 +6,8 @@
 <style>
   {{data.widget.formattedContainerStyles}}
 
-  .layout header {
+
+ .layout header {
     position: relative !important;
     transform: none !important;
     visibility: visible !important;
@@ -49,6 +50,9 @@
       restApi: {
         url: '/api/site/{{site.id}}'
       },
+	  statsApi:{
+		  url: '/stats/site/{{site.id}}/overview'
+	  },
       csrf:"{{csrfToken}}",
       resources: {
         idea: {
