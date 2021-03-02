@@ -25,11 +25,13 @@
       {% endif %}
 
       <main role="main" class="{% if noSidebar %}col-sm-12 {% else %}col-md-9 ml-sm-auto col-lg-10 px-md-4 bg-light{% endif %}">
+        {% if not noQuickLinks %}
         <div class="d-flex justify-content-end flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
           <div class="btn-group btn-toolbar mb-2 mb-md-0">
             {% block quickLinks %}{% endblock %}
           </div>
         </div>
+        {% endif %}
         {% include 'partials/flash.html' %}
 
         {% block body %}{% endblock %}
