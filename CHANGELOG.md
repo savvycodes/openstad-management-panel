@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+* Cut the name for mongodb name shorter, in same cases it was too long causing an db creation error
+* On input even in domain field strip special characters 
+
 ## v0.12.0 (2020-02-23)
 * Make URL in table overview table a link to the url
 * For localhost skip DNS test, allowing development environments to create sites
