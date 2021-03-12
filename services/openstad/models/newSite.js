@@ -14,11 +14,11 @@ const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
  * @param fromName
  */
 module.exports = function NewSite(domain, title, fromEmail, fromName) {
-  console.log('domain', domain);
+  console.log('domain in new site', domain);
 
   const uniqueSiteId = Math.round(new Date().getTime() / 1000) + domain.replace(/\W/g, '').slice(0,40);
 
-  console.log('uniqueSiteId', uniqueSiteId);
+  console.log('uniqueSiteId in new site', uniqueSiteId);
 
   //also used for mongodb db name, so don't add longer then 64 chars
   this.uniqueSiteId = uniqueSiteId;
