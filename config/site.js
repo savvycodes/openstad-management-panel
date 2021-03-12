@@ -247,11 +247,11 @@ exports.configSchema = {
         },
         {
           value: 'count-per-theme',
-          name: 'Count per theme '
+          label: 'Count per theme '
         },
         {
           value: 'budgeting-per-theme',
-          name: 'Budgeting per theme'
+          label: 'Budgeting per theme'
         },
       ],
       default: 'likes',

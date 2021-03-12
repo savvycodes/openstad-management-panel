@@ -3,6 +3,7 @@
 ## Unreleased
 * Cut the name for mongodb name shorter, in same cases it was too long causing an db creation error
 * On input even in domain field strip special characters 
+* Add options for selecting  for voting type: count per theme and budgetting per theme in site vote setting
 
 ## v0.12.0 (2020-02-23)
 * Make URL in table overview table a link to the url
