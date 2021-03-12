@@ -244,7 +244,15 @@ exports.configSchema = {
         {
           value: 'budgeting',
           label: 'Budgeting'
-        }
+        },
+        {
+          value: 'count-per-theme',
+          name: 'Count per theme '
+        },
+        {
+          value: 'budgeting-per-theme',
+          name: 'Budgeting per theme'
+        },
       ],
       default: 'likes',
       label: 'What type of voting is available?'
