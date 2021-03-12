@@ -59,15 +59,23 @@ $(function () {
       var key = event.which;
       var keychar = String.fromCharCode(key).toLowerCase();
 
-      if ((("abcdefghijklmnopqrstuvwxyz0123456789.:/").indexOf(keychar) == -1)) {
+      if ((("abcdefghijklmnopqrstuvwxyz0123456789-.:/").indexOf(keychar) == -1)) {
          event.preventDefault();
          return false;
       }
   });
 
+
+
+
   $(".valid-domain-character").on('input', function(event) {
     //also enfore lowercase
     var lowercaseValue = $(this).val().toLowerCase();
+
+    // remove all chars that are not alpha numeric
+    lowercaseValue.replace(/[^a-zA-Z0-9]/g, "");
+    
+
     $(this).val(lowercaseValue);
   });
 
