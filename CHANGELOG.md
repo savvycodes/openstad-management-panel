@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.13.0 (2020-03-17)
+* Remove checkboxes in import and export for ideas and choice guides
+* Update Openstad React Admin JS to v0.10
+
 ## v0.12.0 (2020-02-23)
 * Make URL in table overview table a link to the url
 * For localhost skip DNS test, allowing development environments to create sites
