@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.14.0 (2020-04-06)
 * Cut the name for mongodb name shorter, in same cases it was too long causing an db creation error
 * On input even in domain field strip special characters 
 * Add options for selecting  for voting type: count per theme and budgetting per theme in site vote setting
