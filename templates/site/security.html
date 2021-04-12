@@ -150,7 +150,7 @@
       </div>
 
       <div
-        id="config-"
+        id="config-required-fields"
         class="card card-openstad auth-type-form "
       >
         <form method="POST" action="/admin/site/{{site.id}}/user-api">
@@ -164,8 +164,13 @@
           </fieldset>
 
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
+        </form>
       </div>
+
+
+
+
+
 
       {% for authType in authTypes %}
       <div
@@ -209,7 +214,45 @@
 </form>
       </div>
       {% endfor %}
+
+      <div
+        id="config--two-factor"
+        class="card card-openstad auth-type-form "
+      >
+        <form method="POST" action="/admin/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span>{{ __('Two Factor') }}</span></legend>
+            {{ renderFields(twoFactorValidateFields, userApiClient.config.twoFactor, 'config[twoFactor]') }}
+
+            <div class="form-buttons-w">
+              <button class="btn btn-outline-primary" type="submit">{{ __('Save') }}</button>
+            </div>
+          </fieldset>
+
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
+      </div>
+      <div
+              id="config-configure-two-factor"
+              class="card card-openstad auth-type-form "
+      >
+        <form method="POST" action="/admin/site/{{site.id}}/user-api">
+          <fieldset>
+            <legend><span>{{ __('Configure Two Factor') }}</span></legend>
+            {{ renderFields(twoFactorConfigureFields, userApiClient.config.configureTwoFactor, 'config[configureTwoFactor]') }}
+
+            <div class="form-buttons-w">
+              <button class="btn btn-outline-primary" type="submit">{{ __('Save') }}</button>
+            </div>
+          </fieldset>
+
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
+      </div>
+
       {% include 'site/settings/modal-login-email.html' %}
+
+
     </div>
   </div>
 </div>

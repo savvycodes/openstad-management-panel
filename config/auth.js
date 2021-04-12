@@ -116,7 +116,6 @@ const types = [
       },
     ]
   },
-
 ];
 
 const userFields = [
@@ -234,6 +233,66 @@ const userApiRequiredFields = [
 
 
 
+const twoFactorValidateFields = [
+  {
+    label: 'Title',
+    key: 'title',
+    default: 'Valideer two factor token',
+    type: 'string'
+  },
+  {
+    label: 'Description',
+    key: 'description',
+    default: 'Vul de token in van je two factor authentication app.',
+    type: 'string',
+    textarea: true
+  },
+  {
+    label: 'Button Text',
+    key: 'buttonText',
+    default: 'Valideer',
+    type: 'string'
+  },
+  {
+    label: 'Help text',
+    key: 'info',
+    default: '',
+    type: 'string',
+    textarea: true
+  }
+];
+
+const twoFactorConfigureFields = [
+  {
+    label: 'Title',
+    key: 'title',
+    default: 'Configureer je two-factor app',
+    type: 'string'
+  },
+  {
+    label: 'Description',
+    key: 'description',
+    default: 'Voor het inloggen op deze site is het vereist om met een token te valideren.\n' +
+        'Dit is nog niet geconfigureerd voor je account. Dit kun je nu eenmalig doen.\n' +
+        'Om dit te kunnen doen is een authenticator app nodig voor je telefoon.\n' +
+        'Dit kan met  de meeste authenticator apps die het "Time-based One-Time Password" protocol\n' +
+        'ondersteunen. Dit zijn onder andere: Google Authenticator, Authy and Microsoft Authenticator.\n' +
+        'Vervolgens kun je de QR code scannen in de app.\n' +
+        'Nadat u dit gedaan heeft click je op bevestig configuratie.\n' +
+        'Let op: hierna kun je niet meer terugkomen op dit scherm.',
+    type: 'string',
+    textarea: true
+  },
+  {
+    label: 'Button Text',
+    key: 'buttonText',
+    default: 'Bevestig configuratie',
+    type: 'string'
+  },
+]
+
+
+
 const get = (key) => {
   return types.find(type => type.key === key);
 }
@@ -243,3 +302,7 @@ exports.types = types;
 exports.get = get;
 exports.userApiSettingFields = userApiSettingFields;
 exports.userApiRequiredFields =userApiRequiredFields;
+exports.twoFactorConfigureFields = twoFactorConfigureFields;
+exports.twoFactorValidateFields = twoFactorValidateFields;
+
+

@@ -26,6 +26,9 @@ const copyDb                      = require('../../services/mongo').copyMongoDb;
 
 const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
 const userApiRequiredFields       = require('../../config/auth').userApiRequiredFields;
+const twoFactorConfigureFields    = require('../../config/auth').twoFactorConfigureFields;
+const twoFactorValidateFields     = require('../../config/auth').twoFactorValidateFields;
+
 const siteConfigSchema            = require('../../config/site').configSchema;
 
 //models
@@ -85,7 +88,9 @@ module.exports = function(app){
         siteConfigSchema: siteConfigSchema,
         pageName: req.params.page,
         userApiSettingFields: userApiSettingFields,
-        userApiRequiredFields: userApiRequiredFields
+        userApiRequiredFields: userApiRequiredFields,
+        twoFactorConfigureFields: twoFactorConfigureFields,
+        twoFactorValidateFields: twoFactorValidateFields
       });
     }
   );
