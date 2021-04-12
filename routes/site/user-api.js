@@ -45,6 +45,7 @@ module.exports = function(app) {
       } else {
         data.requiredUserFields = req.body.requiredUserFields ? req.body.requiredUserFields : [];
         data.authTypes = req.body.authTypes;
+        data.twoFactorRoles = req.body.twoFactorRoles ? req.body.twoFactorRoles : [];
 
         userClientApi
           .update(req.userApiClient.clientId, data)

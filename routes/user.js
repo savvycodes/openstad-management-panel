@@ -103,6 +103,7 @@ module.exports = function(app){
    */
   app.post('/admin/user',
     (req, res) => {
+
       userApiService
         .create(req.body)
         .then((response) => {
@@ -124,6 +125,15 @@ module.exports = function(app){
     clientMw.withAll,
     roleMw.withAll,
     (req, res) => {
+        if (req.body.twoFactorReset) {
+            req.body.twoFactorConfigured = false;
+            req.body.twoFactorToken = null;
+
+            delete req.body.twoFactorReset;
+        }
+
+        console.log('req.body', req.body);
+
       userApiService
         .update(req.params.userId, req.body)
         .then((response) => {

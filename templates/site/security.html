@@ -73,7 +73,31 @@
                 </div>
               </div>
             </div>
-
+        <div class="form-group row">
+           <label class="col-form-label col-sm-4">
+              {{ __('Select roles that should be authenticated with two factor') }}
+            </label>
+            <div class="col-sm-8">
+              <div class="row">
+                {% for role in roles %}
+                <div class="col-sm-6">
+                  <input
+                      id="checkbox-auth-{{role.id}}"
+                      type="checkbox"
+                      name="twoFactorRoles[]"
+                      value="{{role.name}}"
+                      {% if (userApiClient.twoFactorRoles) and (role.name in userApiClient.twoFactorRoles) %}
+                      checked
+                      {% endif %}
+                  />
+                  <label for="checkbox-auth-{{role.id}}">
+                    {{role.name}}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+        </div>
             <div class="form-group row">
               <label class="col-form-label col-sm-4" for="">{{ __('Required fields') }}</label>
               <div class="col-sm-8">

@@ -7,6 +7,7 @@ const externalSiteMw    = require('../../middleware/externalSite');
 const siteMw            = require('../../middleware/site');
 const voteMw            = require('../../middleware/vote');
 const userClientMw      = require('../../middleware/userClient');
+const roleClientMw      = require('../../middleware/role');
 
 //services
 const userClientApi     = require('../../services/userClientApi');
@@ -22,6 +23,7 @@ const siteFields        = [{key: 'title'}];
 const deleteMongoDb               = require('../../services/mongo').deleteDb;
 const dbExists                    = require('../../services/mongo').dbExists;
 const copyDb                      = require('../../services/mongo').copyMongoDb;
+
 const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
 const userApiRequiredFields       = require('../../config/auth').userApiRequiredFields;
 const siteConfigSchema            = require('../../config/site').configSchema;
@@ -76,6 +78,7 @@ module.exports = function(app){
   app.get('/admin/site/:siteId/:page',
     siteMw.withOne,
     ideaMw.allForSite,
+    roleClientMw.withAll,
     userClientMw.withOneForSite,
     (req, res, next) => {
       res.render(`site/${req.params.page}.html`,  {
