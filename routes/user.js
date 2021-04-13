@@ -131,9 +131,7 @@ module.exports = function(app){
 
             delete req.body.twoFactorReset;
         }
-
-        console.log('req.body', req.body);
-
+        
       userApiService
         .update(req.params.userId, req.body)
         .then((response) => {
