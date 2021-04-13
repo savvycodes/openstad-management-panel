@@ -117,6 +117,33 @@
                     />
                   </div>
               </div>
+              {% if editUser %}
+              <div class="form-group row">
+                  {% if editUser.twoFactorConfigured %}
+                  <label class="col-form-label col-sm-4" for="">
+                      Reset two factor <br />
+                      <small>Check to reset two factor for user.
+                          This way they can reconfigure their
+                          two factor app again, for instance if the lost it.</small>
+                  </label>
+                  <p>
+
+                  </p>
+                  <div class="col-sm-8">
+                      <input
+                          type="checkbox"
+                          name="twoFactorReset"
+                          value="yes"
+                          classBkp="form-input form-control"
+                      />
+                  </div>
+                  {% else %}
+                     <div class="col-sm-4">
+                            <em> Two factor authentication is not configured (yet)</em>
+                      </div>
+                  {% endif %}
+              </div>
+              {% endif %}
           </fieldset>
 
             <button type="submit" class="btn btn-outline-primary">

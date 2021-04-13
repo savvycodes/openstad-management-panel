@@ -19,6 +19,7 @@ const authFields        = [{key: 'name'}, {key: 'requiredUserFields'}, {key: 'au
 const userApiSettingFields        = require('../../config/auth').userApiSettingFields;
 
 
+
 module.exports = function(app) {
   /**
    * Handle updating required fields & authTypes of the default oAuth API connected to this site
@@ -45,6 +46,7 @@ module.exports = function(app) {
       } else {
         data.requiredUserFields = req.body.requiredUserFields ? req.body.requiredUserFields : [];
         data.authTypes = req.body.authTypes;
+        data.twoFactorRoles = req.body.twoFactorRoles ? req.body.twoFactorRoles : [];
 
         userClientApi
           .update(req.userApiClient.clientId, data)
@@ -70,6 +72,10 @@ module.exports = function(app) {
         req.body.config = req.userApiClient.config;
       } else if (req.userApiClient.config &&  req.body.config && req.body.config.requiredFields ) {
         req.userApiClient.config.requiredFields = req.body.config.requiredFields;
+      } else if (req.userApiClient.config &&  req.body.config && req.body.config.twoFactor ) {
+          req.userApiClient.config.twoFactor = req.body.config.twoFactor;
+      } else if (req.userApiClient.config &&  req.body.config && req.body.config.configureTwoFactor ) {
+          req.userApiClient.config.configureTwoFactor = req.body.config.configureTwoFactor;
       } else if (req.userApiClient.config && req.body.config) {
         userApiSettingFields.forEach((field) => {
           if (req.body.config[field.key]) {
