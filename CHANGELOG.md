@@ -1,23 +1,26 @@
 # Changelog
 
-## v0.14.0 (2020-04-06)
+## v0.14.1 (2021-04-19)
+* Fix Site URL input
+
+## v0.14.0 (2021-04-06)
 * Cut the name for mongodb name shorter, in same cases it was too long causing an db creation error
 * On input even in domain field strip special characters 
 * Add options for selecting  for voting type: count per theme and budgetting per theme in site vote setting
 
-## v0.13.0 (2020-03-17)
+## v0.13.0 (2021-03-17)
 * Remove checkboxes in import and export for ideas and choice guides
 * Update Openstad React Admin JS to v0.10
 
-## v0.12.0 (2020-02-23)
+## v0.12.0 (2021-02-23)
 * Make URL in table overview table a link to the url
 * For localhost skip DNS test, allowing development environments to create sites
 * React admin via jsdelivr
 
-## v0.11.1 (2020-02-02)
+## v0.11.1 (2021-02-02)
 * Remove publish button, not needed anymore happens automatically
 
-## v0.11.0 (2020-01-27)
+## v0.11.0 (2021-01-27)
 * Allowing to set ALLOW_HTTP_URLS to ON will allow http:// edit
 * Allowing site with urls with subdirectories like domain.com/site1 domain.com/site2
 
