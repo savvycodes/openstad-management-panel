@@ -1,9 +1,14 @@
 # Changelog
 
+## Unreleased
+* Add two factor configuration of text on screens and what role per oAuth client should validate with a Two Factor token
+* Add ability to  reset two factor configuration in user edit form
+* Allow for site names to have a - sign
+
 ## v0.14.1 (2021-04-19)
 * Fix Site URL input
 
-## v0.14.0 (2021-04-06)
+## v0.14.0 (2020-04-06)
 * Cut the name for mongodb name shorter, in same cases it was too long causing an db creation error
 * On input even in domain field strip special characters 
 * Add options for selecting  for voting type: count per theme and budgetting per theme in site vote setting

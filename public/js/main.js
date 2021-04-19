@@ -73,8 +73,7 @@ $(function () {
     var lowercaseValue = $(this).val().toLowerCase();
 
     // remove all chars that are not alpha numeric
-    lowercaseValue = lowercaseValue.replace(/[^a-z0-9-.:/]/g, "");
-
+    lowercaseValue = lowercaseValue.replace(/[^a-zA-Z0-9-.://_]/g, "");
 
     $(this).val(lowercaseValue);
   });
