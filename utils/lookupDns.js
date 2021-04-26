@@ -6,7 +6,12 @@ module.exports = async (domain, timeout) => {
     console.log('domain 1', domain, cleanUrl)
 
     let cleanDomain = cleanUrl(domain);
-    console.log('domain 2', cleanDomain);
+    console.log('domain 2', cleanDomain, cleanDomain.startsWith('localhost'));
+
+    if (cleanDomain.startsWith('localhost')) {
+      console.log('resolve 2', true);
+      return resolve(true);
+    }
 
     setTimeout(function(){
       console.log('custom DNS timeout')
