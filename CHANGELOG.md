@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.15.0 (2020-04-26)
 * Add two factor configuration of text on screens and what role per oAuth client should validate with a Two Factor token
 * Add ability to  reset two factor configuration in user edit form
 * Allow for site names to have a - sign
