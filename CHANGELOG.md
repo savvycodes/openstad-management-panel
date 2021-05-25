@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## v0.16.0 (2020-05-25)
 * Fix domain validation on site creation.
 * Add phonenumber and local auth as experimental auth methods
 * Turn on choice guide in react admin panel 
