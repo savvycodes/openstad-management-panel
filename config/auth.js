@@ -195,6 +195,18 @@ if (process.env.EXPERIMENTAL_AUTH_TYPES === 'ON') {
                 default: '',
                 type: 'textarea'
             },
+            {
+                label: 'Sender for SMS (Default: OpenStad)',
+                key: 'smsCodeSender',
+                default: '',
+                type: 'text'
+            },
+            {
+                label: 'Text for SMS (Default: Code: [[code]])',
+                key: 'smsCodeText',
+                default: '',
+                type: 'text'
+            },
         ],
     },
         {
