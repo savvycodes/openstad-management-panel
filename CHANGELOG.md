@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## v0.16.1 (2020-06-08)
 * Add option to configure SMS sender and message.
 
 ## v0.16.0 (2020-05-25)
