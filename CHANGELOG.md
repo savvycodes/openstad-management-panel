@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+* Load react-admin from cdn - OPENSTAD_REACT_ADMIN_CDN in .env is now an optional overrule
+
 ## v0.16.1 (2020-06-08)
 * Add option to configure SMS sender and message.
 
