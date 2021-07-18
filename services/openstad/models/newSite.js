@@ -29,6 +29,7 @@ module.exports = function NewSite(domain, title, fromEmail, fromName) {
   this.fromEmail = fromEmail;
 
   this.formattedFromEmail = fromName ? `${fromName} <${fromEmail}>` : fromEmail;
+  this.contactEmail = fromEmail;
   this.fromName = fromName;
   this.title = title;
 

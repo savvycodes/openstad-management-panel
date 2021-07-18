@@ -243,7 +243,7 @@ const userFields = [
     },
     {
         key: 'houseNumber',
-        label: 'House name',
+        label: 'House number',
     },
     {
         key: 'city',
