@@ -1,4 +1,4 @@
 {
-  "watch": ["app.js", "templates", "controllers", "services", "middleware", "config", "nunjucks", "routes"],
+  "watch": ["app.js", "templates", "controllers", "providers", "services", "middleware", "config", "nunjucks", "routes"],
     "ext": "js json html"
 }
