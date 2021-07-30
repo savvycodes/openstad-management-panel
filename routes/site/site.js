@@ -1,5 +1,10 @@
-const slugify             = require('slugify');
-const Promise             = require("bluebird");
+const slugify           = require('slugify');
+const Promise           = require("bluebird");
+const fs                = require('fs').promises;
+const tar               = require('tar');
+const fetch             = require('node-fetch');
+const multer            = require('multer');
+const upload            = multer();
 
 //middleware
 const ideaMw            = require('../../middleware/idea');
@@ -12,8 +17,11 @@ const roleClientMw      = require('../../middleware/role');
 //services
 const userClientApi     = require('../../services/userClientApi');
 const siteApi           = require('../../services/siteApi');
-const openstadEnvironmentService = require('../../services/openstad/openstadEnvironmentService');
+const openstadSiteDataService = require('../../services/openstad/openstadSiteDataService');
 const k8Ingress = require('../../services/k8/ingress');
+
+//models
+const NewSite = require('../../services/openstad/models/newSite');
 
 //ENV constants
 const apiUrl            = process.env.API_URL;
@@ -31,12 +39,11 @@ const twoFactorValidateFields     = require('../../config/auth').twoFactorValida
 
 const siteConfigSchema            = require('../../config/site').configSchema;
 
-//models
-const NewSite = require('../../services/openstad/models/newSite');
-
 const cleanUrl                = require('../../utils/cleanUrl');
 const ensureUrlHasProtocol    = require('../../utils/ensureUrlHasProtocol');
 const formatBaseDomain        = require('../../utils/formatBaseDomain');
+
+const tmpDir = process.env.TMPDIR || './tmp';
 
 module.exports = function(app){
 
@@ -58,6 +65,16 @@ module.exports = function(app){
     siteMw.withAll,
     (req, res, next) => {
       res.render('site/copy-form.html', {existingDomains: req.sites.map(site => site.domain).join(',')});
+    }
+  );
+  
+  /**
+   * Show import site form
+   */
+  app.get('/admin/site-import',
+    siteMw.withAll,
+    (req, res, next) => {
+      res.render('site/import-form.html', {existingDomains: req.sites.map(site => site.domain).join(',')});
     }
   );
 
@@ -111,22 +128,47 @@ module.exports = function(app){
     }
   );
 
+  /**
+   * Copy a site
+   */
   app.post('/admin/site/copy',
-    // Todo: It would be nice if we create a controller for this method.
     async (req, res, next) => {
       try {
 
+        // domain
         let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
         const protocol = req.body.protocol ? req.body.protocol : 'https://';
-
         domain = protocol + cleanUrl(domain);
 
+        // collect data
         const newSite = new NewSite(domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
+        let siteData = await openstadSiteDataService.collectData({
+          uniqueSiteId: newSite.getUniqueSiteId(),
+          siteIdToCopy: req.body.siteIdToCopy,
+          includeChoiceGuide: req.body['choice-guides'],
+          includeCmsAttachments: true
+        });
 
-        const siteData = await openstadEnvironmentService.get(newSite.getUniqueSiteId(), req.body.siteIdToCopy, req.body['choice-guides'], false);
+        // write attachments to tmp dir
+        let exportDir = tmpDir + '/' + newSite.getUniqueSiteId();
+        if (siteData.cmsData.attachments && siteData.cmsData.attachments.length) {
+          let tmpData = { cmsData: { attachments: siteData.cmsData.attachments } };
+          console.log(siteData.apiData.site.domain);
+          let err = await openstadSiteDataService.writeDataToTmpDir({ exportDir, siteData: tmpData, fromDomain: siteData.apiData.site.domain });
+          if (err) throw err;
+        }
 
-        const site = await openstadEnvironmentService.create(req.user, newSite, siteData.apiData, siteData.cmsData, siteData.oauthData);
-
+        // create site
+        console.log('creating new site :', newSite.title );
+        const site = await openstadSiteDataService.createSite({
+          user: req.user, 
+          dataDir: exportDir,
+          newSite, 
+          apiData: siteData.apiData, 
+          cmsData: siteData.cmsData, 
+          oauthData: siteData.oauthData
+        });
+        
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id)
 
@@ -135,6 +177,112 @@ module.exports = function(app){
         req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken.'});
         res.redirect('back');
       }
+    }
+  );
+
+  /**
+   * Import a site
+   */
+  app.post(
+    '/admin/site/import',
+    siteMw.withAll,
+    userClientMw.withAll,
+    upload.single('import_file'),
+    async (req, res, next) => {
+      try {
+
+        // domain
+        let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
+        const protocol = req.body.protocol ? req.body.protocol : 'https://';
+        domain = protocol + cleanUrl(domain); // add protocol so in development environments http is allowed
+        domain = domain.toLowerCase();
+
+        // extract import file
+        let importId = Math.round(new Date().getTime() / 1000);
+        let importDir = tmpDir + '/' + importId;
+        const err = await openstadSiteDataService.extractFileToTmpDir({ importDir, file: req.file, fileUrl: req.body.fileUrl });
+        if (err) throw err;
+
+        // collect data
+        const newSite = new NewSite(domain, '', req.body.fromEmail, req.body.fromName);
+        const siteData = await openstadSiteDataService.collectDataFromFiles(importDir);
+        newSite.title = req.body.siteName;
+
+        // create site
+        console.log('creating new site :', newSite.title );
+        const site = await openstadSiteDataService.createSite({
+          user: req.user,
+          dataDir: importDir,
+          newSite, 
+          apiData: siteData.apiData, 
+          cmsData: siteData.cmsData, 
+          oauthData: siteData.oauthData
+        });
+
+        req.flash('success', { msg: 'De site is succesvol aangemaakt'});
+        res.redirect('/admin/site/' + site.id);
+      } catch(error) {
+        console.error(error);
+        req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken'});
+        res.redirect('back');
+      }
+    },
+  );
+  
+  /**
+   * Export a site
+   */
+  app.post(
+    '/admin/site/:siteId/export',
+    siteMw.withOne,
+    async(req, res, next) => {
+
+      try {
+        
+        // prepare
+        console.log('Export prepare');
+        let exportId = Math.round(new Date().getTime() / 1000);
+
+        // collect data
+        let siteData = await openstadSiteDataService.collectData({
+          uniqueSiteId: exportId,
+          siteIdToCopy: req.params.siteId,
+          includeChoiceGuide: req.body['choice-guides'],
+          includeCmsAttachments: req.body['cms-attachments']
+        });
+
+        // exists?
+        let dbName = req.site.config && req.site.config.cms && req.site.config.cms.dbName;
+        if (!dbName) throw new Error('Site not found');
+
+        // write data
+        let exportDir = tmpDir + '/' + exportId;
+        let err = await openstadSiteDataService.writeDataToTmpDir({
+          exportDir,
+          siteData,
+          fromDomain: req.site.domain,
+        });
+        if (err) throw err;
+
+        // export tar - TODO: wegens consitent met import zou dit in openstadSiteDataService moeten
+        let filename = tmpDir + '/' + exportId + '.export.tgz';
+        await tar.create(
+          {
+            gzip: true,
+            cwd: exportDir,
+            file: filename,
+          },
+          ['.']);
+
+        res.download(filename);
+
+      } catch (err) {
+        console.log('SITE EXPORT FAILED');
+        console.log(err);
+        req.flash('error', { msg: 'Het is helaas niet gelukt om de site te exporteren'});
+        res.redirect('back');
+      }
+
     }
   );
 
@@ -353,8 +501,7 @@ module.exports = function(app){
           res.redirect('/admin');
         })
         .catch((err) => {
-
-          console.log('++++++++++++++++++++');
+          console.log('DELETE WEBSITE FAILED');
           console.log(err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
