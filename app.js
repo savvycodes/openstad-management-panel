@@ -210,8 +210,6 @@ require('./routes/site/newsletter.js')(app);
 require('./routes/user')(app);
 require('./routes/site/idea')(app);
 require('./routes/site/site')(app);
-require('./routes/site/site-import')(app);
-require('./routes/site/site-export')(app);
 require('./routes/api-proxy')(app);
 
 /**
