@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELASED
+* Fix shared images between copies of sites
+
 ## v0.17.0
 * Load react-admin from cdn - OPENSTAD_REACT_ADMIN_CDN in .env is now an optional overrule
 * When creating a new site set contactEmail from the form
