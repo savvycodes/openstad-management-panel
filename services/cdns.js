@@ -11,6 +11,7 @@ exports.contructReactAdminCdn = async function() {
       
       let { stdout, stderr } = await exec('git rev-parse --abbrev-ref HEAD');
       let branch = stdout && stdout.toString();
+      branch = branch.trim();
 
       let tag = 'alpha';
       if (branch == 'release') tag = 'beta';
