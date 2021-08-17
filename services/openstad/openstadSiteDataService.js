@@ -75,10 +75,11 @@ exports.writeDataToTmpDir = async function ({ exportDir, siteData, fromDomain })
     // fetch attachments and write them to files
     if (siteData.cmsData.attachments) {
       await fs.mkdir(exportDir + '/attachments');
-      const domainIsUp = await lookupDns(fromDomain, 3000);
-      if (domainIsUp === false) {
-        throw new Error('Not able to fetch attachments because the current site is down');
-      }
+      // first: a check on dns is not a way to see if the domain is up and second: if it is not the fetching will fail; no need to check first
+      // const domainIsUp = await lookupDns(fromDomain, 3000);
+      // if (domainIsUp === false) {
+      //   throw new Error('Not able to fetch attachments because the current site is down');
+      // }
       const cmsUrl = protocol + '://' + fromDomain;
       await Promise.all(siteData.cmsData.attachments.map(async (filename) => {
         const res = await fetch(cmsUrl + '/uploads/attachments/' + filename)

@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELASED
+## v0.18.0
 * Fix shared images between copies of sites
 
 ## v0.17.0
