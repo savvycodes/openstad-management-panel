@@ -1,12 +1,18 @@
 const k8s = require('@kubernetes/client-node');
 
+const getHostnameFromRegex = (url) => {
+  // run against regex
+  const matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+  // extract hostname (will be null if no match is found)
+  return matches && matches[1];
+}
+
 const getK8sApi = () => {
   const kc = new k8s.KubeConfig();
   kc.loadFromCluster();
-  
+
   return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
 }
-
 
 
 /**
@@ -47,6 +53,80 @@ const getIngressBody = (databaseName, domain) => {
     }
   }
 };
+const getAll = async () => {
+  const ingresses = await appsV1Api.listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
+  return ingresses;
+}
+exports.getAll = getAll;
+
+exports.get = async (domain) => {
+
+}
+/***
+ * There are many domains
+ */
+exports.setAllDomains((domains) => {
+  const domainsToCreate = [];
+
+  const ingresses = await appsV1Api.listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
+
+  domains.forEach((domain) => {
+    console.log('Get ingress for domain: ', domain);
+
+    domain = getHostnameFromRegex(domain);
+
+    console.log('Get ingress for domain cleaned up: ', domain);
+
+    const ingress = ingresses.find((ingress) => {
+      console.log('Get ingress for domain check following ingress ', ingress);
+
+      const domains = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
+        return rule.host;
+      });
+
+      console.log('Get ingress for domain check see if domain is in here ', domain);
+
+      return domains.includes(domain);
+    });
+
+    /**
+     * In case no ingress exists for this domain.
+     */
+    if (!ingress) {
+      domainsToCreate.push(domain);
+    }
+  });
+
+  ingresses.forEach((ingress) => {
+    console.log('Get ingress for domain: ', domain);
+
+    const domainsInIngress = [];
+
+    ingresses.forEach((ingress) => {
+      console.log('Get ingress for domain check following ingress ', ingress);
+
+      const domainsFound = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
+        return rule.host;
+      });
+
+      domainsInIngress.concat(domainsFound);
+    });
+
+  });
+
+  const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
+    domains.find(domain => domain === domainInIngress);
+  });
+
+
+  domainsToCreate.forEach(async (domain) => {
+    await add(domain);
+  });
+
+  domainsToDelete.forEach(async (domain) => {
+    await delete (domain);
+  });
+});
 
 /**
  *
@@ -54,7 +134,13 @@ const getIngressBody = (databaseName, domain) => {
  * @returns {Promise<{response: http.IncomingMessage; body: NetworkingV1beta1Ingress}>}
  */
 exports.add = async (newSite) => {
-  return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getCmsDatabaseName(), newSite.getDomain()));
+  const ingress = k8Ingress.get(newSite.getDomain());
+
+  if (ingress) {
+    return ingress;
+  } else {
+    return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getCmsDatabaseName(), newSite.getDomain()));
+  }
 };
 
 /**

@@ -1,16 +1,20 @@
 <div class="form-group">
   <label for="domain">Domeinnaam: </label>
   <div class="form-check">
-    <input type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" checked />
+    <input {'checked' if site and site.domainType === 'subdir'} type="radio" class="form-check-input domain-type" id="subdir-type" name="domain-type" required value="subdir"  />
+    <label for="subdir-type" class="form-check-label" >Sub directory</label>
+  </div>
+  <div class="form-check">
+    <input  {'checked' if site and site.domainType === 'subdomain'} type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" />
     <label for="subdomain-type" class="form-check-label" >Sub domain</label>
   </div>
   <div class="form-check">
-    <input type="radio" class="form-check-input domain-type" id="domain-type" name="domain-type" required value="domain"/>
+    <input {'checked' if site and site.domainType === 'domain'} type="radio" class="form-check-input domain-type" id="domain-type" name="domain-type" required value="domain"/>
     <label for="domain-type" class="form-check-label">Full domain</label>
   </div>
 
 
-  <div class="form-row">
+  <div class="form-row align-items-center">
     <div class="col-auto" style="width: 100px">
       {% if allowHttpUrls %}
       <select
@@ -31,18 +35,19 @@
       />
       {% endif %}
     </div>
-    <div class="col col-domain">
+    <div class="col col-domain display-for-domain display-for-subdomain">
       <input
         class="form-control valid-domain-character"
         id="domain"
         type="text"
         value=""
         name="domain"
-        data-existing-domains="{{existingDomains}}"
+        data-existing-domains="{{existingDomainsString}}"
         required
       />
     </div>
-    <div class="col col-auto wildcardHost">
+
+    <div class="col col-auto wildcardHost display-for-subdomain">
       <input
         class="form-control valid-domain-character"
         id="wildcardHost"
@@ -53,5 +58,37 @@
         readonly
       />
     </div>
+
+    <div class="col col-domain existing-sites display-for-subdir">
+      <select
+              class="form-control valid-domain-character"
+              id="subdir"
+              type="text"
+              name="main-domain"
+              required
+      >
+
+        {% for domain in existingDomains %}
+        <option value="{{domain}}">{{domain}}</option>
+        {% endfor %}
+      </select>
+
+    </div>
+
+    <div class="display-for-subdir">
+      /
+    </div>
+
+    <div class="col col-domain subdir display-for-subdir">
+      <input
+              class="form-control valid-domain-character valid-subdir-character"
+              id="subdir"
+              type="text"
+              value=""
+              name="subdir"
+              required
+      />
+    </div>
+
   </div>
 </div>

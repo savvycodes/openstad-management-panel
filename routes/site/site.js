@@ -54,7 +54,7 @@ module.exports = function(app){
     siteMw.withAll,
     externalSiteMw.withAll,
     (req, res, next) => {
-      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST, existingDomains: req.sites.map(site => site.domain).join(',') });
+      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST, existingDomainsString: req.sites.map(site => site.domain).join(','), existingDomains: req.sites.map(site => site.domain) });
     }
   );
 

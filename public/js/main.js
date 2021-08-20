@@ -13,8 +13,19 @@ function initHideFlash() {
     $('.flash-container').remove();
   }, 5000);
 }
+function displayDomainFields () {
+  var domainType = $('input[name="domain-type"]:checked').val();
+  $('.display-for-subdir, .display-for-domain, .display-for-subdomain').hide();
+
+  console.log('.display-for'+domainType);
+  $('.display-for-'+domainType).show();
+}
+
 
 $(function () {
+
+
+  displayDomainFields ()
 
   // # CREATE SITE FORM VALIDATION
   var existingDomains = [];
@@ -31,13 +42,7 @@ $(function () {
   });
 
   $('.domain-type').change(function (event) {
-    var domainType = $('input[name="domain-type"]:checked').val();
-
-    if (domainType === 'domain') {
-      $('.wildcardHost').addClass('d-none');
-    } else {
-      $('.wildcardHost').removeClass('d-none');
-    }
+    displayDomainFields();
   });
 
   $('#create-site-form').validate({
@@ -59,7 +64,7 @@ $(function () {
       var key = event.which;
       var keychar = String.fromCharCode(key).toLowerCase();
 
-      if ((("abcdefghijklmnopqrstuvwxyz0123456789-.:/").indexOf(keychar) === -1)) {
+      if ((("abcdefghijklmnopqrstuvwxyz0123456789-.:").indexOf(keychar) === -1)) {
          event.preventDefault();
          return false;
       }
@@ -73,7 +78,7 @@ $(function () {
     var lowercaseValue = $(this).val().toLowerCase();
 
     // remove all chars that are not alpha numeric
-    lowercaseValue = lowercaseValue.replace(/[^a-zA-Z0-9-.://_]/g, "");
+    lowercaseValue = lowercaseValue.replace(/[^a-zA-Z0-9-.:_]/g, "");
 
     $(this).val(lowercaseValue);
   });

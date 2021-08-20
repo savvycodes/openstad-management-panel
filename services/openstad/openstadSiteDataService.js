@@ -16,6 +16,8 @@ const removeFolderRecursive = require('../../utils/removeFolderRecursive');
 
 const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
 
+
+
 /**
  * Get all Openstad project data
  * @param uniqueSiteId
@@ -250,8 +252,10 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
     //   console.error('Error removing tmp dir for uploading', error);
     // }
 
+    //only create ingress for domain, subdirs run under an existing domain already ??? or check if domain ingress exists
     if (process.env.KUBERNETES_NAMESPACE) {
       try {
+
         await k8Ingress.add(newSite);
 
         // Todo: Move this to the a cronjob (api or admin).
@@ -265,7 +269,6 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
       }
     }
 
-    console.log('return new site: ', site);
     return site;
   } catch (error) {
     //Todo: rollback created entities?
