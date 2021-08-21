@@ -15,30 +15,16 @@
       <span>Gebruikers</span>
     </a>
   </li>
-  {#
+
+  {% if onKubernetes %}
   <li class="nav-item">
-    <a class="nav-link"  href="#">
-      <div class="icon-w">
-        <div class="os-icon os-icon-mail"></div>
+    <a class="nav-link"  href="/admin/server">
+      <div class="nav-item">
+        <div class="os-icon os-icon-users"></div>
       </div>
-      <span>Mailings</span>
+      <span>Server configuratie</span>
     </a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link"  href="#">
-      <div class="icon-w">
-        <div class="os-icon os-icon-ui-46"></div>
-      </div>
-      <span>Instellingen</span>
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link"  href="#">
-      <div class="icon-w">
-        <i class="os-icon os-icon-bar-chart-stats-up"></i>
-      </div>
-      <span>Statistieken</span>
-    </a>
-  </li>
-  #}
+  {% endif %}
+
 </ul>

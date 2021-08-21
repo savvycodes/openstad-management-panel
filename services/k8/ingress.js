@@ -54,21 +54,28 @@ const getIngressBody = (databaseName, domain) => {
   }
 };
 const getAll = async () => {
-  const ingresses = await appsV1Api.listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
-  return ingresses;
+  return await getK8sApi().listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
 }
+
 exports.getAll = getAll;
 
-exports.get = async (domain) => {
-
-}
 /***
  * There are many domains
  */
-exports.setAllDomains((domains) => {
+exports.setAllDomains = async (domains) => {
+  // make sure we have a consistent root
+  domains = domains.map((value, index, self) => {
+    return getHostnameFromRegex(value);
+  });
+
+  // filter to make sure unique domains
+  domains = domains.filter((value, index, self) => {
+    return self.indexOf(value) === index;
+  });
+
   const domainsToCreate = [];
 
-  const ingresses = await appsV1Api.listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
+  const ingresses = await getK8sApi().listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
 
   domains.forEach((domain) => {
     console.log('Get ingress for domain: ', domain);
@@ -89,10 +96,13 @@ exports.setAllDomains((domains) => {
       return domains.includes(domain);
     });
 
+    console.log('Found ingress ', ingress);
+
     /**
-     * In case no ingress exists for this domain.
+     * In case no ingress exists for this domain add to create
      */
     if (!ingress) {
+      console.log('Create ingress for domain because no ingress is present', domain);
       domainsToCreate.push(domain);
     }
   });
@@ -114,19 +124,23 @@ exports.setAllDomains((domains) => {
 
   });
 
+  // filter all domains present
   const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
-    domains.find(domain => domain === domainInIngress);
+    return !domains.find(domain => domain === domainInIngress);
   });
 
+  console.log('domainsToCreate', domainsToCreate);
 
   domainsToCreate.forEach(async (domain) => {
-    await add(domain);
+   // await add(domain);
   });
 
+  console.log('domainsToDelete', domainsToDelete);
+
   domainsToDelete.forEach(async (domain) => {
-    await delete (domain);
+   // await delete (domain);
   });
-});
+};
 
 /**
  *

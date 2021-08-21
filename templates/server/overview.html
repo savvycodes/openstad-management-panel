@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block sideMenu %}
+{% include 'partials/overview-menu.html' %}
+{% endblock %}
+
+{% block quickLinks %}
+<form action="/admin/set-ingress" method="POST">
+<button class="btn btn-outline-primary btn-sm" >
+    <i class="os-icon os-icon-window-content"></i>
+    <span>Clean up all ingress</span>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+</button>
+</form>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-12 col-xxxl-9">
+        <div class="element-wrapper">
+            <h6 class="section-header">
+                Overview Ingress
+            </h6>
+            <div class="card card-openstad">
+                {% for ingress in ingress %}
+                <div style="border: 1px solid #888888; margin: 10px 0;">
+                    <code>{{ingress | dump}} </code>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
