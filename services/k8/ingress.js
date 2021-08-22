@@ -2,7 +2,7 @@ const k8s = require('@kubernetes/client-node');
 
 const getHostnameFromRegex = (url) => {
   // run against regex
-  const matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+  const matches = url ? url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i) : false;
   // extract hostname (will be null if no match is found)
   return matches && matches[1];
 }
@@ -62,7 +62,9 @@ exports.getAll = getAll;
 /***
  * There are many domains
  */
-exports.setAllDomains = async (domains) => {
+exports.ensureIngressForAllDomains = async (domains) => {
+  console.log('Set all domains', domains);
+
   // make sure we have a consistent root
   domains = domains.map((value, index, self) => {
     return getHostnameFromRegex(value);

@@ -11,6 +11,8 @@ module.exports = function(app){
     async (req, res) => {
       const ingresses = await ingress.getAll();
 
+      console.log('All ingresses found, ingresses', ingresses)
+
       res.render('server/overview.html', {
         ingresses: ingresses
       });
@@ -21,7 +23,10 @@ module.exports = function(app){
   app.post('/admin/set-ingress',
     siteMw.withAll,
     async (req, res) => {
-      const ingresses = await ingress.setAllDomains(req.sites.map((site) => {
+      console.log('Set ingress for all sites', req.sites)
+
+      const ingresses = await ingress.ensureIngressForAllDomains(req.sites.filter(site => !!site.domain).map((site) => {
+        console.log('site.domain', site.domain)
         return site.domain;
       }));
 
