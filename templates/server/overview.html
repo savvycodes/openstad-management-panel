@@ -22,12 +22,33 @@
                 Overview Ingress
             </h6>
             {{ ingresses | dump }}
-            <div class="card card-openstad">
-                {% for ingress in ingresses %}
-                <div style="border: 1px solid #888888; margin: 10px 0;">
-                    <code>{{ingress | dump}} </code>
-                </div>
-                {% endfor %}
+            <tr class="card card-openstad">
+                <table class="table">
+                    <th>
+                        <td>Name</td>
+                        <td>Domains</td>
+                        <td>Config annotations</td>
+                        <td>Dump</td>
+                    </th>
+                    {% for ingress in ingresses %}
+                    <tr>
+                        <td>
+                            {{ingress.metadata.name}}
+                        </td>
+                        <td>
+                            {% for rule in ingress.rules %}
+                            {{rule.host}}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{ingress.metadata.annotations | dump}}
+                        </td>
+                        <td>
+                            <code>{{ingress | dump}} </code>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
     </div>

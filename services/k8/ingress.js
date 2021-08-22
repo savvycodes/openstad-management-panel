@@ -54,7 +54,9 @@ const getIngressBody = (databaseName, domain) => {
   }
 };
 const getAll = async () => {
-  return await getK8sApi().listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
+  let response = await getK8sApi().listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
+  response = response.response ? response.response : {};
+  return response.body && response.body.items ? response.body.items : [];
 }
 
 exports.getAll = getAll;
