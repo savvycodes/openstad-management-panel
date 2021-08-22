@@ -22,7 +22,7 @@
                 Overview Ingress
             </h6>
             {{ ingresses | dump }}
-            <tr class="card card-openstad">
+            <div class="card card-openstad">
                 <table class="table">
                     <th>
                         <td>Name</td>
@@ -36,7 +36,7 @@
                             {{ingress.metadata.name}}
                         </td>
                         <td>
-                            {% for rule in ingress.rules %}
+                            {% for rule in ingress.spec.rules %}
                             {{rule.host}}
                             {% endfor %}
                         </td>
