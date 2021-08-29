@@ -409,7 +409,7 @@ module.exports = function(app){
       }
 
       if (process.env.KUBERNETES_NAMESPACE) {
-        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
+        promises.push(k8Ingress.edit(domain));
       }
 
       /**
@@ -452,7 +452,7 @@ module.exports = function(app){
 
 
       if (process.env.KUBERNETES_NAMESPACE) {
-        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
+        promises.push(k8Ingress.edit(domain));
       }
 
       /**

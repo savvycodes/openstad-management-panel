@@ -10,27 +10,40 @@ const getHostnameFromRegex = (url) => {
 const getK8sApi = () => {
   const kc = new k8s.KubeConfig();
   kc.loadFromCluster();
-
   return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
 }
 
+/**
+ * Create a unique name based upon the domain
+ * @param domain
+ * @returns {*}
+ */
+const formatIngressName = (domain) => {
+  return Math.round(new Date().getTime() / 1000) + domain.replace(/\W/g, '').slice(0,40);
+}
 
 /**
  * Return the body to create / replace a namespaced ingress through the API
  *
- * @param databaseName
  * @param domain
  * @returns {{metadata: {name: *, annotations: {"cert-manager.io/cluster-issuer": string, "kubernetes.io/ingress.class": string}}, apiVersions: string, kind: string, spec: {rules: [{host: *, http: {paths: [{path: string, backend: {servicePort: number, serviceName: string}}]}}], tls: [{secretName: *, hosts: [*]}]}}}
  */
-const getIngressBody = (databaseName, domain) => {
+const getIngressBody = (domain) => {
   return {
     apiVersions: 'networking.k8s.io/v1beta1',
     kind: 'Ingress',
     metadata: {
-      name: databaseName,
+      name: formatIngressName(domain),
       annotations: {
         'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod', // Todo: make this configurable
-        'kubernetes.io/ingress.class': 'nginx'
+        'kubernetes.io/ingress.class': 'nginx',
+        'nginx.ingress.kubernetes.io/from-to-www-redirect': "true",
+        'nginx.ingress.kubernetes.io/proxy-body-size': '128m',
+         'nginx.ingress.kubernetes.io/configuration-snippet': `|
+  more_set_headers "X-Content-Type-Options: nosniff";
+  more_set_headers "X-Frame-Options: SAMEORIGIN";
+  more_set_headers "X-Xss-Protection: 1";
+  more_set_headers "Referrer-Policy: same-origin";`
       }
     },
     spec: {
@@ -47,7 +60,7 @@ const getIngressBody = (databaseName, domain) => {
         }
       }],
       tls: [{
-        secretName: databaseName,
+        secretName:  formatIngressName(domain),
         hosts: [domain]
       }]
     }
@@ -79,7 +92,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
 
   const domainsToCreate = [];
 
-  const ingresses = await getK8sApi().listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
+  const ingresses = await getAll();
 
   domains.forEach((domain) => {
     console.log('Get ingress for domain: ', domain);
@@ -142,7 +155,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
   console.log('domainsToDelete', domainsToDelete);
 
   domainsToDelete.forEach(async (domain) => {
-   // await delete (domain);
+   // await delete (domain);getIngressBody(newDomain)
   });
 };
 
@@ -157,26 +170,25 @@ exports.add = async (newSite) => {
   if (ingress) {
     return ingress;
   } else {
-    return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getCmsDatabaseName(), newSite.getDomain()));
+    return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getDomain()));
   }
 };
 
 /**
  *
- * @param databaseName
  * @param newDomain
  * @returns {Promise<*>}
  */
-exports.edit = async (databaseName, newDomain) => {
-  return getK8sApi().replaceNamespacedIngress(databaseName, process.env.KUBERNETES_NAMESPACE, getIngressBody(databaseName, newDomain));
+exports.edit = async (newDomain) => {
+  return getK8sApi().replaceNamespacedIngress(formatIngressName(newDomain), process.env.KUBERNETES_NAMESPACE, getIngressBody(newDomain));
 };
 
 
 /**
  *
- * @param databaseName
+ * @param domain
  * @returns {Promise<*>}
  */
-exports.delete = async (databaseName) => {
-  return getK8sApi().deleteNamespacedIngress(databaseName, process.env.KUBERNETES_NAMESPACE);
+exports.delete = async (domain) => {
+  return getK8sApi().deleteNamespacedIngress(formatIngressName(newDomain), process.env.KUBERNETES_NAMESPACE);
 };
