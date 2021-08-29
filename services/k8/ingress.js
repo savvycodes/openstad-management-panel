@@ -24,7 +24,7 @@ const getK8sApi = () => {
  * @returns {Promise<*>}
  */
 const deleteIngress = async (ingressName) => {
-  return getK8sApi().deleteNamespacedIngress(formatIngressName(ingressName), process.env.KUBERNETES_NAMESPACE);
+  return getK8sApi().deleteNamespacedIngress(ingressName, process.env.KUBERNETES_NAMESPACE);
 };
 
 const add  = async (domain) => {
