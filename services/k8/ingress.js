@@ -18,8 +18,8 @@ const getK8sApi = () => {
   return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
 }
 
-const add  = async (newSite) => {
-  return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getDomain()));
+const add  = async (domain) => {
+  return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(domain));
 
   /*const ingress = k8Ingress.get(newSite.getDomain());
 
