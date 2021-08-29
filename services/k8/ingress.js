@@ -202,7 +202,12 @@ exports.ensureIngressForAllDomains = async (domains) => {
 
   domainsToDelete.forEach(async (domain) => {
     const ingressData = domainsInIngress[domain];
-    await deleteIngress (ingressData.ingressName);
+    try {
+      console.log('Delete ingress with name ', ingressData);
+      await deleteIngress (ingressData.ingressName);
+    } catch (e) {
+      console.log('Error when deleting ingress', e)
+    }
   });
 };
 
