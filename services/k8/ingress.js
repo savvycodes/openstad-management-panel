@@ -130,7 +130,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
 
   // filter all domains present
   const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
-    return !domains.find(domain => domain === domainInIngress);
+    return !domains.find(domain => domain === domainInIngress || 'www.' + domain === domainInIngress);
   });
 
   console.log('domainsToCreate', domainsToCreate);
