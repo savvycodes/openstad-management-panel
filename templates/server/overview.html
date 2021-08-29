@@ -41,10 +41,12 @@
                             {% endfor %}
                         </td>
                         <td>
+                            <code class="expand closed json-code" >
                             {{ingress.metadata.annotations | dump}}
+                            </code>
                         </td>
                         <td>
-                            <code class="expand closed" style="width: 210px; overflow: scroll; height: 120px">{{ingress | dump}} </code>
+                            <code class="expand closed json-code" >{{ingress | dump}} </code>
                         </td>
                     </tr>
                     {% endfor %}

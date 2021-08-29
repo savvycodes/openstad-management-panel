@@ -18,6 +18,17 @@ const getK8sApi = () => {
   return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
 }
 
+const add  = async (newSite) => {
+  return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getDomain()));
+
+  /*const ingress = k8Ingress.get(newSite.getDomain());
+
+  if (ingress) {
+    return ingress;
+  } else {
+  }*/
+};
+
 /**
  * Create a unique name based upon the domain
  * @param domain
@@ -166,7 +177,11 @@ exports.ensureIngressForAllDomains = async (domains) => {
   console.log('domainsToCreate', domainsToCreate);
 
   domainsToCreate.forEach(async (domain) => {
-   // await add(domain);
+    try {
+      await add(domain);
+    } catch (e) {
+      console.log('Errrr, e', e);
+    }
   });
 
   console.log('domainsToDelete', domainsToDelete);
@@ -186,15 +201,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
  * @param newSite
  * @returns {Promise<{response: http.IncomingMessage; body: NetworkingV1beta1Ingress}>}
  */
-exports.add = async (newSite) => {
-  const ingress = k8Ingress.get(newSite.getDomain());
-
-  if (ingress) {
-    return ingress;
-  } else {
-    return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(newSite.getDomain()));
-  }
-};
+exports.
 
 /**
  *
