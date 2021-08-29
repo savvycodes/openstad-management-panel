@@ -16,7 +16,7 @@ exports.run = (req, res, next) => {
   res.locals.authTypes            = authTypes;
   res.locals.authUserFields       = authUserFields;
   res.locals.config               = { openStadMap: mapConfig }
-  res.locals.onKubernetes         =  !!process.env.KUBERNETES_NAMESPACE
+  res.locals.onKubernetes         =  true// !!process.env.KUBERNETES_NAMESPACE
 
   next();
 }

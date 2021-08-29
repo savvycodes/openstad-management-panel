@@ -9,7 +9,8 @@ module.exports = function(app){
   app.get('/admin/server',
   //  userMw.withAll,
     async (req, res) => {
-      const ingresses = await ingress.getAll();
+
+      const ingresses =  !!process.env.KUBERNETES_NAMESPACE ? await ingress.getAll() : [];
 
       console.log('All ingresses found, ingresses', ingresses)
 

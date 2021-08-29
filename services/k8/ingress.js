@@ -1,6 +1,11 @@
 const k8s = require('@kubernetes/client-node');
 
 const getHostnameFromRegex = (url) => {
+  var prefix = 'https://';
+
+  if (url.substr(0, prefix.length) !== prefix) {
+    url = prefix + url;
+  }
   // run against regex
   const matches = url ? url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i) : false;
   // extract hostname (will be null if no match is found)
@@ -80,14 +85,16 @@ exports.ensureIngressForAllDomains = async (domains) => {
   console.log('Set all domains', domains);
 
   // make sure we have a consistent root
-  domains = domains.map((value, index, self) => {
-    return getHostnameFromRegex(value);
+  domains = domains.map((domain, index, self) => {
+    return getHostnameFromRegex( domain);
   });
 
   // filter to make sure unique domains
   domains = domains.filter((value, index, self) => {
     return self.indexOf(value) === index;
   });
+
+  return;
 
   const domainsToCreate = [];
 
@@ -101,7 +108,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
     console.log('Get ingress for domain cleaned up: ', domain);
 
     const ingress = ingresses.find((ingress) => {
-      console.log('Get ingress for domain check following ingress ', ingress);
+      console.log('Get ingress for domain check following ingress ', ingress.metadata.name);
 
       const domainsInIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
         return rule.host;
@@ -149,11 +156,12 @@ exports.ensureIngressForAllDomains = async (domains) => {
 
   console.log('Domains found in ingress', domainsInIngress);
 
-
   const systemIngresses = ['openstad-admin', "openstad-frontend", "openstad-image", "openstad-api", "openstad-auth"];
 
   // filter all domains present
-  const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
+  let domainsToDelete = domainsInIngress.filter((domainInIngress) => {
+    // when domain is in ingress, but not in the database, remove it.
+
     return !domains.find(domain => domain === domainInIngress.domain);
   }).filter((domainInIngress) => {
     // never delete ingress
@@ -167,6 +175,11 @@ exports.ensureIngressForAllDomains = async (domains) => {
   });
 
   console.log('domainsToDelete', domainsToDelete);
+
+  // filter to make sure unique domains
+  domainsToDelete = domainsToDelete.filter((value, index, self) => {
+    return self.indexOf(value) === index;
+  });
 
   domainsToDelete.forEach(async (domain) => {
    // await delete (domain);getIngressBody(newDomain)
