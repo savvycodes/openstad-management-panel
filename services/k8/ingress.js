@@ -127,10 +127,9 @@ exports.ensureIngressForAllDomains = async (domains) => {
       domainsToCreate.push(domain);
     }
   });
-  const domainsInIngress = [];
+  const domainsInIngress = {};
 
-  ingresses.forEach((ingress) => {
-    console.log('List domains for ingress: ', ingress);
+
 
 
     ingresses.forEach((ingress) => {
@@ -139,15 +138,12 @@ exports.ensureIngressForAllDomains = async (domains) => {
       const domainsFound = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
         return rule.host;
       });
-
-
       domainsFound.forEach((domain) => {
-        domainsInIngress.push({
+        domainsInIngress[domain] = {
           domain: domain,
           ingressName: ingress.metadata.name
-        })
+        };
       })
-    });
 
   });
   console.log('Domains PASSED', domains);
@@ -157,13 +153,14 @@ exports.ensureIngressForAllDomains = async (domains) => {
   const systemIngresses = ['openstad-admin', "openstad-frontend", "openstad-image", "openstad-api", "openstad-auth"];
 
   // filter all domains present
-  let domainsToDelete = domainsInIngress.filter((domainInIngress) => {
+  let domainsToDelete = Object.keys(domainsInIngress).filter((domainInIngress) => {
     // when domain is in ingress, but not in the database, remove it.
 
-    return !domains.find(domain => domain === domainInIngress.domain);
+    return !domains.find(domain => domain === domainInIngress);
   }).filter((domainInIngress) => {
-    // never delete ingress
-    return !systemIngresses.find(ingressName => ingressName === domainInIngress.ingressName)
+    const ingressData = domainsInIngress[domainInIngress];
+    // never delete ingress from system
+    return !systemIngresses.find(ingressName => ingressName === ingressData.ingressName)
   });
 
   console.log('domainsToCreate', domainsToCreate);
