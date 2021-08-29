@@ -18,6 +18,15 @@ const getK8sApi = () => {
   return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
 }
 
+/**
+ *
+ * @param domain
+ * @returns {Promise<*>}
+ */
+const deleteIngress = async (ingressName) => {
+  return getK8sApi().deleteNamespacedIngress(formatIngressName(ingressName), process.env.KUBERNETES_NAMESPACE);
+};
+
 const add  = async (domain) => {
   return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(domain));
 
@@ -192,7 +201,8 @@ exports.ensureIngressForAllDomains = async (domains) => {
   });
 
   domainsToDelete.forEach(async (domain) => {
-   // await delete (domain);getIngressBody(newDomain)
+    const ingressData = domainsInIngress[domainInIngress];
+    await deleteIngress (ingressData.ingressName);
   });
 };
 
@@ -203,21 +213,6 @@ exports.ensureIngressForAllDomains = async (domains) => {
  */
 exports.add = add;
 
-/**
- *
- * @param newDomain
- * @returns {Promise<*>}
- */
-exports.edit = async (newDomain) => {
-  return getK8sApi().replaceNamespacedIngress(formatIngressName(newDomain), process.env.KUBERNETES_NAMESPACE, getIngressBody(newDomain));
-};
 
 
-/**
- *
- * @param domain
- * @returns {Promise<*>}
- */
-exports.delete = async (domain) => {
-  return getK8sApi().deleteNamespacedIngress(formatIngressName(newDomain), process.env.KUBERNETES_NAMESPACE);
-};
+
