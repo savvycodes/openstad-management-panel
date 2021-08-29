@@ -201,7 +201,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
   });
 
   domainsToDelete.forEach(async (domain) => {
-    const ingressData = domainsInIngress[domainInIngress];
+    const ingressData = domainsInIngress[domain];
     await deleteIngress (ingressData.ingressName);
   });
 };
