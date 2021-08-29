@@ -201,7 +201,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
  * @param newSite
  * @returns {Promise<{response: http.IncomingMessage; body: NetworkingV1beta1Ingress}>}
  */
-exports.
+exports.add = add;
 
 /**
  *
