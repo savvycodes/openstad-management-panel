@@ -139,7 +139,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
       domainsFound.forEach((domain) => {
         domainsInIngress.push({
           domain: domain,
-          ingressName: ingress.name
+          ingressName: ingress.metadata.name
         })
       })
     });
@@ -150,6 +150,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
   console.log('Domains found in ingress', domainsInIngress);
 
 
+  const systemIngresses = ['openstad-admin', "openstad-frontend", "openstad-image", "openstad-api", "openstad-auth"];
 
   // filter all domains present
   const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
