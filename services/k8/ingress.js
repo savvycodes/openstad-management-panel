@@ -94,8 +94,6 @@ exports.ensureIngressForAllDomains = async (domains) => {
     return self.indexOf(value) === index;
   });
 
-  return;
-
   const domainsToCreate = [];
 
   const ingresses = await getAll();
