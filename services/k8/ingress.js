@@ -39,11 +39,10 @@ const getIngressBody = (domain) => {
         'kubernetes.io/ingress.class': 'nginx',
         'nginx.ingress.kubernetes.io/from-to-www-redirect': "true",
         'nginx.ingress.kubernetes.io/proxy-body-size': '128m',
-         'nginx.ingress.kubernetes.io/configuration-snippet': `|
-  more_set_headers "X-Content-Type-Options: nosniff";
-  more_set_headers "X-Frame-Options: SAMEORIGIN";
-  more_set_headers "X-Xss-Protection: 1";
-  more_set_headers "Referrer-Policy: same-origin";`
+         'nginx.ingress.kubernetes.io/configuration-snippet': `more_set_headers "X-Content-Type-Options: nosniff";
+more_set_headers "X-Frame-Options: SAMEORIGIN";
+more_set_headers "X-Xss-Protection: 1";
+more_set_headers "Referrer-Policy: same-origin";`
       }
     },
     spec: {
@@ -123,11 +122,11 @@ exports.ensureIngressForAllDomains = async (domains) => {
       domainsToCreate.push(domain);
     }
   });
+  const domainsInIngress = [];
 
   ingresses.forEach((ingress) => {
     console.log('List domains for ingress: ', ingress);
 
-    const domainsInIngress = [];
 
     ingresses.forEach((ingress) => {
       console.log('Get ingress for domain check following ingress ', ingress);
@@ -143,17 +142,21 @@ exports.ensureIngressForAllDomains = async (domains) => {
           ingressName: ingress.name
         })
       })
-
-      domainsInIngress.concat(domainsFound);
     });
 
   });
+  console.log('Domains PASSED', domains);
 
   console.log('Domains found in ingress', domainsInIngress);
-  
+
+
+
   // filter all domains present
   const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
     return !domains.find(domain => domain === domainInIngress.domain || 'www.' + domain === domainInIngress.domain);
+  }).filter((domainInIngress) => {
+    // never delete ingress
+    return !systemIngresses.find(ingressName => ingressName === domainInIngress.name)
   });
 
   console.log('domainsToCreate', domainsToCreate);
