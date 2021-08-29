@@ -103,13 +103,13 @@ exports.ensureIngressForAllDomains = async (domains) => {
     const ingress = ingresses.find((ingress) => {
       console.log('Get ingress for domain check following ingress ', ingress);
 
-      const domains = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
+      const domainsInIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
         return rule.host;
       });
 
       console.log('Get ingress for domain check see if domain is in here ', domain);
 
-      return domains.includes(domain);
+      return domainsInIngress.includes(domain);
     });
 
     console.log('Found ingress ', ingress);
@@ -154,10 +154,10 @@ exports.ensureIngressForAllDomains = async (domains) => {
 
   // filter all domains present
   const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
-    return !domains.find(domain => domain === domainInIngress.domain || 'www.' + domain === domainInIngress.domain);
+    return !domains.find(domain => domain === domainInIngress.domain);
   }).filter((domainInIngress) => {
     // never delete ingress
-    return !systemIngresses.find(ingressName => ingressName === domainInIngress.name)
+    return !systemIngresses.find(ingressName => ingressName === domainInIngress.ingressName)
   });
 
   console.log('domainsToCreate', domainsToCreate);
