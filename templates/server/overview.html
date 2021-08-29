@@ -21,7 +21,7 @@
             <h6 class="section-header">
                 Overview Ingress
             </h6>
-            {{ ingresses | dump }}
+
             <div class="card card-openstad">
                 <table class="table">
                     <tr>
@@ -44,13 +44,22 @@
                             {{ingress.metadata.annotations | dump}}
                         </td>
                         <td>
-                            <code>{{ingress | dump}} </code>
+                            <code class="expand closed">{{ingress | dump}} </code>
                         </td>
                     </tr>
                     {% endfor %}
                 </table>
             </div>
         </div>
+
+
+        <div  class="card card-openstad expand closed">
+            <h3> All ingress dump</h3>
+            <code>
+            {{ ingresses | dump }}
+            </code>
+        </div>
+
     </div>
 </div>
 {% endblock %}

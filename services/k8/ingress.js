@@ -125,7 +125,7 @@ exports.ensureIngressForAllDomains = async (domains) => {
   });
 
   ingresses.forEach((ingress) => {
-    console.log('Get ingress for domain: ', domain);
+    console.log('List domains for ingress: ', ingress);
 
     const domainsInIngress = [];
 
@@ -136,14 +136,24 @@ exports.ensureIngressForAllDomains = async (domains) => {
         return rule.host;
       });
 
+
+      domainsFound.forEach((domain) => {
+        domainsInIngress.push({
+          domain: domain,
+          ingressName: ingress.name
+        })
+      })
+
       domainsInIngress.concat(domainsFound);
     });
 
   });
 
+  console.log('Domains found in ingress', domainsInIngress);
+  
   // filter all domains present
   const domainsToDelete = domainsInIngress.filter((domainInIngress) => {
-    return !domains.find(domain => domain === domainInIngress || 'www.' + domain === domainInIngress);
+    return !domains.find(domain => domain === domainInIngress.domain || 'www.' + domain === domainInIngress.domain);
   });
 
   console.log('domainsToCreate', domainsToCreate);

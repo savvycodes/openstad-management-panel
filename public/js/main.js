@@ -13,6 +13,15 @@ function initHideFlash() {
     $('.flash-container').remove();
   }, 5000);
 }
+
+/*
+function initExpand () {
+  $( ".expand" ).each(function( index ) {
+  });
+}
+
+ */
+
 function displayDomainFields () {
   var domainType = $('input[name="domain-type"]:checked').val();
   $('.display-for-subdir, .display-for-domain, .display-for-subdomain').hide();
@@ -20,7 +29,6 @@ function displayDomainFields () {
   console.log('.display-for'+domainType);
   $('.display-for-'+domainType).show();
 }
-
 
 $(function () {
 
