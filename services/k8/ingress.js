@@ -76,11 +76,29 @@ const shouldDomainHaveWww = (sites, domain) => {
   return sitesWithWww && sitesWithWww.length > 0;
 }
 
+const getTlsSecretNameForDomain = (sites, domain) => {
+  const sitesForDomain = getSitesForDomain(sites, domain);
+
+  let secretName = '';
+
+  // when multiple sites have different secretnames, that will cause an issue
+  // will select the latest
+  // it's unlikely to lead to bugs however.
+  // since users only set this if they explicitly install tls
+  // if empty let's encrypt takes care of it
+  sitesForDomain.forEach((site) => {
+    secretName = site.config.ingress.tlsSecretName;
+  });
+
+  return secretName;
+}
+
 const getSitesForDomain = (sites, domain) => {
-   return sites.filter((site) => {
+  return sites.filter((site) => {
     return domain === getHostnameFromRegex(site.domain);
   });
 }
+
 
 /**
  *
@@ -204,15 +222,16 @@ exports.ensureIngressForAllDomains = async (sites) => {
   domains.forEach((domain) => {
     domain = getHostnameFromRegex(domain);
 
+
     const ingress = ingresses.find((ingress) => {
 
-      const domainsInIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
+      const domainsInThisIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
         return rule.host;
       });
 
       console.log('Get ingress for domain check see if domain is in here ', domain);
 
-      return domainsInIngress.includes(domain);
+      return domainsInThisIngress.includes(domain);
     });
 
 
@@ -225,19 +244,25 @@ exports.ensureIngressForAllDomains = async (sites) => {
     if (!ingress) {
       console.log('Create ingress for domain because no ingress is present', domain);
       domainsToCreate.push(domain);
-    } else if(domainsInIngress[0]) {
-      const domainsInIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
+    } else  {
+      const domainsInThisIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
         return rule.host;
       });
       // if there is more then one, it\s www. and gets stripped anyway, so doesnt matter
 
       // if ingesss exists check if domain
-      const hasWww = !!domainsInIngress.find((domain) => {
+      const hasWww = !!domainsInThisIngress.find((domain) => {
         domain.startsWith('www.')
       });
 
-      const addWww = shouldDomainHaveWww(req.sites, domain);
-      const updateTlsSecretname = shouldDomainHaveWww(req.sites, domain);
+      const secretNameForDomain =  getTlsSecretNameForDomain(sites, domain);
+
+      const addWww = shouldDomainHaveWww(sites, domain);
+
+      const tslConfigForDomain = ingress.spec && ingress.spec.tls && ingress.spec.tls.find((config) => {
+        return config.hosts.includes(domain);
+      });
+      const updateTlsSecretname = tslConfigForDomain.sercretName !== secretNameForDomain;
 
       if(addWww || updateTlsSecretname) {
         domainsToUpdate[domain] = {
@@ -292,52 +317,25 @@ exports.ensureIngressForAllDomains = async (sites) => {
    */
   for(const domain in domainsToCreate) {
     try {
-
-      const sitesForDomain = getSitesForDomain(sites, domain);
-
-      const addWww = shouldDomainHaveWww(req.sites, domain);
-
-      const ipAddressForDomain = await dnsLookUp(domain);
-      const ipAddressForWWWDomain = await dnsLookUp('www.' + domain);
-
-      const dnsIsSet = ipAddressForDomain && ipAddressForDomain === serverPublicIP;
-      const dnsIsSetForWWW  = ipAddressForWWWDomain && ipAddressForWWWDomain === serverPublicIP;
-
-      // dns is valid when www is not required and default dns isset, otherwise we also need to check if www dns isset;
-      const dnsIsValid = (!addWww && dnsIsSet) && (addWww && dnsIsSet && dnsIsSetForWWW);
-
-      const ingressConfigFields = {
-        dnsIsSet: dnsIsSet,
-        dnsIsSetForWWW: dnsIsSetForWWW,
-        ipAddressForDomain: ipAddressForDomain,
-        ipAddressForWWWDomain: ipAddressForWWWDomain,
-        dnsIsValid: dnsIsValid,
-      }
-
-      if (dnsIsValid) {
-          const ingressName = formatIngressName(domain);
-          const response = await add(ingressName, domain, addWww);
-
-
-          if (response) {
-            ingressConfigFields.created = true;
-            ingressConfigFields.ingressName = ingressName;
-          } else {
-            ingressConfigFields.created = false;
-          }
-      }
-
-      for(const site in sitesForDomain) {
-        const config = site.config;
-        config.ingress = config.ingress ? Object.assign(config.ingress, ingressConfigFields) : {};
-        site.config = config;
-        await siteApi.update(null, site.id, site);
-      }
-
+      await processIngressForDomain(domain, sites, );
     } catch (e) {
       console.log('Errrr, e', e);
     }
   }
+
+  console.log('Update domainsToUpdate ',domainsToUpdate)
+
+
+  for(const domain in Object.keys(domainsToUpdate)) {
+    try {
+      const ingressName = domainsToUpdate[domain].ingressName;
+      console.log('Update domain ', domain, ' with ingress name ', ingressName)
+     // await processIngressForDomain(domain, sites, ingressName);
+    } catch (e) {
+      console.log('Errrr, e', e);
+    }
+  }
+
 
   console.log('domainsToDelete', domainsToDelete);
 
@@ -356,6 +354,62 @@ exports.ensureIngressForAllDomains = async (sites) => {
     }
   });
 };
+
+
+const processIngressForDomain = async (domain, sites, ingressName) => {
+  const sitesForDomain = getSitesForDomain(sites, domain);
+  const addWww = shouldDomainHaveWww(sites, domain);
+
+  const ipAddressForDomain = await dnsLookUp(domain);
+  const ipAddressForWWWDomain = await dnsLookUp('www.' + domain);
+
+  const dnsIsSet = ipAddressForDomain && ipAddressForDomain === serverPublicIP;
+  const dnsIsSetForWWW  = ipAddressForWWWDomain && ipAddressForWWWDomain === serverPublicIP;
+
+  // dns is valid when www is not required and default dns isset, otherwise we also need to check if www dns isset;
+  const dnsIsValid = (!addWww && dnsIsSet) && (addWww && dnsIsSet && dnsIsSetForWWW);
+
+  const ingressConfigFields = {
+    dnsIsSet: dnsIsSet,
+    dnsIsSetForWWW: dnsIsSetForWWW,
+    ipAddressForDomain: ipAddressForDomain,
+    ipAddressForWWWDomain: ipAddressForWWWDomain,
+    dnsIsValid: dnsIsValid,
+  }
+
+  // in case
+  if (dnsIsValid) {
+    const secretNameForDomain =  getTlsSecretNameForDomain(sites, domain);
+
+    if (ingressName) {
+      const response = await add(ingressName, domain, addWww, secretNameForDomain);
+    } else {
+      const response = await update(formatIngressName(domain), domain, addWww, secretNameForDomain);
+    }
+
+    if (response) {
+      ingressConfigFields.created = true;
+      ingressConfigFields.ingressName = ingressName;
+    } else {
+      ingressConfigFields.created = false;
+    }
+    // in case dnsIs invalid and ingressName exists we "try to delete"
+  } else if (!dnsIsValid && ingressName) {
+    try {
+      await deleteIngress(ingressName)
+    } catch (e) {
+      console.log('Failed to delete ingress after dns not set', ingressName)
+    }
+  }
+
+
+  for(const site in sitesForDomain) {
+    const config = site.config;
+    config.ingress = config.ingress ? Object.assign(config.ingress, ingressConfigFields) : {};
+    site.config = config;
+    await siteApi.update(null, site.id, site);
+  }
+}
 
 /**
  *
