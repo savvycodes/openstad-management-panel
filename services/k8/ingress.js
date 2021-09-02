@@ -50,7 +50,13 @@ const getHostnameFromRegex = (url) => {
   // run against regex
   const matches = url ? url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i) : false;
   // extract hostname (will be null if no match is found)
-  return matches && matches[1];
+  let hostname = matches && matches[1];
+
+  if (hostname.startsWith('www.')) {
+    hostname = url.substr('www.'.length);
+  }
+
+  return hostname;
 }
 
 const getK8sApi = () => {
@@ -60,6 +66,21 @@ const getK8sApi = () => {
 }
 
 
+const shouldDomainHaveWww = (sites, domain) => {
+  const sitesForDomain = getSitesForDomain(sites, domain);
+  // if one site has www. set, we assume should be for all
+  const sitesWithWww = sitesForDomain.filter((site) => {
+    return site.config && site.config.ingress && site.config.ingress.www;
+  });
+
+  return sitesWithWww && sitesWithWww.length > 0;
+}
+
+const getSitesForDomain = (sites, domain) => {
+   return sites.filter((site) => {
+    return domain === getHostnameFromRegex(site.domain);
+  });
+}
 
 /**
  *
@@ -176,6 +197,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
   });
 
   const domainsToCreate = [];
+  const domainsToUpdate = {};
 
   const ingresses = await getAll();
 
@@ -193,11 +215,9 @@ exports.ensureIngressForAllDomains = async (sites) => {
       return domainsInIngress.includes(domain);
     });
 
-    console.log('Found ingress ', ingress);
 
-    const hasWww = !!domainsInIngress.find((domain) => {
-       domain.startsWith('www.')
-    });
+
+    console.log('Found ingress ', ingress);
 
     /**
      * In case no ingress exists for this domain add to create
@@ -205,15 +225,32 @@ exports.ensureIngressForAllDomains = async (sites) => {
     if (!ingress) {
       console.log('Create ingress for domain because no ingress is present', domain);
       domainsToCreate.push(domain);
-    } else {
+    } else if(domainsInIngress[0]) {
+      const domainsInIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
+        return rule.host;
+      });
+      // if there is more then one, it\s www. and gets stripped anyway, so doesnt matter
+
       // if ingesss exists check if domain
+      const hasWww = !!domainsInIngress.find((domain) => {
+        domain.startsWith('www.')
+      });
+
+      const addWww = shouldDomainHaveWww(req.sites, domain);
+      const updateTlsSecretname = shouldDomainHaveWww(req.sites, domain);
+
+      if(addWww || updateTlsSecretname) {
+        domainsToUpdate[domain] = {
+          domain: domain,
+          ingressName: ingress.metadata.name
+        }
+      }
     }
   });
 
   const domainsInIngress = {};
 
   ingresses.forEach((ingress) => {
-
     const domainsFound = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
       return rule.host;
     });
@@ -255,16 +292,10 @@ exports.ensureIngressForAllDomains = async (sites) => {
    */
   for(const domain in domainsToCreate) {
     try {
-      const sitesForDomain = req.sites.filter((site) => {
-         return domain === getHostnameFromRegex(site.domain);
-      });
 
-      // if one site has www. set, we assume should be for all
-      const sitesWithWww = sitesForDomain.filter((site) => {
-        return site.config && site.config.ingress && site.config.ingress.www;
-      });
+      const sitesForDomain = getSitesForDomain(sites, domain);
 
-      const addWww = sitesWithWww && sitesWithWww.length > 0;
+      const addWww = shouldDomainHaveWww(req.sites, domain);
 
       const ipAddressForDomain = await dnsLookUp(domain);
       const ipAddressForWWWDomain = await dnsLookUp('www.' + domain);
