@@ -26,10 +26,7 @@ module.exports = function(app){
     async (req, res) => {
       console.log('Set ingress for all sites', req.sites)
 
-      const ingresses = await ingress.ensureIngressForAllDomains(req.sites.filter(site => !!site.domain).map((site) => {
-        console.log('site.domain', site.domain)
-        return site.domain;
-      }));
+      const ingresses = await ingress.ensureIngressForAllDomains(req.sites);
 
       req.flash('success', { msg: 'Checked ingress' });
       res.redirect('/admin/server');

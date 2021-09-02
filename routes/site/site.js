@@ -43,6 +43,7 @@ const cleanUrl                = require('../../utils/cleanUrl');
 const ensureUrlHasProtocol    = require('../../utils/ensureUrlHasProtocol');
 const formatBaseDomain        = require('../../utils/formatBaseDomain');
 
+
 const tmpDir = process.env.TMPDIR || './tmp';
 
 module.exports = function(app){
@@ -160,6 +161,7 @@ module.exports = function(app){
 
         // create site
         console.log('creating new site :', newSite.title );
+
         const site = await openstadSiteDataService.createSite({
           user: req.user, 
           dataDir: exportDir,
@@ -168,6 +170,8 @@ module.exports = function(app){
           cmsData: siteData.cmsData, 
           oauthData: siteData.oauthData
         });
+
+        const k
         
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id)
@@ -218,6 +222,8 @@ module.exports = function(app){
           cmsData: siteData.cmsData, 
           oauthData: siteData.oauthData
         });
+
+        await k8Ingress.ensureIngressForAllDomains(req.sites)
 
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id);
@@ -291,6 +297,7 @@ module.exports = function(app){
    */
   app.post('/admin/site/:siteId(\\d+)',
     siteMw.withOne,
+    siteMw.withAll,
     (req, res, next) => {
       delete req.body.url;
       const siteConfigFields = Object.keys(siteConfigSchema);
@@ -351,8 +358,11 @@ module.exports = function(app){
 
       siteApi
         .update(req.session.jwt, req.params.siteId, siteData)
-        .then((site) => {
+        .then(async (site) => {
           req.flash('success', { msg: 'Aangepast!'});
+
+          await k8Ingress.ensureIngressForAllDomains(req.sites)
+
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch((err) => { next(err) });
@@ -366,6 +376,7 @@ module.exports = function(app){
    */
   app.post('/admin/site/:siteId/url',
     siteMw.withOne,
+    siteMw.withAll,
     userClientMw.withOneForSite,
     (req, res, next) => {
 
@@ -409,7 +420,9 @@ module.exports = function(app){
       }
 
       if (process.env.KUBERNETES_NAMESPACE) {
-        promises.push(k8Ingress.edit(domain));
+        promises.push(
+          k8Ingress.ensureIngressForAllDomains(req.sites)
+        );
       }
 
       /**
@@ -446,10 +459,8 @@ module.exports = function(app){
       }
 
       clientConfig.smtp = smtpSettings;
-      clientData
 
       promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
-
 
       if (process.env.KUBERNETES_NAMESPACE) {
         promises.push(k8Ingress.edit(domain));
@@ -479,6 +490,7 @@ module.exports = function(app){
    */
   app.post('/admin/site/:siteId/delete',
     siteMw.withOne,
+    siteMw.withAll,
     siteMw.addAuthClientId,
     (req, res, next) => {
 
@@ -491,7 +503,7 @@ module.exports = function(app){
         deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
 
         if (process.env.KUBERNETES_NAMESPACE) {
-          deleteActions.push(k8Ingress.delete(req.site.config.cms.dbName));
+          deleteActions.push(k8Ingress.ensureIngressForAllDomains(req.sites));
         }
       }
 

@@ -224,6 +224,7 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
 
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
+
     if (apiData.choiceGuides) {
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
     }
@@ -233,6 +234,7 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
     }
 
     console.log('Waiting for cms to restart');
+
     await sleep(3000);
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
@@ -256,7 +258,7 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
     if (process.env.KUBERNETES_NAMESPACE) {
       try {
 
-        await k8Ingress.add(newSite);
+       // await k8Ingress.add(newSite);
 
         // Todo: Move this to the a cronjob (api or admin).
         //const domainIp = await lookupDns(newSite.getDomain(), 2000);
