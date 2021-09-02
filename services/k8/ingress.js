@@ -59,6 +59,8 @@ const getK8sApi = () => {
   return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
 }
 
+
+
 /**
  *
  * @param domain
@@ -68,16 +70,14 @@ const deleteIngress = async (ingressName) => {
   return getK8sApi().deleteNamespacedIngress(ingressName, process.env.KUBERNETES_NAMESPACE);
 };
 
-const add = async (ingressName, domain, addWww) => {
-  return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(ingressName, domain, addWww));
-
-  /*const ingress = k8Ingress.get(newSite.getDomain());
-
-  if (ingress) {
-    return ingress;
-  } else {
-  }*/
+const add = async (ingressName, domain, addWww, tslSecret) => {
+  return getK8sApi().createNamespacedIngress(process.env.KUBERNETES_NAMESPACE, getIngressBody(ingressName, domain, addWww, tslSecret));
 };
+
+const update = async (ingressName, domain, addWww, tslSecret) => {
+  return getK8sApi().replaceNamespacedIngress(ingressName, process.env.KUBERNETES_NAMESPACE, getIngressBody(ingressName, domain, addWww, tslSecret));
+};
+
 
 /**
  * Create a unique name based upon the domain
