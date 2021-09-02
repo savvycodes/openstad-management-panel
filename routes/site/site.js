@@ -171,8 +171,6 @@ module.exports = function(app){
           oauthData: siteData.oauthData
         });
 
-        const k
-        
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id)
 
