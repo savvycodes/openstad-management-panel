@@ -32,9 +32,9 @@ const siteApi = require('../siteApi');
  *    - Cert manager also uses ingress to fetch a new SSL, we check to make sure we don't delete those
  */
 
-const dnsLookUp = () => {
+const dnsLookUp = (domain) => {
   return new Promise((resolve, reject) => {
-    dns.lookup("www.aWebSiteName.am", (err, address, family) => {
+    dns.lookup(domain, (err, address, family) => {
       if (err) reject(err);
       resolve(address);
     });
@@ -87,7 +87,9 @@ const getTlsSecretNameForDomain = (sites, domain) => {
   // since users only set this if they explicitly install tls
   // if empty let's encrypt takes care of it
   sitesForDomain.forEach((site) => {
-    secretName = site.config.ingress.tlsSecretName;
+    if (!secretName) {
+      secretName = site.config && site.config.ingress && site.config.ingress.tlsSecretName ? site.config.ingress.tlsSecretName : false;
+    }
   });
 
   return secretName;
@@ -317,7 +319,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
    */
   for(const domain in domainsToCreate) {
     try {
-      await processIngressForDomain(domain, sites, );
+      await processIngressForDomain(domain, sites;
     } catch (e) {
       console.log('Errrr, e', e);
     }
@@ -376,6 +378,8 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
     ipAddressForWWWDomain: ipAddressForWWWDomain,
     dnsIsValid: dnsIsValid,
   }
+
+  console.log('processIngressForDomain ingressConfigFields', ingressConfigFields);
 
   // in case
   if (dnsIsValid) {
