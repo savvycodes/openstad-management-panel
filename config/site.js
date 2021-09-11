@@ -301,13 +301,13 @@ exports.configSchema = {
     },
     {
       key: 'tlsSecretName',
-      type: 'number',
+      type: 'text',
       label: 'Name of the TLS secret in Kubernetes (will disable let\'s encrypt and use the TLS secret for SSL)'
     },
     {
       key: 'disabled',
       type: 'boolean',
-      label: 'Disable creating an auto ingress for this site'
+      label: 'Disable creating an auto ingress for this site? (will delete it if it exists?)'
     },
 
   ]

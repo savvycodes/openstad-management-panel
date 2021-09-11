@@ -423,15 +423,19 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
 
   // in case
   if (dnsIsValid) {
+    console.log('dnsIsValid and create')
+    let response;
 
     if (ingressName) {
+      console.log('ingressName so update', ingressName)
 
-      const response = await update(ingressName, domain, addWww, secretNameForDomain);
-
-
+      response = await update(ingressName, domain, addWww, secretNameForDomain);
     } else {
-      const response = await add(formatIngressName(domain), domain, addWww, secretNameForDomain);
+      console.log('no ingressName so create', )
+      response = await add(formatIngressName(domain), domain, addWww, secretNameForDomain);
     }
+
+    console.log('Ingress create/update response', response);
 
     if (response) {
       ingressConfigFields.created = true;
@@ -449,10 +453,18 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
   }
 
 
+  
+
   for(const site in sitesForDomain) {
-    const config = site.config;
+    console.log('site in sitesDomain', site);
+
+    const config = site.config ? site.config : {};
+    console.log('config', config);
+
     config.ingress = config.ingress ? Object.assign(config.ingress, ingressConfigFields) : {};
+
     site.config = config;
+
     await siteApi.update(null, site.id, site);
   }
 }
