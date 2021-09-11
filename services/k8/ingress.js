@@ -158,7 +158,7 @@ more_set_headers "Referrer-Policy: same-origin";`
     },
     spec: {
       rules: [{
-        host: domains,
+        host: domain,
         http: {
           paths: [{
             backend: {
