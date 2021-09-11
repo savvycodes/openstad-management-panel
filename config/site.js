@@ -301,7 +301,7 @@ exports.configSchema = {
     },
     {
       key: 'tlsSecretName',
-      type: 'text',
+      type: 'string',
       label: 'Name of the TLS secret in Kubernetes (will disable let\'s encrypt and use the TLS secret for SSL)'
     },
     {
