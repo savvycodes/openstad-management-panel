@@ -346,7 +346,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
       const ingressName = domainsToUpdate[domainToUpdate].ingressName;
 
       console.log('Update domain ', domainToUpdate, ' with ingress name ', ingressName)
-     // await processIngressForDomain(domain, sites, ingressName);
+      await processIngressForDomain(domain, sites, ingressName);
     } catch (e) {
       console.log('Errrr, e', e);
     }
@@ -444,7 +444,8 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
       ingressConfigFields.created = false;
     }
     // in case dnsIs invalid and ingressName exists we "try to delete"
-  } else if (!dnsIsValid && ingressName) {
+  } else if (ingressName) {
+    console.log('Deletel ingressname: ', ingressName)
     try {
       await deleteIngress(ingressName)
     } catch (e) {
