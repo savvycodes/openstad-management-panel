@@ -92,7 +92,7 @@ const getTlsSecretNameForDomain = (sites, domain) => {
     }
   });
 
-  return secretName;
+  return secretName ? secretName : false;
 }
 
 const getSitesForDomain = (sites, domain) => {
@@ -264,7 +264,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
       const tslConfigForDomain = ingress.spec && ingress.spec.tls && ingress.spec.tls.find((config) => {
         return config.hosts.includes(domain);
       });
-      const updateTlsSecretname = tslConfigForDomain.sercretName !== secretNameForDomain;
+      const updateTlsSecretname = !!tslConfigForDomain.sercretName !== !!secretNameForDomain;
 
       console.log('updateTlsSecretname for domain ', domain, ' tslConfigForDomain.sercretName', tslConfigForDomain.sercretName)
 
@@ -312,6 +312,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
   });
 
   console.log('domainsToCreate', domainsToCreate);
+  console.log('domainsToUpdate', domainsToUpdate);
 
   /**
    * Get all site objects with domain as hostname
@@ -326,7 +327,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
    */
   for(const domainToCreate in domainsToCreate) {
     try {
-      await IngressForDomain(domainToCreate, sites);
+      await processIngressForDomain(domainToCreate, sites);
     } catch (e) {
       console.log('Errrr, e', e);
     }
