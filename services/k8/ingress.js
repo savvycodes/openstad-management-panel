@@ -336,6 +336,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
    */
   for(const domainToCreate in domainsToCreate) {
     try {
+      console.log('Start create', domainToCreate)
       await processIngressForDomain(domainToCreate, sites);
     } catch (e) {
       console.log('Errrr, e', e);
@@ -376,11 +377,20 @@ exports.ensureIngressForAllDomains = async (sites) => {
 
 
 const processIngressForDomain = async (domain, sites, ingressName) => {
+  console.log('start ingress', ipAddressForDomain);
+
   const sitesForDomain = getSitesForDomain(sites, domain);
   const addWww = shouldDomainHaveWww(sites, domain);
 
-  const ipAddressForDomain = await dnsLookUp(domain);
-  const ipAddressForWWWDomain = await dnsLookUp('www.' + domain);
+  let ipAddressForDomain;
+  let ipAddressForWWWDomain;
+
+  try {
+    ipAddressForDomain = await dnsLookUp(domain);
+    ipAddressForWWWDomain = await dnsLookUp('www.' + domain);
+  } catch(e ) {
+    console.log('Error checking dns for domain', domain);
+  }
 
   const dnsIsSet = ipAddressForDomain && ipAddressForDomain === serverPublicIP;
   const dnsIsSetForWWW  = ipAddressForWWWDomain && ipAddressForWWWDomain === serverPublicIP;
