@@ -266,6 +266,13 @@ exports.ensureIngressForAllDomains = async (sites) => {
       });
       const updateTlsSecretname = tslConfigForDomain.sercretName !== secretNameForDomain;
 
+      console.log('updateTlsSecretname for domain ', domain, ' tslConfigForDomain.sercretName', tslConfigForDomain.sercretName)
+
+      console.log('updateTlsSecretname for domain ', domain, ' secretNameForDomain', secretNameForDomain)
+
+      console.log('shouldDomainHaveWww for domain ', addWww);
+
+
       if(addWww || updateTlsSecretname) {
         domainsToUpdate[domain] = {
           domain: domain,
@@ -319,7 +326,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
    */
   for(const domainToCreate in domainsToCreate) {
     try {
-      await processIngressForDomain(domainToCreate, sites);
+      await IngressForDomain(domainToCreate, sites);
     } catch (e) {
       console.log('Errrr, e', e);
     }
@@ -358,7 +365,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
 };
 
 
-const processIngressForDomain = async (domain, sites, ingressName) => {
+const processIngreprocessssForDomain = async (domain, sites, ingressName) => {
   const sitesForDomain = getSitesForDomain(sites, domain);
   const addWww = shouldDomainHaveWww(sites, domain);
 
@@ -381,14 +388,26 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
 
   console.log('processIngressForDomain ingressConfigFields', ingressConfigFields);
 
+  const secretNameForDomain =  getTlsSecretNameForDomain(sites, domain);
+
+  try {
+    let body = getIngressBody(formatIngressName(domain), domain, addWww, secretNameForDomain);
+    body = body ? JSON.stringify(body) : false;
+    console.log('getIngressBody ingressConfigFields for domain ', domain, body);
+  } catch(e) {
+    console.log('erroror loggin ingress body', e)
+  }
+
   // in case
   if (dnsIsValid) {
-    const secretNameForDomain =  getTlsSecretNameForDomain(sites, domain);
 
     if (ingressName) {
-      const response = await add(ingressName, domain, addWww, secretNameForDomain);
+
+      const response = await update(ingressName, domain, addWww, secretNameForDomain);
+
+
     } else {
-      const response = await update(formatIngressName(domain), domain, addWww, secretNameForDomain);
+      const response = await add(formatIngressName(domain), domain, addWww, secretNameForDomain);
     }
 
     if (response) {
