@@ -55,7 +55,11 @@ module.exports = function(app){
     siteMw.withAll,
     externalSiteMw.withAll,
     (req, res, next) => {
-      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST, existingDomainsString: req.sites.map(site => site.domain).join(','), existingDomains: req.sites.map(site => site.domain) });
+      res.render('site/new-form.html', {
+        externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST,
+        existingDomainsString: req.sites.map(site => site.domain).join(','),
+        existingDomains: req.sites.map(site => site.domain)
+      });
     }
   );
 
@@ -65,7 +69,10 @@ module.exports = function(app){
   app.get('/admin/site-copy',
     siteMw.withAll,
     (req, res, next) => {
-      res.render('site/copy-form.html', {existingDomains: req.sites.map(site => site.domain).join(',')});
+      res.render('site/copy-form.html', {
+        existingDomainsString: req.sites.map(site => site.domain).join(','),
+        existingDomains: req.sites.map(site => site.domain)
+      });
     }
   );
   
@@ -75,7 +82,10 @@ module.exports = function(app){
   app.get('/admin/site-import',
     siteMw.withAll,
     (req, res, next) => {
-      res.render('site/import-form.html', {existingDomains: req.sites.map(site => site.domain).join(',')});
+      res.render('site/import-form.html', {
+        existingDomainsString: req.sites.map(site => site.domain).join(','),
+        existingDomains: req.sites.map(site => site.domain)
+      });
     }
   );
 

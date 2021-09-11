@@ -1,15 +1,15 @@
 <div class="form-group">
   <label for="domain">Domeinnaam: </label>
   <div class="form-check">
-    <input {'checked' if site and site.domainType === 'subdir'} type="radio" class="form-check-input domain-type" id="subdir-type" name="domain-type" required value="subdir"  />
+    <input {{'checked' if site and site.domainType === 'subdir'}} type="radio" class="form-check-input domain-type" id="subdir-type" name="domain-type" required value="subdir"  />
     <label for="subdir-type" class="form-check-label" >Sub directory</label>
   </div>
   <div class="form-check">
-    <input  {'checked' if site and site.domainType === 'subdomain'} type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" />
+    <input {{'checked' if site and site.domainType === 'subdomain'}} type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" />
     <label for="subdomain-type" class="form-check-label" >Sub domain</label>
   </div>
   <div class="form-check">
-    <input {'checked' if site and site.domainType === 'domain'} type="radio" class="form-check-input domain-type" id="domain-type" name="domain-type" required value="domain"/>
+    <input {{'checked' if site and site.domainType === 'domain'}} type="radio" class="form-check-input domain-type" id="domain-type" name="domain-type" required value="domain"/>
     <label for="domain-type" class="form-check-label">Full domain</label>
   </div>
 
