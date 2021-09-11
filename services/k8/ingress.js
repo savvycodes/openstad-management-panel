@@ -52,6 +52,8 @@ const getHostnameFromRegex = (url) => {
   // extract hostname (will be null if no match is found)
   let hostname = matches && matches[1];
 
+  console.log('hostname', hostname)
+
   if (hostname.startsWith('www.')) {
     hostname = url.substr('www.'.length);
   }
@@ -206,15 +208,24 @@ exports.ensureIngressForAllDomains = async (sites) => {
     return site.domain;
   });
 
+  console.log('All domains 1', domains);
+
+
   // make sure we have a consistent root
   domains = domains.map((domain, index, self) => {
     return getHostnameFromRegex(domain);
   });
 
+  console.log('All domains 2', domains);
+
+
   // filter to make sure unique domains
   domains = domains.filter((value, index, self) => {
     return self.indexOf(value) === index;
   });
+
+  console.log('All domains 3', domains);
+
 
   const domainsToCreate = [];
   const domainsToUpdate = {};
@@ -224,9 +235,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
   domains.forEach((domain) => {
     domain = getHostnameFromRegex(domain);
 
-
     const ingress = ingresses.find((ingress) => {
-
       const domainsInThisIngress = ingress.spec && ingress.spec.rules && ingress.spec.rules.map((rule) => {
         return rule.host;
       });
@@ -366,7 +375,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
 };
 
 
-const processIngreprocessssForDomain = async (domain, sites, ingressName) => {
+const processIngressForDomain = async (domain, sites, ingressName) => {
   const sitesForDomain = getSitesForDomain(sites, domain);
   const addWww = shouldDomainHaveWww(sites, domain);
 
@@ -375,6 +384,13 @@ const processIngreprocessssForDomain = async (domain, sites, ingressName) => {
 
   const dnsIsSet = ipAddressForDomain && ipAddressForDomain === serverPublicIP;
   const dnsIsSetForWWW  = ipAddressForWWWDomain && ipAddressForWWWDomain === serverPublicIP;
+
+  console.log('ipAddressForDomain', ipAddressForDomain);
+  console.log('serverPublicIP', serverPublicIP);
+
+  console.log('dnsIsSet dnsIsSet', dnsIsSet);
+  console.log('dnsIsSetForWWW dnsIsSetForWWW', dnsIsSetForWWW);
+
 
   // dns is valid when www is not required and default dns isset, otherwise we also need to check if www dns isset;
   const dnsIsValid = (!addWww && dnsIsSet) && (addWww && dnsIsSet && dnsIsSetForWWW);
