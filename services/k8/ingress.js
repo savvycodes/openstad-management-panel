@@ -1,7 +1,7 @@
 const k8s = require('@kubernetes/client-node');
 const serverPublicIP = process.env.PUBLIC_IP;
 const siteApi = require('../siteApi');
-
+const dns = require('dns');
 /**
  * Ingress files get created / deleted
  *
@@ -324,14 +324,14 @@ exports.ensureIngressForAllDomains = async (sites) => {
       console.log('Errrr, e', e);
     }
   }
-  
+
 
   for(let domainToUpdate of Object.keys(domainsToUpdate)) {
     try {
       console.log('domainToUpdate', domainToUpdate)
       const ingressName = domainsToUpdate[domainToUpdate].ingressName;
 
-      console.log('Update domain ', domain, ' with ingress name ', ingressName)
+      console.log('Update domain ', domainToUpdate, ' with ingress name ', ingressName)
      // await processIngressForDomain(domain, sites, ingressName);
     } catch (e) {
       console.log('Errrr, e', e);
