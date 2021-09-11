@@ -18,18 +18,14 @@ const dns = require('dns');
  *    If we add www. standard always then the auto certificates won't be valid for wildcard dns because Let's encrypt will try to validate both www.
  *    and it's DNS wise not allowed to set www.*.subdomain
  *
- *  - When DNS is not set to the server, then
+ *  - When DNS is not set to the server, then no ingress will be created, it will be deleted as long as DNS not properly set,
+ *   - then added again
  *
- *  - It's wanted th
- *
- *  - It's possible to not create ingress for site by adding site.config.ingress.disable: true
+ *  - It's possible to not create ingress for site by adding site.config.ingress.disabled: true
  *
  *   - It's possible to set www. for site in site.config.ingress.www: true
  *
- *  - When ingress exists we don't delete it when DNS is changed, might cause instability,
- *    however, it might cause problems long term if not detected
- *
- *    - Cert manager also uses ingress to fetch a new SSL, we check to make sure we don't delete those
+ *   - It's possible to set the secret tls key in ingress for custom ssl
  */
 
 const dnsLookUp = (domain) => {
@@ -334,7 +330,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
    *  - stemmen.amsterdam.nl
    *  - stemmen.amsterdam.nl/site3
    */
-  for(const domainToCreate in domainsToCreate) {
+  for(const domainToCreate of domainsToCreate) {
     try {
       console.log('Start create', domainToCreate)
       await processIngressForDomain(domainToCreate, sites);
@@ -377,7 +373,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
 
 
 const processIngressForDomain = async (domain, sites, ingressName) => {
-  console.log('start ingress', ipAddressForDomain);
+  console.log('start processIngressForDomain');
 
   const sitesForDomain = getSitesForDomain(sites, domain);
   const addWww = shouldDomainHaveWww(sites, domain);
