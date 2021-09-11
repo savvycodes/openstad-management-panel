@@ -319,7 +319,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
    */
   for(const domain in domainsToCreate) {
     try {
-      await processIngressForDomain(domain, sites;
+      await processIngressForDomain(domain, sites);
     } catch (e) {
       console.log('Errrr, e', e);
     }
