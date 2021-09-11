@@ -399,7 +399,7 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
 
 
   // dns is valid when www is not required and default dns isset, otherwise we also need to check if www dns isset;
-  const dnsIsValid = (!addWww && dnsIsSet) && (addWww && dnsIsSet && dnsIsSetForWWW);
+  const dnsIsValid = (!addWww && dnsIsSet) || (addWww && dnsIsSet && dnsIsSetForWWW);
 
   const ingressConfigFields = {
     dnsIsSet: dnsIsSet,
@@ -453,9 +453,9 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
   }
 
 
-  
 
-  for(const site in sitesForDomain) {
+
+  for(const site of sitesForDomain) {
     console.log('site in sitesDomain', site);
 
     const config = site.config ? site.config : {};
