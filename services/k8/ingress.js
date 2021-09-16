@@ -206,7 +206,6 @@ exports.ensureIngressForAllDomains = async (sites) => {
 
   console.log('All domains 1', domains);
 
-
   // make sure we have a consistent root
   domains = domains.map((domain, index, self) => {
     return getHostnameFromRegex(domain);
@@ -214,14 +213,12 @@ exports.ensureIngressForAllDomains = async (sites) => {
 
   console.log('All domains 2', domains);
 
-
   // filter to make sure unique domains
   domains = domains.filter((value, index, self) => {
     return self.indexOf(value) === index;
   });
 
   console.log('All domains 3', domains);
-
 
   const domainsToCreate = [];
   const domainsToUpdate = {};
@@ -241,9 +238,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
       return domainsInThisIngress.includes(domain);
     });
 
-
-
-    console.log('Found ingress ', ingress);
+    console.log('Found ingress', ingress);
 
     /**
      * In case no ingress exists for this domain add to create
@@ -269,14 +264,8 @@ exports.ensureIngressForAllDomains = async (sites) => {
       const tslConfigForDomain = ingress.spec && ingress.spec.tls && ingress.spec.tls.find((config) => {
         return config.hosts.includes(domain);
       });
+
       const updateTlsSecretname = !!tslConfigForDomain.sercretName !== !!secretNameForDomain;
-
-      console.log('updateTlsSecretname for domain ', domain, ' tslConfigForDomain.sercretName', tslConfigForDomain.sercretName)
-
-      console.log('updateTlsSecretname for domain ', domain, ' secretNameForDomain', secretNameForDomain)
-
-      console.log('shouldDomainHaveWww for domain ', addWww);
-
 
       if(addWww || updateTlsSecretname) {
         domainsToUpdate[domain] = {
@@ -352,9 +341,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
     }
   }
 
-
   console.log('domainsToDelete', domainsToDelete);
-
   // filter to make sure unique domains
   domainsToDelete = domainsToDelete.filter((value, index, self) => {
     return self.indexOf(value) === index;
