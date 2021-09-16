@@ -7,27 +7,35 @@ const siteApiService   = require('../../services/siteApi');
 /**
  * Ingress files get created / deleted
  *
- * Principle is auto check,
+ * Principle is auto correct everything. Not CRUD one by one, but
  *
- * So we run through all, and check if changes, so EDIT / DELETE / CREATE, is all the same logic.
- * This is because, edit a domain is sometimes also a Delete.
- * And some domains run on domain.com/site1. Then we need to make sure the domain exists.
- * So there can be sites with domain.com, domain.com/site, etc. So it's not as simple as an ingress file per site.
- * Domains are always saved without www.
+ * Ingress files are the vhosts of Kubernetes, they tell the server what code should manage what domain, what server settings and headers are connected
+ * and what SSL certs should be loaded
+ *
+ * On a CRUD action we run through all sites, and check if changes, so EDIT / DELETE / CREATE, is all the same logic.
+ * This is because, edit of a domain is sometimes also a delete. (if we go from denhaag.cms.openstad.org to stem.denhaag.nl the old domain should be removed)
+ * And some sites run on a subdirectory: openstad.org/site1. Then we need to make sure the openstad.org domain exists.
+ * So there can be sites with domain.com, domain.com/site, etc. In this case only one ingress file should be made, handling multiple sites
+ *
+ *
  *
  * Some other caveats:
- *  - Some sites have www added, some not, need
- *    If we add www. standard always then the auto certificates won't be valid for wildcard dns because Let's encrypt will try to validate both www.
- *    and it's DNS wise not allowed to set www.*.subdomain
+ *  - Some sites have www added, some not
+ *    If we add www. standard always then the auto certificates won't be valid for wildcard dns because Let's encrypt will try to validate both www. and non www
+ *    and it's DNS wise not allowed to set www.*.subdomain, so therefore if www. is wanted it can be turned on in the site settings via the UI (site.config.ingress.www)
  *
- *  - When DNS is not set to the server, then no ingress will be created, it will be deleted as long as DNS not properly set,
- *   - then added again
+ *  - When DNS is not set to the server, then no ingress will be created, it will be deleted as long as DNS not properly set, then added again once turned on
  *
- *  - It's possible to not create ingress for site by adding site.config.ingress.disabled: true
+ *   - It's possible to not create ingress for site by adding site.config.ingress.disabled: true
  *
  *   - It's possible to set www. for site in site.config.ingress.www: true
  *
- *   - It's possible to set the secret tls key in ingress for custom ssl
+ *   - It's possible to set the secret tls key in ingress for custom ssl, this skips installing an automatic cert by certmanager, it doesn't validate whether the secret is a valid SSL or exists
+ *
+ *   Examples:
+ *   - site.acc.openstad.org with site.config.ingress.www: true, should only make an ingress if both site.acc.openstad.org and www.site.acc.openstad.org point to the server, this because SSL won't be able to be validated by cert manager
+ *   - in case DNS site.acc.openstad.org and www.site.acc.openstad.org is pointing to the server ip, and the www. gets deleted, the ingress will also be removed automatically once a check is done
+ *   - in case of adding a secret tls key in ingress for custom ssl
  */
 
 const dnsLookUp = (domain) => {
@@ -197,9 +205,11 @@ exports.ensureIngressForAllDomains = async () => {
     return false;
   }
 
+  let sites;
+
   // fetch the domain fresh, so always the latest sites
   try {
-    const sites = await siteApiService.fetchAll();
+    sites = await siteApiService.fetchAll();
   } catch (e) {
     console.log('error while fetching all sites')
     throw Error(e);
@@ -300,7 +310,7 @@ exports.ensureIngressForAllDomains = async () => {
     // cert manager makes temporary ingress files in order to be able to validate the domain for an SSL certificate,
     // dont use these ingresses
     // it's better to filter on the labels we add while creating the ingress via the admin panel
-    // this is more stable, but because of backwards compatiblity not implemented at the moment.
+    // this is more stable, but because of backwards compatibmlity not implemented at the moment.
     const isCertManagerResolver = ingress && ingress.metadata && ingress.metadata.generateName && ingress.metadata.generateName === 'acm-acme-http-solver-';
 
     if (!isCertManagerResolver) {
