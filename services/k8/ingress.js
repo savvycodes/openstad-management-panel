@@ -2,6 +2,8 @@ const k8s = require('@kubernetes/client-node');
 const serverPublicIP = process.env.PUBLIC_IP;
 const siteApi = require('../siteApi');
 const dns = require('dns');
+const siteApiService   = require('../../services/siteApi');
+
 /**
  * Ingress files get created / deleted
  *
@@ -144,6 +146,9 @@ const getIngressBody = (ingressName, domain, addWww, secretName) => {
     apiVersions: 'networking.k8s.io/v1beta1',
     kind: 'Ingress',
     metadata: {
+      labels: {
+        type: 'user-site'
+      },
       name: ingressName,
       annotations: {
         'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod', // Todo: make this configurable
@@ -187,11 +192,20 @@ exports.getAll = getAll;
 /***
  * There are many domains
  */
-exports.ensureIngressForAllDomains = async (sites) => {
-
+exports.ensureIngressForAllDomains = async () => {
   if (!process.env.KUBERNETES_NAMESPACE) {
     return false;
   }
+
+  // fetch the domain fresh, so always the latest sites
+  try {
+    const sites = await siteApiService.fetchAll();
+  } catch (e) {
+    console.log('error while fetching all sites')
+    throw Error(e);
+  }
+
+  console.log('sites', sites)
 
   if (!Array.isArray(sites) || sites.length === 0) {
     return false;
@@ -283,12 +297,20 @@ exports.ensureIngressForAllDomains = async (sites) => {
       return rule.host;
     });
 
-    domainsFound.forEach((domain) => {
-      domainsInIngress[domain] = {
-        domain: domain,
-        ingressName: ingress.metadata.name
-      };
-    })
+    // cert manager makes temporary ingress files in order to be able to validate the domain for an SSL certificate,
+    // dont use these ingresses
+    // it's better to filter on the labels we add while creating the ingress via the admin panel
+    // this is more stable, but because of backwards compatiblity not implemented at the moment.
+    const isCertManagerResolver = ingress && ingress.metadata && ingress.metadata.generateName && ingress.metadata.generateName === 'acm-acme-http-solver-';
+
+    if (!isCertManagerResolver) {
+      domainsFound.forEach((domain) => {
+        domainsInIngress[domain] = {
+          domain: domain,
+          ingressName: ingress.metadata.name
+        };
+      })
+    }
 
   });
 
@@ -303,7 +325,7 @@ exports.ensureIngressForAllDomains = async (sites) => {
     const ingressData = domainsInIngress[domainInIngress];
     // never delete ingress from system
     return !systemIngresses.find(ingressName => ingressName === ingressData.ingressName)
-  });
+  })
 
   console.log('domainsToCreate', domainsToCreate);
   console.log('domainsToUpdate', domainsToUpdate);
@@ -342,6 +364,8 @@ exports.ensureIngressForAllDomains = async (sites) => {
   }
 
   console.log('domainsToDelete', domainsToDelete);
+
+
   // filter to make sure unique domains
   domainsToDelete = domainsToDelete.filter((value, index, self) => {
     return self.indexOf(value) === index;
@@ -383,6 +407,7 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
 
   console.log('dnsIsSet dnsIsSet', dnsIsSet);
   console.log('dnsIsSetForWWW dnsIsSetForWWW', dnsIsSetForWWW);
+
 
 
   // dns is valid when www is not required and default dns isset, otherwise we also need to check if www dns isset;

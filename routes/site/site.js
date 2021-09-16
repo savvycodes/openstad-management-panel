@@ -181,9 +181,6 @@ module.exports = function(app){
           oauthData: siteData.oauthData
         });
 
-
-        await k8Ingress.ensureIngressForAllDomains(req.sites)
-
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id)
 
@@ -204,8 +201,8 @@ module.exports = function(app){
     userClientMw.withAll,
     upload.single('import_file'),
     async (req, res, next) => {
-
       try {
+
         // domain
         let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
         const protocol = req.body.protocol ? req.body.protocol : 'https://';
@@ -225,7 +222,6 @@ module.exports = function(app){
 
         // create site
         console.log('creating new site :', newSite.title );
-
         const site = await openstadSiteDataService.createSite({
           user: req.user,
           dataDir: importDir,
