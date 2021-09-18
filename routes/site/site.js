@@ -423,7 +423,6 @@ module.exports = function(app){
 
 
       siteData.config.allowedDomains = baseDomain ? [baseDomain] : [];
-
       // update CMS urls
       if (siteData.config.cms) {
         siteData.config.cms.url = domainWithProtocol;
@@ -439,7 +438,6 @@ module.exports = function(app){
         clientData.siteUrl = domainWithProtocol;
         clientData.redirectUrl = domainWithProtocol;
         clientData.config.backUrl = domainWithProtocol;
-
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
 
@@ -449,9 +447,15 @@ module.exports = function(app){
        */
       Promise.all(promises)
         .then(async function (response) {
-
           // make sure ingress update is done after the updates are done
           await k8Ingress.ensureIngressForAllDomains();
+
+          // reset site config in frontend
+          // api does this, but will fail on url change because new site wont exists yet if ingress is still being created
+          if (process.env.FRONTEND_URL) {
+            await fetch(process.env.FRONTEND_URL + '/config-reset')
+          }
+
 
           req.flash('success', { msg: 'Url aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
