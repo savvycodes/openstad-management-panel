@@ -76,7 +76,7 @@ $(function () {
       if ($(this).hasClass('valid-domain-character-allow-slash')) {
         allowedCharacters = allowedCharacters + '/';
       }
-      
+
       if ((allowedCharacters).indexOf(keychar) === -1) {
          event.preventDefault();
          return false;

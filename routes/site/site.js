@@ -443,17 +443,16 @@ module.exports = function(app){
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
 
-      if (process.env.KUBERNETES_NAMESPACE) {
-        promises.push(
-          k8Ingress.ensureIngressForAllDomains(req.sites)
-        );
-      }
 
       /**
        * Import all promises
        */
       Promise.all(promises)
-        .then(function (response) {
+        .then(async function (response) {
+
+          // make sure ingress update is done after the updates are done
+          await k8Ingress.ensureIngressForAllDomains();
+
           req.flash('success', { msg: 'Url aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
         })
