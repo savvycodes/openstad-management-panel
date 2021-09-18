@@ -46,6 +46,25 @@ const formatBaseDomain        = require('../../utils/formatBaseDomain');
 
 const tmpDir = process.env.TMPDIR || './tmp';
 
+const formatDomainFromBody = (req, res, next) => {
+  //main-domain + subdir
+  let domain;
+
+  if (req.body['domain-type'] === 'subdir') {
+    domain = `${req.body['main-domain']}/${req.body.subdir}`;
+  } else if (req.body['domain-type'] === 'subdomain') {
+    domain = `${req.body.domain}.${process.env.WILDCARD_HOST}`;
+  } else {
+    domain = req.body.domain
+  }
+
+  const protocol = req.body.protocol ? req.body.protocol : 'https://';
+  domain = protocol + cleanUrl(domain);
+  req.formattedDomain = domain;
+
+  next();
+}
+
 module.exports = function(app){
 
   /**
@@ -143,13 +162,12 @@ module.exports = function(app){
    * Copy a site
    */
   app.post('/admin/site/copy',
+    formatDomainFromBody,
     async (req, res, next) => {
       try {
 
         // domain
-        let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
-        const protocol = req.body.protocol ? req.body.protocol : 'https://';
-        domain = protocol + cleanUrl(domain);
+        const domain = req.formattedDomain;
 
         // collect data
         const newSite = new NewSite(domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
@@ -200,14 +218,12 @@ module.exports = function(app){
     siteMw.withAll,
     userClientMw.withAll,
     upload.single('import_file'),
+    formatDomainFromBody,
     async (req, res, next) => {
       try {
 
         // domain
-        let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
-        const protocol = req.body.protocol ? req.body.protocol : 'https://';
-        domain = protocol + cleanUrl(domain); // add protocol so in development environments http is allowed
-        domain = domain.toLowerCase();
+        let domain = req.formattedDomain;
 
         // extract import file
         let importId = Math.round(new Date().getTime() / 1000);
