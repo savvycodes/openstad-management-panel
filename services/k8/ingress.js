@@ -372,7 +372,7 @@ exports.ensureIngressForAllDomains = async () => {
 
   for(let domainToUpdate of Object.keys(domainsToUpdate)) {
     try {
-     .. console.log('domainToUpdate', domainToUpdate)
+      console.log('domainToUpdate', domainToUpdate)
       const ingressName = domainsToUpdate[domainToUpdate].ingressName;
 
     //  console.log('Update domain ', domainToUpdate, ' with ingress name ', ingressName)
