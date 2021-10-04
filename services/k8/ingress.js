@@ -376,7 +376,7 @@ exports.ensureIngressForAllDomains = async () => {
       const ingressName = domainsToUpdate[domainToUpdate].ingressName;
 
       console.log('Update domain ', domainToUpdate, ' with ingress name ', ingressName)
-      await processIngressForDomain(domain, sites, ingressName);
+      await processIngressForDomain(domainToUpdate, sites, ingressName);
     } catch (e) {
       console.log('Errrr, e', e);
     }
