@@ -372,10 +372,10 @@ exports.ensureIngressForAllDomains = async () => {
 
   for(let domainToUpdate of Object.keys(domainsToUpdate)) {
     try {
-      console.log('domainToUpdate', domainToUpdate)
+     .. console.log('domainToUpdate', domainToUpdate)
       const ingressName = domainsToUpdate[domainToUpdate].ingressName;
 
-      console.log('Update domain ', domainToUpdate, ' with ingress name ', ingressName)
+    //  console.log('Update domain ', domainToUpdate, ' with ingress name ', ingressName)
       await processIngressForDomain(domainToUpdate, sites, ingressName);
     } catch (e) {
       console.log('Errrr, e', e);
@@ -487,10 +487,10 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
 
 
   for(const site of sitesForDomain) {
-    console.log('site in sitesDomain', site);
+  //  console.log('site in sitesDomain', site);
 
     const config = site.config ? site.config : {};
-    console.log('config', config);
+//    console.log('config', config);
 
     config.ingress = config.ingress ? Object.assign(config.ingress, ingressConfigFields) : {};
 
