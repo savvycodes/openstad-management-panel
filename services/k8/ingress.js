@@ -76,10 +76,19 @@ const getK8sApi = () => {
 
 const shouldDomainHaveWww = (sites, domain) => {
   const sitesForDomain = getSitesForDomain(sites, domain);
+
+
+
   // if one site has www. set, we assume should be for all
   const sitesWithWww = sitesForDomain.filter((site) => {
-    return site.config && site.config.ingress && site.config.ingress.www;
+    if (site.config) {
+      console.log('shouldDomainHaveWww  site.config.ingress ', site.config.ingress )
+    }
+
+    return site.config && site.config.ingress && site.config.ingress.www && (site.config.ingress.www === 'true' || site.config.ingress.www === true);
   });
+
+  console.log('shouldDomainHaveWww for domain', domain, sitesWithWww)
 
   return sitesWithWww && sitesWithWww.length > 0;
 }
@@ -417,7 +426,6 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
 
   console.log('dnsIsSet dnsIsSet', dnsIsSet);
   console.log('dnsIsSetForWWW dnsIsSetForWWW', dnsIsSetForWWW);
-
 
 
   // dns is valid when www is not required and default dns isset, otherwise we also need to check if www dns isset;
