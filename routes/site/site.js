@@ -199,7 +199,15 @@ module.exports = function(app){
           oauthData: siteData.oauthData
         });
 
-        req.flash('success', { msg: 'De site is succesvol aangemaakt'});
+          await k8Ingress.ensureIngressForAllDomains();
+
+          // reset site config in frontend
+          // api does this, but will fail on url change because new site wont exists yet if ingress is still being created
+          if (process.env.FRONTEND_URL) {
+              await fetch(process.env.FRONTEND_URL + '/config-reset')
+          }
+
+          req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id)
 
       } catch (error) {
@@ -247,7 +255,13 @@ module.exports = function(app){
           oauthData: siteData.oauthData
         });
 
-        await k8Ingress.ensureIngressForAllDomains(req.sites)
+        await k8Ingress.ensureIngressForAllDomains()
+
+          // reset site config in frontend
+          // api does this, but will fail on url change because new site wont exists yet if ingress is still being created
+          if (process.env.FRONTEND_URL) {
+              await fetch(process.env.FRONTEND_URL + '/config-reset')
+          }
 
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id);
