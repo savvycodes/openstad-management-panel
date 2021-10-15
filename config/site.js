@@ -85,8 +85,6 @@ exports.configSchema = {
       label: "Display deprecated widgets?"
     },
   ],
-
-
   feedbackEmail: [
     {
       parentKey: 'ideas',
@@ -295,6 +293,24 @@ exports.configSchema = {
     },
 
   ],
+  ingress: [
+    {
+      key: 'www',
+      type: 'boolean',
+      label: 'Also make an ingress for the www. (make sure DNS is set to the server)'
+    },
+    {
+      key: 'tlsSecretName',
+      type: 'string',
+      label: 'Name of the TLS secret in Kubernetes (will disable let\'s encrypt and use the TLS secret for SSL)'
+    },
+    {
+      key: 'disabled',
+      type: 'boolean',
+      label: 'Disable creating an auto ingress for this site? (will delete it if it exists?)'
+    },
+
+  ]
 /*  ignoreBruteForce : [
 
 ]*/

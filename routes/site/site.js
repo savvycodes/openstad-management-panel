@@ -43,7 +43,27 @@ const cleanUrl                = require('../../utils/cleanUrl');
 const ensureUrlHasProtocol    = require('../../utils/ensureUrlHasProtocol');
 const formatBaseDomain        = require('../../utils/formatBaseDomain');
 
+
 const tmpDir = process.env.TMPDIR || './tmp';
+
+const formatDomainFromBody = (req, res, next) => {
+  //main-domain + subdir
+  let domain;
+
+  if (req.body['domain-type'] === 'subdir') {
+    domain = `${req.body['main-domain']}/${req.body.subdir}`;
+  } else if (req.body['domain-type'] === 'subdomain') {
+    domain = `${req.body.domain}.${process.env.WILDCARD_HOST}`;
+  } else {
+    domain = req.body.domain
+  }
+
+  const protocol = req.body.protocol ? req.body.protocol : 'https://';
+  domain = protocol + cleanUrl(domain);
+  req.formattedDomain = domain;
+
+  next();
+}
 
 module.exports = function(app){
 
@@ -54,7 +74,11 @@ module.exports = function(app){
     siteMw.withAll,
     externalSiteMw.withAll,
     (req, res, next) => {
-      res.render('site/new-form.html', { externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST, existingDomains: req.sites.map(site => site.domain).join(',') });
+      res.render('site/new-form.html', {
+        externalSites: req.externalSites, wildcardHost: process.env.WILDCARD_HOST,
+        existingDomainsString: req.sites.map(site => site.domain).join(','),
+        existingDomains: req.sites.map(site => site.domain)
+      });
     }
   );
 
@@ -64,7 +88,10 @@ module.exports = function(app){
   app.get('/admin/site-copy',
     siteMw.withAll,
     (req, res, next) => {
-      res.render('site/copy-form.html', {existingDomains: req.sites.map(site => site.domain).join(',')});
+      res.render('site/copy-form.html', {
+        existingDomainsString: req.sites.map(site => site.domain).join(','),
+        existingDomains: req.sites.map(site => site.domain)
+      });
     }
   );
   
@@ -74,7 +101,10 @@ module.exports = function(app){
   app.get('/admin/site-import',
     siteMw.withAll,
     (req, res, next) => {
-      res.render('site/import-form.html', {existingDomains: req.sites.map(site => site.domain).join(',')});
+      res.render('site/import-form.html', {
+        existingDomainsString: req.sites.map(site => site.domain).join(','),
+        existingDomains: req.sites.map(site => site.domain)
+      });
     }
   );
 
@@ -132,13 +162,12 @@ module.exports = function(app){
    * Copy a site
    */
   app.post('/admin/site/copy',
+    formatDomainFromBody,
     async (req, res, next) => {
       try {
 
         // domain
-        let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
-        const protocol = req.body.protocol ? req.body.protocol : 'https://';
-        domain = protocol + cleanUrl(domain);
+        const domain = req.formattedDomain;
 
         // collect data
         const newSite = new NewSite(domain, req.body.siteName, req.body.fromEmail, req.body.fromName);
@@ -160,6 +189,7 @@ module.exports = function(app){
 
         // create site
         console.log('creating new site :', newSite.title );
+
         const site = await openstadSiteDataService.createSite({
           user: req.user, 
           dataDir: exportDir,
@@ -168,8 +198,16 @@ module.exports = function(app){
           cmsData: siteData.cmsData, 
           oauthData: siteData.oauthData
         });
-        
-        req.flash('success', { msg: 'De site is succesvol aangemaakt'});
+
+          await k8Ingress.ensureIngressForAllDomains();
+
+          // reset site config in frontend
+          // api does this, but will fail on url change because new site wont exists yet if ingress is still being created
+          if (process.env.FRONTEND_URL) {
+              await fetch(process.env.FRONTEND_URL + '/config-reset')
+          }
+
+          req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id)
 
       } catch (error) {
@@ -188,14 +226,12 @@ module.exports = function(app){
     siteMw.withAll,
     userClientMw.withAll,
     upload.single('import_file'),
+    formatDomainFromBody,
     async (req, res, next) => {
       try {
 
         // domain
-        let domain = req.body['domain-type'] === 'subdomain' ? `${req.body.domain}.${process.env.WILDCARD_HOST}` : req.body.domain;
-        const protocol = req.body.protocol ? req.body.protocol : 'https://';
-        domain = protocol + cleanUrl(domain); // add protocol so in development environments http is allowed
-        domain = domain.toLowerCase();
+        let domain = req.formattedDomain;
 
         // extract import file
         let importId = Math.round(new Date().getTime() / 1000);
@@ -218,6 +254,14 @@ module.exports = function(app){
           cmsData: siteData.cmsData, 
           oauthData: siteData.oauthData
         });
+
+        await k8Ingress.ensureIngressForAllDomains()
+
+          // reset site config in frontend
+          // api does this, but will fail on url change because new site wont exists yet if ingress is still being created
+          if (process.env.FRONTEND_URL) {
+              await fetch(process.env.FRONTEND_URL + '/config-reset')
+          }
 
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
         res.redirect('/admin/site/' + site.id);
@@ -291,6 +335,7 @@ module.exports = function(app){
    */
   app.post('/admin/site/:siteId(\\d+)',
     siteMw.withOne,
+    siteMw.withAll,
     (req, res, next) => {
       delete req.body.url;
       const siteConfigFields = Object.keys(siteConfigSchema);
@@ -351,8 +396,11 @@ module.exports = function(app){
 
       siteApi
         .update(req.session.jwt, req.params.siteId, siteData)
-        .then((site) => {
+        .then(async (site) => {
           req.flash('success', { msg: 'Aangepast!'});
+
+          await k8Ingress.ensureIngressForAllDomains(req.sites)
+
           res.redirect(req.header('Referer')  || appUrl);
         })
         .catch((err) => { next(err) });
@@ -366,6 +414,7 @@ module.exports = function(app){
    */
   app.post('/admin/site/:siteId/url',
     siteMw.withOne,
+    siteMw.withAll,
     userClientMw.withOneForSite,
     (req, res, next) => {
 
@@ -388,7 +437,6 @@ module.exports = function(app){
 
 
       siteData.config.allowedDomains = baseDomain ? [baseDomain] : [];
-
       // update CMS urls
       if (siteData.config.cms) {
         siteData.config.cms.url = domainWithProtocol;
@@ -404,19 +452,25 @@ module.exports = function(app){
         clientData.siteUrl = domainWithProtocol;
         clientData.redirectUrl = domainWithProtocol;
         clientData.config.backUrl = domainWithProtocol;
-
         promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
       }
 
-      if (process.env.KUBERNETES_NAMESPACE) {
-        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
-      }
 
       /**
        * Import all promises
        */
       Promise.all(promises)
-        .then(function (response) {
+        .then(async function (response) {
+          // make sure ingress update is done after the updates are done
+          await k8Ingress.ensureIngressForAllDomains();
+
+          // reset site config in frontend
+          // api does this, but will fail on url change because new site wont exists yet if ingress is still being created
+          if (process.env.FRONTEND_URL) {
+            await fetch(process.env.FRONTEND_URL + '/config-reset')
+          }
+
+
           req.flash('success', { msg: 'Url aangepast!'});
           res.redirect(req.header('Referer')  || appUrl);
         })
@@ -446,13 +500,11 @@ module.exports = function(app){
       }
 
       clientConfig.smtp = smtpSettings;
-      clientData
 
       promises.push(userClientApi.update(req.userApiClient.clientId, clientData));
 
-
       if (process.env.KUBERNETES_NAMESPACE) {
-        promises.push(k8Ingress.edit(siteData.config.cms.dbName, domain));
+        promises.push(k8Ingress.edit(domain));
       }
 
       /**
@@ -479,6 +531,7 @@ module.exports = function(app){
    */
   app.post('/admin/site/:siteId/delete',
     siteMw.withOne,
+    siteMw.withAll,
     siteMw.addAuthClientId,
     (req, res, next) => {
 
@@ -491,7 +544,7 @@ module.exports = function(app){
         deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
 
         if (process.env.KUBERNETES_NAMESPACE) {
-          deleteActions.push(k8Ingress.delete(req.site.config.cms.dbName));
+          deleteActions.push(k8Ingress.ensureIngressForAllDomains(req.sites));
         }
       }
 

@@ -77,5 +77,6 @@
 	"Vimeo": "Vimeo",
 	"Select roles that should be authenticated with two factor": "Select roles that should be authenticated with two factor",
 	"Two Factor": "Two Factor",
-	"Configure Two Factor": "Configure Two Factor"
+	"Configure Two Factor": "Configure Two Factor",
+	"Ingress": "Ingress"
 }

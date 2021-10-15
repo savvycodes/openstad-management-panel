@@ -16,6 +16,8 @@ const removeFolderRecursive = require('../../utils/removeFolderRecursive');
 
 const protocol = process.env.FORCE_HTTP ? 'http' : 'https';
 
+
+
 /**
  * Get all Openstad project data
  * @param uniqueSiteId
@@ -222,6 +224,7 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
     await cmsProvider.importCmsDatabase(newSite, cmsData.mongoPath);
 
     const site = await apiProvider.createSite(newSite, apiData.site, oauthClients);
+
     if (apiData.choiceGuides) {
       await apiProvider.createChoiceGuides(site.id, apiData.choiceGuides);
     }
@@ -231,6 +234,7 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
     }
 
     console.log('Waiting for cms to restart');
+
     await sleep(3000);
 
     if (isDomainUp && cmsData.attachments && cmsData.attachments.length > 0) {
@@ -250,9 +254,11 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
     //   console.error('Error removing tmp dir for uploading', error);
     // }
 
+    //only create ingress for domain, subdirs run under an existing domain already ??? or check if domain ingress exists
     if (process.env.KUBERNETES_NAMESPACE) {
       try {
-        await k8Ingress.add(newSite);
+
+       // await k8Ingress.add(newSite);
 
         // Todo: Move this to the a cronjob (api or admin).
         //const domainIp = await lookupDns(newSite.getDomain(), 2000);
@@ -265,7 +271,6 @@ exports.createSite = async ({ user, dataDir, newSite, apiData, cmsData, oauthDat
       }
     }
 
-    console.log('return new site: ', site);
     return site;
   } catch (error) {
     //Todo: rollback created entities?
