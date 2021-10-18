@@ -28,6 +28,8 @@ const jsonFilter                  = require('./nunjucks/json');
 const timestampFilter             = require('./nunjucks/timestamp');
 const replaceIdeaVariablesFilter  = require('./nunjucks/replaceIdeaVariables');
 
+const cdns = require('./services/cdns');
+
 const mongoCredentials = {
   host: process.env.MONGO_DB_HOST || 'localhost',
   port: process.env.MONGO_DB_PORT || 27017,
@@ -198,6 +200,7 @@ app.get('/admin',
 /**
  * Required main routes.
  */
+require('./routes/site/beta')(app);
 require('./routes/site/idea-export')(app);
 require('./routes/site/idea-import')(app);
 require('./routes/site/uniqueCode')(app);
@@ -207,8 +210,6 @@ require('./routes/site/newsletter.js')(app);
 require('./routes/user')(app);
 require('./routes/site/idea')(app);
 require('./routes/site/site')(app);
-require('./routes/site/site-import')(app);
-require('./routes/site/site-export')(app);
 require('./routes/api-proxy')(app);
 
 /**
@@ -238,4 +239,10 @@ app.listen(process.env.PORT, function() {
   console.log('Express server listening on port ' + process.env.PORT);
 });
 
-module.exports = app;
+async function start() {
+  let openstadReactAdminCdn = await cdns.contructReactAdminCdn();
+  app.set('openstadReactAdminCdn', openstadReactAdminCdn);
+  module.exports = app;
+} 
+
+start();

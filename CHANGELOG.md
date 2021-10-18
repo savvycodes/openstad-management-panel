@@ -1,7 +1,19 @@
 # Changelog
 
-## UNRELEASED
+## v0.18.0
+* Fix shared images between copies of sites
+
+## v0.17.0
+* Load react-admin from cdn - OPENSTAD_REACT_ADMIN_CDN in .env is now an optional overrule
+* When creating a new site set contactEmail from the form
+
+## v0.16.1 (2020-06-08)
+* Add option to configure SMS sender and message.
+
+## v0.16.0 (2020-05-25)
 * Fix domain validation on site creation.
+* Add phonenumber and local auth as experimental auth methods
+* Turn on choice guide in react admin panel 
 
 ## v0.15.0 (2020-04-26)
 * Add two factor configuration of text on screens and what role per oAuth client should validate with a Two Factor token
