@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.19.0
+## v0.20.0
 * Rewrite of ingress logic and adding support for subdir sites (domain.com/site1 &&domain.com/site2) for Kubernetes environments
 * For new sites set 2FA on by default for admin, editors & moderators
 
