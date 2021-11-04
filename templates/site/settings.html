@@ -44,9 +44,8 @@
           <div class="form-buttons-w">
             <button class="btn btn-outline-primary" type="submit">Opslaan</button>
           </div>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
-
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
       </div>
 
 {#
@@ -111,24 +110,36 @@
 
 #}
 
-    <div class="card card-openstad">
-      <form method="POST" action="/admin/site/{{site.id}}">
-        <fieldset>
+      <div class="card card-openstad">
+        <form method="POST" action="/admin/site/{{site.id}}">
+          <fieldset>
             <legend><span>{{ __('Widget settings') }}</span></legend>
             {{ renderFields(siteConfigSchema.widgetDisplaySettings, site.config.cms.widgetDisplaySettings, 'config[widgetDisplaySettings]') }}
 
-        <div class="form-buttons-w">
-          <button class="btn btn-outline-primary" type="submit">Opslaan</button>
-        </div>
-        </fieldset>
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    </form>
+            <div class="form-buttons-w">
+              <button class="btn btn-outline-primary" type="submit">Opslaan</button>
+            </div>
+          </fieldset>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
+      </div>
+
+      <div class="card card-openstad">
+        <form method="POST" action="/admin/site/{{site.id}}">
+          <div class="form-group row">
+            <label class="col-form-label col-sm-4" for="">Redirect deze site naar</label>
+            <div class="col-sm-8">
+              <input class="form-control valid-domain-character valid-domain-character-allow-slash" placeholder="" type="text" name="config[cms][redirectURI]" value="{{site.config.cms.redirectURI}}">
+            </div>
+          </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-outline-primary" type="submit">Opslaan</button>
+          </div>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
+      </div>
+
     </div>
-</div>
-
-
-
-
 
       <div class="card card-openstad">
         <form method="POST" action="/admin/site/{{site.id}}/delete">
