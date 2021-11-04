@@ -85,6 +85,14 @@ exports.configSchema = {
       label: "Display deprecated widgets?"
     },
   ],
+
+  cms: [{
+    key: 'redirectURI',
+    type: 'string',
+    default: '',
+    label: "Redirect deze site naar"
+  }],
+
   feedbackEmail: [
     {
       parentKey: 'ideas',
