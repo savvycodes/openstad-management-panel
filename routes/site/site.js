@@ -356,8 +356,8 @@ module.exports = function(app){
             if (req.body.config[siteConfigField]) {
               let value = req.body.config[siteConfigField][field.key];
 
-              //check if not set (can be false in case of boolean)
-              if (value || value === false) {
+              //check if not set (can be false in case of boolean or empty in case of a string)
+              if (value || value === false || value === '') {
                 // in case it's a number cast the type, otherwise api will not see it as valid
                 if (field.type === 'number') {
                   value = parseInt(value, 10);
