@@ -13,6 +13,7 @@ const siteMw            = require('../../middleware/site');
 const voteMw            = require('../../middleware/vote');
 const userClientMw      = require('../../middleware/userClient');
 const roleClientMw      = require('../../middleware/role');
+const requestSiteValidation = require('../../middleware/request/validation/site');
 
 //services
 const userClientApi     = require('../../services/userClientApi');
@@ -336,6 +337,7 @@ module.exports = function(app){
   app.post('/admin/site/:siteId(\\d+)',
     siteMw.withOne,
     siteMw.withAll,
+    requestSiteValidation,
     (req, res, next) => {
       delete req.body.url;
       const siteConfigFields = Object.keys(siteConfigSchema);
