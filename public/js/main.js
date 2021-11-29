@@ -26,7 +26,7 @@ function displayDomainFields () {
   var domainType = $('input[name="domain-type"]:checked').val();
   $('.display-for-subdir, .display-for-domain, .display-for-subdomain').hide();
 
-  console.log('.display-for'+domainType);
+  // console.log('.display-for'+domainType);
   $('.display-for-'+domainType).show();
 }
 
