@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Validate email address on special characters and reject the follow characters: ! and =
+
 ## v0.20.0
 * Rewrite of ingress logic and adding support for subdir sites (domain.com/site1 &&domain.com/site2) for Kubernetes environments
 * For new sites set 2FA on by default for admin, editors & moderators
