@@ -34,17 +34,11 @@ function getRefererUrl(url) {
 }
 
 /**
- * Request validation middleware
- * Loop through siteConfigSchema fields to check if they have validation options enabled
+ * Validate fields
  * @param req
- * @param res
- * @param next
- * @returns {*}
+ * @returns {*[]}
  */
-module.exports = (req, res, next) => {
-  if (!req.body || !req.body.config) {
-    return next();
-  }
+function validateFields(req) {
   const errors = [];
 
   Object.keys(siteConfigSchema).forEach(key => {
@@ -57,23 +51,43 @@ module.exports = (req, res, next) => {
       if (! bodyValue) {
         return;
       }
-      if (field.validation) {
-        field.validation.forEach(validationType => {
-          if (validationType.name === PATTERN) {
-            const valid = validate(bodyValue, validationType.value, field);
-            if (valid === true) {
-              return;
-            }
-            errors.push(valid);
-          }
-        })
-      }
-
       if (field.trim) {
         req.body.config[key][field.key] = bodyValue.trim();
       }
+
+      if (!field.validation) {
+        return;
+      }
+
+      field.validation.forEach(validationType => {
+        if (validationType.name === PATTERN) {
+          const valid = validate(bodyValue, validationType.value, field);
+          if (valid === true) {
+            return;
+          }
+          errors.push(valid);
+        }
+      })
     })
   })
+
+  return errors;
+}
+
+/**
+ * Request validation middleware
+ * Loop through siteConfigSchema fields to check if they have validation options enabled
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+module.exports = (req, res, next) => {
+  if (!req.body || !req.body.config) {
+    return next();
+  }
+
+  const errors = validateFields(req);
 
   if (errors.length > 0) {
     req.flash('error', { msg: errors.join(',')});
