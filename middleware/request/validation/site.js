@@ -21,6 +21,19 @@ function validate (value, pattern, field) {
 }
 
 /**
+ *
+ * @param {string} url
+ * @returns {string}
+ */
+function getRefererUrl(url) {
+  if (url.startsWith(process.env.APP_URL) === true) {
+    return url;
+  }
+  console.error('Url not trusted', url);
+  return appUrl;
+}
+
+/**
  * Request validation middleware
  * Loop through siteConfigSchema fields to check if they have validation options enabled
  * @param req
@@ -64,7 +77,8 @@ module.exports = (req, res, next) => {
 
   if (errors.length > 0) {
     req.flash('error', { msg: errors.join(',')});
-    return res.redirect(req.header('Referer')  || appUrl);
+    const redirectUrl = getRefererUrl(req.header('Referer'));
+    return res.redirect(redirectUrl);
   }
 
   next();

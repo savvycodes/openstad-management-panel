@@ -140,8 +140,8 @@ exports.configSchema = {
       trim: true,
       validation: [
         {
-          name: 'noSpecialCharacters',
-          value: '!:'
+          name: 'pattern',
+          value: '!:A-Z'
         }
       ]
     },
