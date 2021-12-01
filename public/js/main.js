@@ -291,7 +291,6 @@ $(function () {
       imagePreviewMaxHeight: 256,
       server: {
         process: '/image',
-        fetch: '/fetch-image?img=',
         revert: null
       },
       labelIdle: "Sleep afbeelding naar deze plek of <span class='filepond--label-action'>klik hier</span>",
@@ -322,8 +321,6 @@ $(function () {
       labelButtonProcessItem: "Upload"
     }
 
-    var pond = FilePond.create(filepondFieldset, filePondSettings);
+    FilePond.create(filepondFieldset, filePondSettings);
   }
-
-
 });
