@@ -1,6 +1,7 @@
 <div class="ae-side-menu">
   <ul class="nav flex-column">
     <li class="nav-item" {% if pageName === 'settings'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings" class="nav-link">{{ __('General') }}</a> </li>
+    <li class="nav-item" {% if pageName === 'email'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/email" class="nav-link">{{ __('Email') }}</a> </li>
     <li class="nav-item" {% if pageName === 'ideas'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/ideas" class="nav-link">{{ __('Ideas') }}</a> </li>
     <li class="nav-item" {% if pageName === 'voting'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/voting" class="nav-link">{{ __('Voting') }}</a> </li>
     <li class="nav-item"  {% if pageName === 'basic-auth'%} class="active" {% endif %}> <a href="/admin/site/{{site.id}}/settings/basic-auth" class="nav-link">{{ __('Password protection') }}</a> </li>

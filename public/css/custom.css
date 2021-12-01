@@ -201,3 +201,7 @@ label.error {
     font-weight: bold;
     font-size: 20px;
 }
+
+.filepond--file-info-sub {
+    display:none;
+}

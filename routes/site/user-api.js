@@ -85,6 +85,17 @@ module.exports = function(app) {
         });
       }
 
+      if (req.body.image) {
+        try {
+          const imageObject = JSON.parse(req.body.image);
+          if (imageObject.url) {
+            req.userApiClient.config['emailHeaderImage'] = imageObject.url || '';
+          }
+        } catch(error) {
+          next(err)
+        }
+      }
+
       let data = pick(req.body, authFields.map(field => field.key));
       data = Object.assign(req.userApiClient, data);
 
