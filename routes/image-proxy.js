@@ -6,7 +6,6 @@ module.exports = function(app){
   /**
    * Create route for proxying one image to image server, add api token in header
    */
-  console.log(imageApiUrl, imageApiToken);
 
   app.use('/image', createProxyMiddleware({
     target: imageApiUrl,
