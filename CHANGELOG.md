@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Add email image header setting field to authentication tab (using filepond to upload image via the image server)
+
 ## v0.20.0
 * Rewrite of ingress logic and adding support for subdir sites (domain.com/site1 &&domain.com/site2) for Kubernetes environments
 * For new sites set 2FA on by default for admin, editors & moderators
