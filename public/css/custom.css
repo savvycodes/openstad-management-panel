@@ -201,3 +201,10 @@ label.error {
     font-weight: bold;
     font-size: 20px;
 }
+
+.navbar-site-title {
+  font-size: larger;
+  margin-top: 7px;
+  float: inline-block;
+  font-weight: bold;
+}
