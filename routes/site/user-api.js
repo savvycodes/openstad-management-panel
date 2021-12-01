@@ -89,10 +89,10 @@ module.exports = function(app) {
         try {
           const imageObject = JSON.parse(req.body.image);
           if (imageObject.url) {
-            req.userApiClient.config['emailHeaderImage'] = imageObject.url || '';
+            req.userApiClient.config[req.body.imageFieldName] = imageObject.url || '';
           }
         } catch(error) {
-          next(err)
+          return next(err)
         }
       }
 

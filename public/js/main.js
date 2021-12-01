@@ -287,6 +287,8 @@ $(function () {
       maxFiles: 1,
       allowBrowse: true,
       files: uploadedFiles,
+      filePosterMaxHeight: 256,
+      imagePreviewMaxHeight: 256,
       server: {
         process: '/image',
         fetch: '/fetch-image?img=',
