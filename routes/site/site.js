@@ -525,6 +525,35 @@ module.exports = function(app){
   );
 
   /**
+   * Anonymize a website
+   */
+  app.post('/admin/site/:siteId/anonymize',
+    siteMw.withOne,
+    siteMw.withAll,
+    siteMw.addAuthClientId,
+    (req, res, next) => {
+
+      const anonymizeActions = [
+        siteApi.anonymize(req.session.jwt, req.params.siteId),
+      ];
+
+      Promise.all(anonymizeActions)
+        .then((response) => {
+          req.flash('success', { msg: 'Geannonimiseerd!'});
+          res.redirect('/admin');
+        })
+        .catch((err) => {
+          console.log('ANONYMIZE WEBSITE FAILED');
+          console.log(err);
+          let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
+          req.flash('error', { msg: message});
+          res.redirect('/admin');
+        });
+    }
+  );
+
+
+  /**
    * Delete a website
    * At the moment it's a hard delete of the mongodb database.
    * The api adds a flag "deletedAt" to the the row, but keeps the row,
@@ -535,20 +564,23 @@ module.exports = function(app){
     siteMw.addAuthClientId,
     (req, res, next) => {
 
-      const deleteActions = [
-        siteApi.delete(req.session.jwt, req.params.siteId),
-      //  userClientApi.delete(req.authClientId),
-      ];
+      siteApi
+        .delete(req.session.jwt, req.params.siteId)
+        .then( result => {
+          if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
+            return deleteMongoDb(req.site.config.cms.dbName)
+          } else {
+            return 'Done'
+          }
+        })
+        .then( result => {
+          if (process.env.KUBERNETES_NAMESPACE) {
+            return deleteActions.push(k8Ingress.ensureIngressForAllDomains(req.sites));
+          } else {
+            return 'Done'
+          }
+        })
 
-      if (req.site.config && req.site.config.cms && req.site.config.cms.dbName) {
-        deleteActions.push(deleteMongoDb(req.site.config.cms.dbName));
-
-        if (process.env.KUBERNETES_NAMESPACE) {
-          deleteActions.push(k8Ingress.ensureIngressForAllDomains(req.sites));
-        }
-      }
-
-      Promise.all(deleteActions)
         .then((response) => {
           req.flash('success', { msg: 'Verwijderd!'});
           res.redirect('/admin');
@@ -559,7 +591,6 @@ module.exports = function(app){
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
           res.redirect('/admin');
-      //     next(err)
         });
     }
   );

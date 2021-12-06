@@ -3,6 +3,7 @@
 ## v0.21.0
 * Update react admin
 * Update proxy call to API
+* Add 'anonymize site' functionality
 
 ## v0.20.0
 * Rewrite of ingress logic and adding support for subdir sites (domain.com/site1 &&domain.com/site2) for Kubernetes environments
