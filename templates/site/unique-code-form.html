@@ -12,33 +12,31 @@
   <div class="col-sm-12 col-xxxl-9">
     <div class="card-container">
       <h6 class="section-header">
-         Create new unique codes
+        Create new unique codes
       </h6>
       <div class="card card-openstad">
+
+        <div style="margin-bottom: 8px">
+          Let op: de stemcodes worden op de achtergrond gegenereerd. Zie de statusmelding boven het overzicht om te controleren of alle codes gegenereerd zijn, voordat je deze exporteert.
+        </div>
         <form
-          method="POST"
-          action="/admin/site/{{site.id}}/unique-codes/bulk"
+        method="POST"
+        action="/admin/site/{{site.id}}/unique-codes/bulk"
         >
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">
-               {{ __("Amount of codes") }}
+              {{ __("Amount of codes") }}
             </label>
 
             <div class="col-sm-8">
-              {% set codeAmountOptions = [1, 2, 3, 4, 5, 10, 20, 50, 100, 200, 500, 1000, 5000, 10000, 25000, 50000] %}
-
-              <select name="amountOfCodes">
-                {% for codeAmountOption in codeAmountOptions %}
-                <option value="{{codeAmountOption}}">{{codeAmountOption}}</option>
-                {% endfor %}
-              </select>
+              <input class="form-control valid-domain-character valid-domain-character-allow-slash" placeholder="" type="text" name="amountOfCodes" value="5">
             </div>
           </div>
           <div class="form-buttons-w">
             <button class="btn btn-outline-primary" type="submit">{{ __("Create codes") }}</button>
           </div>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
       </div>
 
     </div>

@@ -5,17 +5,19 @@ const userClientMw      = require('../../middleware/userClient');
 const userApiUrl        = process.env.USER_API;
 
 const uniqueCodeApi     = require('../../services/uniqueCodeApi');
-const maxCodesAllowed   = 120000;
+const maxCodesAllowed   = parseInt(process.env.MAX_UNIQUE_CODES_PER_BATCH) || 250000;
 
 module.exports = function(app){
   /**
    * Display all unique codes
    */
-  app.get('/admin/site/:siteId/unique-codes',
+  app.get(
+    '/admin/site/:siteId/unique-codes',
     siteMw.withOne,
     siteMw.addAuthClientId,
     userClientMw.withOneForSite,
     uniqueCodeMw.withAllForClient,
+    uniqueCodeMw.getGeneratorStatus,
     (req, res) => {
       res.render('site/unique-codes.html', {
         apiUrl: `/admin/site/${req.site.id}/api/unique-codes`
@@ -54,20 +56,32 @@ module.exports = function(app){
     userClientMw.withOneForSite,
     uniqueCodeMw.withAllForClient,
     (req, res) => {
-      const amountOfCodes = req.body.amountOfCodes;
 
-      // For performance reasons don't allow above certain nr of codes
+      let amountOfCodes = parseInt(req.body.amountOfCodes);
+
+      // don't allow above certain nr of codes
       if (amountOfCodes > maxCodesAllowed) {
-        throw new Error('Trying to make too many unique codes');
+        let message = 'Je kunt niet meer dan ' + maxCodesAllowed + ' codes in één keer aanmaken';
+        req.flash('error', { msg: message});
+        return res.redirect(req.header('Referer')  || appUrl);
       }
-
-      //
+      
+      // create codes in the background
       uniqueCodeApi.create({clientId: req.authClientId, amount: req.body.amountOfCodes})
         .then(function (response) {
-          req.flash('success', { msg: 'Codes aangemaakt!'});
+          if (response.taskId) {
+            let session = req.session;
+            session.uniqueCodeGenerator = { taskId: response.taskId };
+            console.log(session);
+            return session.save();
+          }
+        })
+        .then(function (response) {
+          req.flash('success', { msg: 'Codes worden aangemaakt!'});
           res.redirect('/admin/site/'+req.site.id+'/unique-codes'  || appUrl);
         })
         .catch(function (err) {
+          console.log('Create bulk codes error:', err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
           res.redirect(req.header('Referer')  || appUrl);
