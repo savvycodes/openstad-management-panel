@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## v0.21.0
+* Update react admin
+* Update proxy call to API
+* Add 'anonymize site' functionality
 * Add extraData to newsletter export
 
 ## v0.20.0

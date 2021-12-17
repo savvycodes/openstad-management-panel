@@ -141,15 +141,32 @@
 
     </div>
 
-      <div class="card card-openstad">
-        <form method="POST" action="/admin/site/{{site.id}}/delete">
-            <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')" {{ 'disabled' if isDefaultSite }} >Verwijder</button>
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        </form>
-        {% if isDefaultSite %} <em> Cannot delete the default site </em> {% endif %}
+    <div class="card card-openstad">
+      <div style="margin-bottom: 8px;">
+        Let op! Deze actie is definitief en kan niet ongedaan gemaakt worden.<br/>
+        Het project moet eerst aangemerkt staan als ‘beëindigd’ voordat deze actie uitgevoerd kan worden.<br/>
       </div>
+      <form method="POST" action="/admin/site/{{site.id}}/anonymize">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')" {{ 'disabled' if isDefaultSite }} >Gebruikersgegevens anonimiseren</button>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      </form>
+      {% if isDefaultSite %} <em> Cannot delete the default site </em> {% endif %}
     </div>
+
+    <div class="card card-openstad">
+      <div style="margin-bottom: 8px;">
+        Let op! Deze actie is definitief en kan niet ongedaan gemaakt worden.<br/>
+        Het project moet eerst aangemerkt staan als ‘beëindigd’ voordat deze actie uitgevoerd kan worden.<br/>
+      </div>
+      <form method="POST" action="/admin/site/{{site.id}}/delete">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')" {{ 'disabled' if isDefaultSite }} >Website verwijderen</button>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      </form>
+      {% if isDefaultSite %} <em> Cannot delete the default site </em> {% endif %}
+    </div>
+
   </div>
+</div>
 </div>
 </div>
 

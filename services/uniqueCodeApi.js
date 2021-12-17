@@ -53,6 +53,18 @@ exports.create =  (params) => {
   });
 }
 
+exports.getGeneratorStatus =  (params) => {
+  const query = httpBuildQuery(params);
+  return rp({
+      uri: `${apiUrl}/unique-code/generator-status?${query}`,
+      headers: {
+          'Accept': 'application/json'
+      },
+      body: apiCredentials,
+      json: true // Automatically parses the JSON string in the response
+  })
+}
+
 exports.reset = (uniqueCodeId) => {
   return rp({
     method: 'POST',
