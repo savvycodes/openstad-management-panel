@@ -5,7 +5,7 @@
     <label for="subdir-type" class="form-check-label" >Sub directory</label>
   </div>
   <div class="form-check">
-    <input {{'checked' if site and site.domainType === 'subdomain'}} type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" />
+    <input {{'checked' if ( site and site.domainType === 'subdomain' ) or not site}} type="radio" class="form-check-input domain-type" id="subdomain-type" name="domain-type" required value="subdomain" />
     <label for="subdomain-type" class="form-check-label" >Sub domain</label>
   </div>
   <div class="form-check">
