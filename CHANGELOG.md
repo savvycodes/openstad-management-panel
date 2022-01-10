@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Fix site delete error in k8s
+
 ## v0.21.0
 * Update react admin
 * Update proxy call to API
