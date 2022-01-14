@@ -575,17 +575,16 @@ module.exports = function(app){
         })
         .then( result => {
           if (process.env.KUBERNETES_NAMESPACE) {
-            return deleteActions.push(k8Ingress.ensureIngressForAllDomains(req.sites));
+            k8Ingress.ensureIngressForAllDomains(req.sites);
           } else {
             return 'Done'
           }
         })
-
-        .then((response) => {
+        .then( result => {
           req.flash('success', { msg: 'Verwijderd!'});
           res.redirect('/admin');
         })
-        .catch((err) => {
+        .catch( err => {
           console.log('DELETE WEBSITE FAILED');
           console.log(err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
