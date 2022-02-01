@@ -2,6 +2,7 @@
 
 ## unreleased
 * Fix site delete error in k8s
+* Move docker builds from travis to github actions
 
 ## v0.21.0
 * Update react admin
