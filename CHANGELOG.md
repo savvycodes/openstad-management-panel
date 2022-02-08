@@ -4,6 +4,7 @@
 * Fix site delete error in k8s
 * Move docker builds from travis to github actions
 * Add email image header setting field to authentication tab (using filepond to upload image via the image server)
+* Validate email address on special characters and reject the follow characters: ! and =
 
 ## v0.21.0
 * Update react admin
