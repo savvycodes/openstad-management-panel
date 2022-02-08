@@ -228,3 +228,7 @@ label.error {
   float: inline-block;
   font-weight: bold;
 }
+
+.filepond--file-info-sub {
+  display:none;
+}
