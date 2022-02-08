@@ -144,13 +144,27 @@ exports.configSchema = {
       key: 'to',
       type: 'string',
       default: '',
-      label: 'To e-mail address'
+      label: 'To e-mail address',
+      trim: true,
+      validation: [
+        {
+          name: 'pattern',
+          value: '!:A-Z'
+        }
+      ]
     },
     {
       key: 'from',
       type: 'string',
       default: '',
-      label: 'From e-mail address'
+      label: 'From e-mail address',
+      trim: true,
+      validation: [
+        {
+          name: 'pattern',
+          value: '!:A-Z'
+        }
+      ]
     },
   ],
   vimeo : [
