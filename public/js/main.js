@@ -251,4 +251,76 @@ $(function () {
     });
   }
 
+
+  // Init filepond
+  var filepondFieldset = document.querySelector('.filepondFieldset');
+  if (filepondFieldset) {
+    FilePond.registerPlugin(FilePondPluginImagePreview);
+    FilePond.registerPlugin(FilePondPluginFilePoster);
+    FilePond.registerPlugin(FilePondPluginImageValidateSize);
+    FilePond.registerPlugin(FilePondPluginFileValidateType);
+    FilePond.registerPlugin(FilePondPluginImageExifOrientation);
+
+    var image = filepondFieldset.dataset.image;
+    var uploadedFiles = [];
+    if (image) {
+      uploadedFiles.push({
+        source: '{"url":"'+ image +'"}',
+        options : {
+          type: 'local',
+          file: {
+            name: image,
+          },
+          metadata: {
+            poster: image,
+          }
+        }
+      });
+    }
+
+    var filePondSettings = {
+      // set allowed file types with mime types
+      acceptedFileTypes: ['image/*'],
+      allowFileSizeValidation: true,
+      maxFileSize: '8mb',
+      name: 'image',
+      maxFiles: 1,
+      allowBrowse: true,
+      files: uploadedFiles,
+      filePosterMaxHeight: 256,
+      imagePreviewMaxHeight: 256,
+      server: {
+        process: '/image',
+        revert: null
+      },
+      labelIdle: "Sleep afbeelding naar deze plek of <span class='filepond--label-action'>klik hier</span>",
+      labelInvalidField: "Field contains invalid files",
+      labelFileWaitingForSize: "Wachtend op grootte",
+      labelFileSizeNotAvailable: "Grootte niet beschikbaar",
+      labelFileCountSingular: "Bestand in lijst",
+      labelFileCountPlural: "Bestanden in lijst",
+      labelFileLoading: "Laden",
+      labelFileAdded: "Toegevoegd", // assistive only
+      labelFileLoadError: "Fout bij het uploaden",
+      labelFileRemoved: "Verwijderd", // assistive only
+      labelFileRemoveError: "Fout bij het verwijderen",
+      labelFileProcessing: "Laden",
+      labelFileProcessingComplete: "Afbeelding geladen",
+      labelFileProcessingAborted: "Upload cancelled",
+      labelFileProcessingError: "Error during upload",
+      labelFileProcessingRevertError: "Error during revert",
+      labelTapToCancel: "tap to cancel",
+      labelTapToRetry: "tap to retry",
+      labelTapToUndo: "tap to undo",
+      labelButtonRemoveItem: "Verwijderen",
+      labelButtonAbortItemLoad: "Abort",
+      labelButtonRetryItemLoad: "Retry",
+      labelButtonAbortItemProcessing: "Verwijder",
+      labelButtonUndoItemProcessing: "Undo",
+      labelButtonRetryItemProcessing: "Retry",
+      labelButtonProcessItem: "Upload"
+    }
+
+    FilePond.create(filepondFieldset, filePondSettings);
+  }
 });
