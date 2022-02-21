@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.40.0
+Update version number
+
 ## v0.22.0
 * Fix site delete error in k8s
 * Move docker builds from travis to github actions
