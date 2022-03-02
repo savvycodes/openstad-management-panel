@@ -1,6 +1,9 @@
 # Changelog
 
-## unreleased
+## v0.40.0
+Update version number
+
+## v0.22.0
 * Fix site delete error in k8s
 * Move docker builds from travis to github actions
 * Add email image header setting field to authentication tab (using filepond to upload image via the image server)
@@ -109,5 +112,4 @@
 ## 0.7.1 (2020-09-16)
 * Fix kubernetes site creation, by skipping broken DNS check
 
-## 0.7.0 (2020-09-15)
-* Start of using version numbers in changelog
+## 0.7.0 (2020-09
