@@ -2850,6 +2850,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 }
 
 .form-row {
+  align-items: center;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

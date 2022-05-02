@@ -208,6 +208,7 @@ require('./routes/site/user-api')(app);
 require('./routes/site/votes')(app);
 require('./routes/site/newsletter.js')(app);
 require('./routes/user')(app);
+require('./routes/server')(app);
 require('./routes/site/idea')(app);
 require('./routes/site/site')(app);
 require('./routes/api-proxy')(app);

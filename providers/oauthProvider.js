@@ -43,6 +43,7 @@ exports.createOauth = async (newSite, oauthData) => {
           authTypes: ['Url'],
           description: '',
           requiredUserFields: ["firstName", "lastName", "email"],
+          twoFactorRoles: process.env.TURN_OFF_2FA_FOR_NEW_SITE === 'true' || process.env.TURN_OFF_2FA_FOR_NEW_SITE === true ? [] : ["admin", "moderator", "editor"]
         }
       },
       {
@@ -74,6 +75,7 @@ exports.createOauth = async (newSite, oauthData) => {
       authTypes: data.authTypes,
       requiredUserFields: data.requiredUserFields,
       exposedUserFields: data.exposedUserFields || [],
+      twoFactorRoles: process.env.TURN_OFF_2FA_FOR_NEW_SITE === 'true' || process.env.TURN_OFF_2FA_FOR_NEW_SITE === true ? [] : ["admin", "moderator", "editor"],
       siteUrl: newSite.getDomainWithProtocol(),
       redirectUrl: newSite.getDomainWithProtocol(),
       allowedDomains: [

@@ -79,16 +79,34 @@ module.exports = function(app){
           {key: 'createdAt', label: 'Subscribed at'},
         ];
 
-        const formattedSubscribers = req.newsletterSubsribers ? req.newsletterSubsribers.map((subscriber) => {
-          const formattedSubscriber = {};
-          exportHeaders.forEach((header) => {
-            formattedSubscriber[header.key] = header.extraData &&  subscriber.extraData ? subscriber.extraData[header.key] : subscriber[header.key];
+        let extraDataKeys = {};
+        let formattedSubscribers = [];
+        if (req.newsletterSubsribers ) {
+
+          req.newsletterSubsribers.forEach((subscriber) => {
+            if (subscriber.extraData) {
+              Object.keys(subscriber.extraData).forEach(key => {
+                extraDataKeys[key] = true;
+              });
+            }
+          });
+          extraDataKeys = Object.keys(extraDataKeys);
+          extraDataKeys.forEach(key => {
+            exportHeaders.push({ key: `extraData.${key}`, label: `extraData.${key}`, extraData: true, extraDataKey: key })
           });
 
-          return formattedSubscriber;
-        }) : [];
+          
 
-        const json2csvParser = new Parser(exportHeaders.map((header) => header.label));
+          formattedSubscribers = req.newsletterSubsribers.map((subscriber) => {
+            const formattedSubscriber = {};
+            exportHeaders.forEach((header) => {
+              formattedSubscriber[header.key] = header.extraData && subscriber.extraData ? subscriber.extraData[header.extraDataKey] : subscriber[header.key];
+            });
+            return formattedSubscriber;
+          });
+        }
+
+        const json2csvParser = new Parser();
         const csvString = json2csvParser.parse(formattedSubscribers);
 
       //  const csvString = csvParser(req.uniqueCodes);

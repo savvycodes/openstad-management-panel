@@ -131,7 +131,6 @@ exports.withAll = (req, res, next) => {
     })
     .catch((err) => {
       console.log('err', sites)
-
       next(err);
     });
 }
