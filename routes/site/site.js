@@ -209,12 +209,16 @@ module.exports = function(app){
           }
 
           req.flash('success', { msg: 'De site is succesvol aangemaakt'});
-        res.redirect('/admin/site/' + site.id)
+          req.session.save( () => {
+              res.redirect('/admin/site/' + site.id)
+          });
 
       } catch (error) {
         console.error(error);
         req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken.'});
-        res.redirect('back');
+        req.session.save( () => {
+          res.redirect('back');
+        });
       }
     }
   );
@@ -265,11 +269,15 @@ module.exports = function(app){
           }
 
         req.flash('success', { msg: 'De site is succesvol aangemaakt'});
-        res.redirect('/admin/site/' + site.id);
+        req.session.save( () => {
+          res.redirect('/admin/site/' + site.id);
+        });
       } catch(error) {
         console.error(error);
         req.flash('error', { msg: 'Het is helaas niet gelukt om de site aan te maken'});
-        res.redirect('back');
+        req.session.save( () => {
+          res.redirect('back');
+        });
       }
     },
   );
@@ -325,7 +333,9 @@ module.exports = function(app){
         console.log('SITE EXPORT FAILED');
         console.log(err);
         req.flash('error', { msg: 'Het is helaas niet gelukt om de site te exporteren'});
-        res.redirect('back');
+        req.session.save( () => {
+          res.redirect('back');
+        });
       }
 
     }
@@ -403,7 +413,9 @@ module.exports = function(app){
 
           await k8Ingress.ensureIngressForAllDomains(req.sites)
 
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
         .catch((err) => { next(err) });
     }
@@ -474,12 +486,16 @@ module.exports = function(app){
 
 
           req.flash('success', { msg: 'Url aangepast!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
         .catch(function (err) {
           console.error(err);
           req.flash('error', { msg: 'Er gaat iets mis!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
 
     }
@@ -515,12 +531,16 @@ module.exports = function(app){
       Promise.all(promises)
         .then(function (response) {
           req.flash('success', { msg: 'Aangepast!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
         .catch(function (err) {
           console.error(err);
           req.flash('error', { msg: 'Er gaat iets mis!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
 
     }
@@ -542,14 +562,18 @@ module.exports = function(app){
       Promise.all(anonymizeActions)
         .then((response) => {
           req.flash('success', { msg: 'Geannonimiseerd!'});
-          res.redirect('/admin');
+          req.session.save( () => {
+            res.redirect('/admin');
+          });
         })
         .catch((err) => {
           console.log('ANONYMIZE WEBSITE FAILED');
           console.log(err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
-          res.redirect('/admin');
+          req.session.save( () => {
+            res.redirect('/admin');
+          });
         });
     }
   );
@@ -584,14 +608,18 @@ module.exports = function(app){
         })
         .then( result => {
           req.flash('success', { msg: 'Verwijderd!'});
-          res.redirect('/admin');
+          req.session.save( () => {
+            res.redirect('/admin');
+          });
         })
         .catch( err => {
           console.log('DELETE WEBSITE FAILED');
           console.log(err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
-          res.redirect('/admin');
+          req.session.save( () => {
+            res.redirect('/admin');
+          });
         });
     }
   );

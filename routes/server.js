@@ -29,7 +29,9 @@ module.exports = function(app){
       const ingresses = await ingress.ensureIngressForAllDomains(req.sites);
 
       req.flash('success', { msg: 'Checked ingress' });
-      res.redirect('/admin/server');
+      req.session.save( () => {
+        res.redirect('/admin/server');
+      });
     }
   );
 

@@ -91,8 +91,10 @@ module.exports = (req, res, next) => {
 
   if (errors.length > 0) {
     req.flash('error', { msg: errors.join(',')});
-    const redirectUrl = getRefererUrl(req.header('Referer'));
-    return res.redirect(redirectUrl);
+    req.session.save( () => {
+      const redirectUrl = getRefererUrl(req.header('Referer'));
+      return res.redirect(redirectUrl);
+    });
   }
 
   next();

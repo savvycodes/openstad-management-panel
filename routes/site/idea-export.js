@@ -18,7 +18,9 @@ module.exports = function(app){
     (req, res, next) => {
       if (req.ideas.length === 0) {
         req.flash('error', { msg: 'No ideas to export'});
-        res.redirect(req.header('Referer'));
+        req.session.save( () => {
+          res.redirect(req.header('Referer'));
+        });
       } else {
         const exportHeaders = [
           {key: 'id', label: 'ID'},

@@ -69,7 +69,9 @@ module.exports = function(app){
     (req, res, next) => {
       if (req.newsletterSubsribers.length === 0) {
         req.flash('error', { msg: 'No subscribers to export'});
-        res.redirect(req.header('Referer'));
+        req.session.save( () => {
+          res.redirect(req.header('Referer'));
+        });
       } else {
         const exportHeaders = [
           {key: 'id', label: 'ID'},

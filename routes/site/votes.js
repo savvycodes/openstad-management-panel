@@ -42,13 +42,17 @@ module.exports = function(app) {
       rp(options)
         .then(function (votes) {
           req.flash('success', { msg: 'Updated!'});
-          res.redirect(req.header('Referer')  || appUrl);
-           next();
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+            next();
+          });
         })
         .catch(function (err) {
           req.flash('error', { msg: 'Something whent wrong!'});
-          res.redirect(req.header('Referer')  || appUrl);
-          next();
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+            next();
+          });
         });
   });
 }
