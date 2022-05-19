@@ -108,12 +108,16 @@ module.exports = function(app){
         .create(req.body)
         .then((response) => {
           req.flash('success', { msg: 'Created user!' });
-          res.redirect('/admin/users');
+          req.session.save( () => {
+            res.redirect('/admin/users');
+          });
         })
         .catch((err) => {
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message });
-          res.redirect('/admin/user');
+          req.session.save( () => {
+            res.redirect('/admin/user');
+          });
         })
     }
   );
@@ -136,12 +140,16 @@ module.exports = function(app){
         .update(req.params.userId, req.body)
         .then((response) => {
           req.flash('success', { msg: 'Updated user!' });
-          res.redirect('/admin/user/' + req.params.userId);
+          req.session.save( () => {
+            res.redirect('/admin/user/' + req.params.userId);
+          });
         })
         .catch((err) => {
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message });
-          res.redirect('/admin/user/' + req.params.userId);
+          req.session.save( () => {
+            res.redirect('/admin/user/' + req.params.userId);
+          });
         })
     }
   );
@@ -155,12 +163,16 @@ module.exports = function(app){
         .delete(req.params.userId)
         .then((response) => {
           req.flash('success', { msg: 'Deleted user!' });
-          res.redirect('/admin/users');
+          req.session.save( () => {
+            res.redirect('/admin/users');
+          });
         })
         .catch((err) => {
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message });
-          res.redirect('/admin/users');
+          req.session.save( () => {
+            res.redirect('/admin/users');
+          });
         })
     }
   );

@@ -37,12 +37,16 @@ module.exports = function(app) {
 
       if (!req.body.authTypes) {
         req.flash('error', { msg: 'At least one authentication method is required'});
-        res.redirect(req.header('Referer')  || appUrl);
+        req.session.save( () => {
+          res.redirect(req.header('Referer')  || appUrl);
+        });
 
       // only allow emailRequired if email is validated through an auth type like email url of password
       } else if (emailRequired && !emailAuthTypesEnabled) {
         req.flash('error', { msg: 'Select an authentication method that uses e-mail if you want to make e-mail an required field.'});
-        res.redirect(req.header('Referer')  || appUrl);
+        req.session.save( () => {
+          res.redirect(req.header('Referer')  || appUrl);
+        });
       } else {
         data.requiredUserFields = req.body.requiredUserFields ? req.body.requiredUserFields : [];
         data.authTypes = req.body.authTypes;
@@ -52,7 +56,9 @@ module.exports = function(app) {
           .update(req.userApiClient.clientId, data)
           .then((userClient) => {
             req.flash('success', { msg: 'Aangepast!'});
-            res.redirect(req.header('Referer')  || appUrl);
+            req.session.save( () => {
+              res.redirect(req.header('Referer')  || appUrl);
+            });
           })
           .catch((err) => { next(err) });
       }
@@ -103,7 +109,9 @@ module.exports = function(app) {
         .update(req.userApiClient.clientId, data)
         .then((userClient) => {
           req.flash('success', { msg: 'Aangepast!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
         .catch((err) => { next(err) });
     }
@@ -141,12 +149,16 @@ module.exports = function(app) {
         .all(updateActions)
         .then(() => {
           req.flash('success', { msg: 'Updated!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
         .catch((err) => {
           console.log('->>> E:', err.message)
           req.flash('success', { msg: 'Something went wrong!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
 
     }
