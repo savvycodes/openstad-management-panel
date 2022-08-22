@@ -59,7 +59,7 @@ const formatDomainFromBody = (req, res, next) => {
     domain = req.body.domain
   }
 
-  const protocol = req.body.protocol ? req.body.protocol : 'https://';
+  const protocol = req.body.protocol || ( process.env.FORCE_HTTP ? 'http://' : 'https://' );
   domain = protocol + cleanUrl(domain);
   req.formattedDomain = domain;
 
