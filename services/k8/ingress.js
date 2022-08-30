@@ -153,7 +153,7 @@ const formatIngressName = (domain) => {
  * @param domain
  * @param addWww
  * @param secretName
- * @returns {{metadata: {name, annotations: {"nginx.ingress.kubernetes.io/proxy-body-size": string, "nginx.ingress.kubernetes.io/configuration-snippet": string, "nginx.ingress.kubernetes.io/from-to-www-redirect": string, "cert-manager.io/cluster-issuer": string, "kubernetes.io/ingress.class": string}, labels: {type: string}}, apiVersions: string, kind: string, spec: {rules: [{host, http: {paths: [{path: string, backend: {service: {port: {number: number}, name: string}}, pathType: string}]}}], tls: [{secretName: *, hosts: *[]}]}}}
+ * @returns {{metadata: {name, annotations: {"nginx.ingress.kubernetes.io/proxy-body-size": string, "nginx.ingress.kubernetes.io/configuration-snippet": string, "nginx.ingress.kubernetes.io/from-to-www-redirect": string, "kubernetes.io/ingress.class": string}, labels: {type: string}}, apiVersions: string, kind: string, spec: {rules: [{host, http: {paths: [{path: string, backend: {service: {port: {number: (number|number)}, name: (string|string)}}, pathType: string}]}}], tls: [{secretName: *, hosts: *[]}]}}}
  */
 const getIngressBody = (ingressName, domain, addWww, secretName) => {
   const domains = [domain];
@@ -162,7 +162,7 @@ const getIngressBody = (ingressName, domain, addWww, secretName) => {
     domains.push('www.' + domain);
   }
 
-  return {
+  const ingressBody = {
     apiVersions: 'networking.k8s.io/v1',
     kind: 'Ingress',
     metadata: {
@@ -171,7 +171,6 @@ const getIngressBody = (ingressName, domain, addWww, secretName) => {
       },
       name: ingressName,
       annotations: {
-        'cert-manager.io/cluster-issuer': 'openstad-letsencrypt-prod', // Todo: make this configurable
         'kubernetes.io/ingress.class': 'nginx',
         'nginx.ingress.kubernetes.io/from-to-www-redirect': "true",
         'nginx.ingress.kubernetes.io/proxy-body-size': '128m',
@@ -190,9 +189,9 @@ more_set_headers "Referrer-Policy: same-origin";`
             pathType: 'Prefix',
             backend: {
               service: {
-                name: 'openstad-frontend', // Todo: make this configurable
+                name: process.env.KUBERNETES_FRONTEND_SERVICE_NAME || 'openstad-frontend',
                 port: {
-                  number: 4444// Todo: make this configurable
+                  number: process.env.KUBERNETES_FRONTEND_SERVICE_PORT ? parseInt(process.env.KUBERNETES_FRONTEND_SERVICE_PORT) : 4444
                 }
               }
             }
@@ -205,6 +204,12 @@ more_set_headers "Referrer-Policy: same-origin";`
       }]
     }
   }
+  
+  if (process.env.KUBERNETES_CLUSTER_ISSUER_ENABLED) {
+    ingressBody.metadata.annotations['cert-manager.io/cluster-issuer'] = process.env.KUBERNETES_CLUSTER_ISSUER || 'openstad-letsencrypt-prod';
+  }
+  
+  return ingressBody;
 };
 const getAll = async () => {
   let response = await getK8sApi().listNamespacedIngress(process.env.KUBERNETES_NAMESPACE);
