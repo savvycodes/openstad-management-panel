@@ -70,7 +70,7 @@ const getHostnameFromRegex = (url) => {
 const getK8sApi = () => {
   const kc = new k8s.KubeConfig();
   kc.loadFromCluster();
-  return k8sApi = kc.makeApiClient(k8s.NetworkingV1beta1Api);
+  return k8sApi = kc.makeApiClient(k8s.NetworkingV1Api);
 }
 
 
@@ -149,8 +149,11 @@ const formatIngressName = (domain) => {
 /**
  * Return the body to create / replace a namespaced ingress through the API
  *
+ * @param ingressName
  * @param domain
- * @returns {{metadata: {name: *, annotations: {"cert-manager.io/cluster-issuer": string, "kubernetes.io/ingress.class": string}}, apiVersions: string, kind: string, spec: {rules: [{host: *, http: {paths: [{path: string, backend: {servicePort: number, serviceName: string}}]}}], tls: [{secretName: *, hosts: [*]}]}}}
+ * @param addWww
+ * @param secretName
+ * @returns {{metadata: {name, annotations: {"nginx.ingress.kubernetes.io/proxy-body-size": string, "nginx.ingress.kubernetes.io/configuration-snippet": string, "nginx.ingress.kubernetes.io/from-to-www-redirect": string, "cert-manager.io/cluster-issuer": string, "kubernetes.io/ingress.class": string}, labels: {type: string}}, apiVersions: string, kind: string, spec: {rules: [{host, http: {paths: [{path: string, backend: {service: {port: {number: number}, name: string}}, pathType: string}]}}], tls: [{secretName: *, hosts: *[]}]}}}
  */
 const getIngressBody = (ingressName, domain, addWww, secretName) => {
   const domains = [domain];
@@ -160,7 +163,7 @@ const getIngressBody = (ingressName, domain, addWww, secretName) => {
   }
 
   return {
-    apiVersions: 'networking.k8s.io/v1beta1',
+    apiVersions: 'networking.k8s.io/v1',
     kind: 'Ingress',
     metadata: {
       labels: {
@@ -183,11 +186,16 @@ more_set_headers "Referrer-Policy: same-origin";`
         host: domain,
         http: {
           paths: [{
+            path: '/',
+            pathType: 'Prefix',
             backend: {
-              serviceName: 'openstad-frontend', // Todo: make this configurable
-              servicePort: 4444 // Todo: make this configurable
-            },
-            path: '/'
+              service: {
+                name: 'openstad-frontend', // Todo: make this configurable
+                port: {
+                  number: 4444// Todo: make this configurable
+                }
+              }
+            }
           }]
         }
       }],
@@ -506,7 +514,3 @@ const processIngressForDomain = async (domain, sites, ingressName) => {
  * @returns {Promise<{response: http.IncomingMessage; body: NetworkingV1beta1Ingress}>}
  */
 exports.add = add;
-
-
-
-
