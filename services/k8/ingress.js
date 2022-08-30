@@ -346,7 +346,9 @@ exports.ensureIngressForAllDomains = async () => {
 
   });
 
-  const systemIngresses = ['openstad-admin', "openstad-frontend", "openstad-image", "openstad-api", "openstad-auth"];
+  const ingressPrefix = (process.env.KUBERNETES_NAMESPACE ? process.env.KUBERNETES_NAMESPACE : 'openstad');
+  
+  const systemIngresses = [`${ingressPrefix}-admin`, `${ingressPrefix}-frontend`, `${ingressPrefix}-image`, `${ingressPrefix}-api`, `${ingressPrefix}-auth`];
 
   // filter all domains present
   let domainsToDelete = Object.keys(domainsInIngress).filter((domainInIngress) => {
