@@ -1,5 +1,10 @@
 # Changelog
 
+## UNRELEASED
+* Use networking.k8s.io/v1 version for ingress
+  * IMPORTANT: This requires Kubernetes version v1.19 due to switching from networking.k8s.io/v1beta1 to networking.k8s.io/v1. 
+  * See https://kubernetes.io/docs/reference/using-api/deprecation-guide/#ingress-v122 for more details.
+
 ## v0.40.0
 Update version number
 
