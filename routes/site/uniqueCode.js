@@ -63,7 +63,9 @@ module.exports = function(app){
       if (amountOfCodes > maxCodesAllowed) {
         let message = 'Je kunt niet meer dan ' + maxCodesAllowed + ' codes in één keer aanmaken';
         req.flash('error', { msg: message});
-        return res.redirect(req.header('Referer')  || appUrl);
+        req.session.save( () => {
+          return res.redirect(req.header('Referer')  || appUrl);
+        });
       }
       
       // create codes in the background
@@ -78,13 +80,17 @@ module.exports = function(app){
         })
         .then(function (response) {
           req.flash('success', { msg: 'Codes worden aangemaakt!'});
-          res.redirect('/admin/site/'+req.site.id+'/unique-codes'  || appUrl);
+          req.session.save( () => {
+            res.redirect('/admin/site/'+req.site.id+'/unique-codes'  || appUrl);
+          });
         })
         .catch(function (err) {
           console.log('Create bulk codes error:', err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
     }
   );
@@ -121,12 +127,16 @@ module.exports = function(app){
         .delete(req.params.uniqueCodeId)
         .then(() => {
           req.flash('success', { msg: 'Verwijderd!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
         .catch((err) => {
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
     }
   );
@@ -142,12 +152,16 @@ module.exports = function(app){
         .reset(req.params.uniqueCodeId)
         .then(() => {
           req.flash('success', { msg: 'Verwijderd!'});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         })
         .catch((err) => {
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
     }
   );

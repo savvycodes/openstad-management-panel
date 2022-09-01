@@ -1,11 +1,18 @@
 # Changelog
 
+## UNRELEASED
+* Use networking.k8s.io/v1 version for ingress
+  * IMPORTANT: This requires Kubernetes version v1.19 due to switching from networking.k8s.io/v1beta1 to networking.k8s.io/v1. 
+  * See https://kubernetes.io/docs/reference/using-api/deprecation-guide/#ingress-v122 for more details.
+
 ## v0.40.0
 Update version number
 
 ## v0.22.0
 * Fix site delete error in k8s
 * Move docker builds from travis to github actions
+* Add email image header setting field to authentication tab (using filepond to upload image via the image server)
+* Validate email address on special characters and reject the follow characters: ! and =
 
 ## v0.21.0
 * Update react admin

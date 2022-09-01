@@ -299,9 +299,13 @@ const userApiSettingFields = [
         ],
         default: 2,
         label: "Default role a user gets when registering the first time"
+    },
+    {
+        label: 'Email header image',
+        key: 'emailHeaderImage',
+        default: 'Aanvullende gegevens',
+        type: 'image'
     }
-
-
 ];
 
 const userApiRequiredFields = [

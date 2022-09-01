@@ -80,8 +80,10 @@ module.exports = function(app){
         })
         .catch(function (err) {
            let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
-           req.flash('error', { msg: message});
-           res.redirect(req.header('Referer')  || appUrl);
+          req.flash('error', { msg: message});
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
     }
   );
@@ -133,14 +135,18 @@ module.exports = function(app){
       ideaApi
         .create(req.session.jwt, req.params.siteId, idea)
         .then(function (response) {
-           req.flash('success', { msg: 'Aangemaakt!'});
-           res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-           res.redirect(redirectTo);
+          req.flash('success', { msg: 'Aangemaakt!'});
+          req.session.save( () => {
+            res.redirect(`/admin/site/${req.params.siteId}/ideas`);
+            res.redirect(redirectTo);
+          });
         })
         .catch(function (err) {
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
     }
   );
