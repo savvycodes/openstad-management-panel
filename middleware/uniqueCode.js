@@ -42,3 +42,29 @@ exports.withAllForClient = (req, res, next) => {
       next(err);
     });
 }
+
+exports.getGeneratorStatus =  (req, res, next) => {
+
+  const params = req.query ? req.query : {};
+  params.clientId = req.authClientId;
+
+  let session = req.session;
+  params.taskId = session.uniqueCodeGenerator && session.uniqueCodeGenerator.taskId;
+  if (!params.taskId) return next();
+
+  return uniqueCodeApiService
+    .getGeneratorStatus(params)
+    .then((result) => {
+      let status = result;
+      if (!result.amountOfCodes && !result.generatedCodes) throw 'Leeg';
+      if (status.error && status.error.message) status.error = status.error.message;
+      res.generatorStatus = status;
+      res.locals.generatorStatus = res.generatorStatus;
+      return next();
+    })
+    .catch(async (err) => {
+      delete req.session.uniqueCodeGenerator;
+      await req.session.save();
+      return next(); // ignore in response
+    });
+}

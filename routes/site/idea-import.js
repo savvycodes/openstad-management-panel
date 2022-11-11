@@ -65,14 +65,18 @@ module.exports = function(app){
       Promise.all(promises)
         .then(function (response) {
           req.flash('success', { msg: 'Geimporteerd!'});
-          res.redirect(`/admin/site/${req.params.siteId}/ideas`);
-    //      res.redirect(redirectTo);
+          req.session.save( () => {
+            res.redirect(`/admin/site/${req.params.siteId}/ideas`);
+            //      res.redirect(redirectTo);
+          });
         })
         .catch(function (err) {
           console.log('errerrerrerr', err);
           let message = err && err.error && err.error.message ?  'Er gaat iets mis: '+ err.error.message : 'Er gaat iets mis!';
           req.flash('error', { msg: message});
-          res.redirect(req.header('Referer')  || appUrl);
+          req.session.save( () => {
+            res.redirect(req.header('Referer')  || appUrl);
+          });
         });
     }
   );

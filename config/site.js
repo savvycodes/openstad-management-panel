@@ -86,6 +86,12 @@ exports.configSchema = {
     },
   ],
 
+  cms: [{
+    key: 'redirectURI',
+    type: 'string',
+    default: '',
+    label: "Redirect deze site naar"
+  }],
 
   feedbackEmail: [
     {
@@ -138,13 +144,27 @@ exports.configSchema = {
       key: 'to',
       type: 'string',
       default: '',
-      label: 'To e-mail address'
+      label: 'To e-mail address',
+      trim: true,
+      validation: [
+        {
+          name: 'pattern',
+          value: '!:A-Z'
+        }
+      ]
     },
     {
       key: 'from',
       type: 'string',
       default: '',
-      label: 'From e-mail address'
+      label: 'From e-mail address',
+      trim: true,
+      validation: [
+        {
+          name: 'pattern',
+          value: '!:A-Z'
+        }
+      ]
     },
   ],
   vimeo : [
@@ -295,6 +315,24 @@ exports.configSchema = {
     },
 
   ],
+  ingress: [
+    {
+      key: 'www',
+      type: 'boolean',
+      label: 'Also make an ingress for the www. (make sure DNS is set to the server)'
+    },
+    {
+      key: 'tlsSecretName',
+      type: 'string',
+      label: 'Name of the TLS secret in Kubernetes (will disable let\'s encrypt and use the TLS secret for SSL)'
+    },
+    {
+      key: 'disabled',
+      type: 'boolean',
+      label: 'Disable creating an auto ingress for this site? (will delete it if it exists?)'
+    },
+
+  ]
 /*  ignoreBruteForce : [
 
 ]*/

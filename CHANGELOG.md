@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.41.0
+* Use networking.k8s.io/v1 version for ingress
+  * IMPORTANT: This requires Kubernetes version v1.19 due to switching from networking.k8s.io/v1beta1 to networking.k8s.io/v1. 
+  * See https://kubernetes.io/docs/reference/using-api/deprecation-guide/#ingress-v122 for more details.
+
+## v0.40.0
+Update version number
+
+## v0.22.0
+* Fix site delete error in k8s
+* Move docker builds from travis to github actions
+* Add email image header setting field to authentication tab (using filepond to upload image via the image server)
+* Validate email address on special characters and reject the follow characters: ! and =
+
+## v0.21.0
+* Update react admin
+* Update proxy call to API
+* Add 'anonymize site' functionality
+* Add extraData to newsletter export
+
+## v0.20.0
+* Rewrite of ingress logic and adding support for subdir sites (domain.com/site1 &&domain.com/site2) for Kubernetes environments
+* For new sites set 2FA on by default for admin, editors & moderators
+
 ## v0.18.0
 * Fix shared images between copies of sites
 
@@ -93,5 +117,4 @@
 ## 0.7.1 (2020-09-16)
 * Fix kubernetes site creation, by skipping broken DNS check
 
-## 0.7.0 (2020-09-15)
-* Start of using version numbers in changelog
+## 0.7.0 (2020-09

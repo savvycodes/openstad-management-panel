@@ -1,12 +1,14 @@
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const apiUrl = process.env.API_URL;
+const siteApiKey = process.env.SITE_API_KEY;
+const authMw = require('../middleware/auth');
 
 module.exports = function(app){
 
     /*
     * Create api route for proxying api so we don't have cross origin errors when making AJAX requests
     */
-   app.use('/api', createProxyMiddleware({
+   app.use('/api', authMw.ensureAuthenticated, authMw.ensureRights, createProxyMiddleware({
      target: apiUrl,
      changeOrigin: true,
      onProxyReq : (proxyReq, req, res) => {
@@ -14,9 +16,7 @@ module.exports = function(app){
         // add custom header to request
         proxyReq.setHeader('Accept', 'application/json');
 
-        if (req.session.jwt) {
-          proxyReq.setHeader('X-Authorization', `Bearer ${req.session.jwt}`);
-        }
+        proxyReq.setHeader('X-Authorization', siteApiKey);
 
         //bodyParser middleware parses the body into an object
         //for proxying to worl we need to turn it back into a string
@@ -39,7 +39,7 @@ module.exports = function(app){
     /*
     * Create api route for proxying api so we don't have cross origin errors when making AJAX requests
     */
-    app.use('/stats', createProxyMiddleware({
+    app.use('/stats', authMw.ensureAuthenticated, authMw.ensureRights, createProxyMiddleware({
      target: apiUrl,
      changeOrigin: true,
      onProxyReq : (proxyReq, req, res) => {
@@ -47,9 +47,7 @@ module.exports = function(app){
         // add custom header to request
         proxyReq.setHeader('Accept', 'application/json');
 
-        if (req.session.jwt) {
-          proxyReq.setHeader('X-Authorization', `Bearer ${req.session.jwt}`);
-        }
+        proxyReq.setHeader('X-Authorization', siteApiKey);
 
      },
      onError: function(err) {

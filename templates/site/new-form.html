@@ -13,38 +13,38 @@
           </div>
           <div class="onboarding-content with-gradient">
             <h2 class="onboarding-title">
-               Maak een nieuwe site aan
+              Maak een nieuwe site aan
             </h2>
             <div class="onboarding-text">
               <!--
-              Wijs de DNS records van de opgegeven domeinnamen
-              naar IP adres {{productionServerIp}}.<br />
+                   Wijs de DNS records van de opgegeven domeinnamen
+                   naar IP adres {{productionServerIp}}.<br />
 
-              <a href="#">
-                Lees hier meer over DNS records
-              </a>
-              !-->
+                   <a href="#">
+                   Lees hier meer over DNS records
+                   </a>
+                   !-->
             </div>
-              <div class="row">
-                <div class="col-sm-12">
-                  <div class="form-group">
-                    <label for="">Naam van de website</label>
-                    <input
-                      class="form-control"
-                      placeholder="Bijv. Javabrug"
-                      type="text"
-                      value=""
-                      name="siteName"
-                      maxlength="62"
-                      minlength="2"
-                      required
-                    />
-                  </div>
-                </div>
-                <div class="col-sm-12">
-                  {% include 'site/partials/form-field-domain.html' %}
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="">Naam van de website</label>
+                  <input
+                  class="form-control"
+                  placeholder="Bijv. Javabrug"
+                  type="text"
+                  value=""
+                  name="siteName"
+                  maxlength="62"
+                  minlength="2"
+                  required
+                  />
                 </div>
               </div>
+              <div class="col-sm-12">
+                {% include 'site/partials/form-field-domain.html' %}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -62,27 +62,26 @@
             </div>
             <div class="row">
               {% for externalSite in externalSites %}
-              <div class="col-4">
+              <div class="card-selector-col">
                 <div class="card-selector">
                   <input
-                    type="radio"
-                    name="fileUrl"
-                    value="{{externalSite.latest.file}}"
-                    id="external-site-{{externalSite.id}}"
-                    required
+                  type="radio"
+                  name="fileUrl"
+                  value="{{externalSite.latest.file}}"
+                  id="external-site-{{externalSite.latest.file}}"
+                  required
                   />
-                  <label class="" for="external-site-{{externalSite.id}}" style="font-size: 15px; width: 100%;">
+                  <label class="" for="external-site-{{externalSite.latest.file}}" style="font-size: 15px; width: 100%;">
                     <img src="{{externalSite.images[0]}}" />
                     <h3>
                       {{externalSite.name}}
                     </h3>
                     <div class="meta">
-                      Version: {{externalSite.latest.number}}
-                      |
-                      Created by: {{externalSite.author}}
-                      |
-                      Maintained by: {{externalSite.maintainer}}
-                    </div>
+                      <em>
+                        Version: {{externalSite.latest.number}}<br/>
+                        Maintained by: {{externalSite.maintainer}}<br/>
+                      </em>
+                    </div><br/>
                     <p>
                       {{externalSite.description}}
                     </p>
@@ -113,24 +112,24 @@
               <div class="form-group">
                 <label for="">E-mail</label>
                 <input
-                  class="form-control"
-                  placeholder="Bijv. javabrug@amsterdam.nl"
-                  type="email"
-                  value=""
-                  name="fromEmail"
-                  required
+                class="form-control"
+                placeholder="Bijv. javabrug@amsterdam.nl"
+                type="email"
+                value=""
+                name="fromEmail"
+                required
                 />
               </div>
               <div ">
                 <div class="form-group">
                   <label for="">Naam verzender email</label>
                   <input
-                    class="form-control"
-                    placeholder="Bijv. Gemeente Amsterdam"
-                    type="text"
-                    value=""
-                    name="fromName"
-                    required
+                  class="form-control"
+                  placeholder="Bijv. Gemeente Amsterdam"
+                  type="text"
+                  value=""
+                  name="fromName"
+                  required
                   />
                 </div>
               </div>
@@ -147,7 +146,7 @@
         </div>
       </div>
     </div>
-  <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  </form>
 </div>
 {% endblock %}

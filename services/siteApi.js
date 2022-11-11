@@ -26,6 +26,18 @@ exports.fetchAll = () => {
   });
 }
 
+exports.anonymize = (token, siteId) => {
+  return rp({
+    method: 'PUT',
+    uri: `${apiUrl}/site/${siteId}/do-anonymize-all-users`,
+    headers: {
+        'Accept': 'application/json',
+        "X-Authorization": siteApiKey
+    },
+    json: true // Automatically parses the JSON string in the response
+  });
+}
+
 exports.delete = (token, siteId) => {
   return rp({
     method: 'DELETE',

@@ -14,6 +14,12 @@ label.error {
   width: 100%;
 }
 
+.json-code {
+    width: 210px;
+    overflow: scroll;
+    height: 120px;
+    display: block;
+}
 .flash-container {
     align-items: center;
     right: 0;
@@ -180,18 +186,49 @@ label.error {
   border: 1px solid #61717f;
   border-radius: 3px;
   padding: 10px;
-  height: 400px;
-  margin: 10px 0;
-  padding: 20px;
+  min-height: 340px;
+  padding: 10px 20px;
   -webkit-box-shadow: 0 0px 9px 0 rgba(42, 18, 18, 0.09);
   box-shadow: 0 0px 9px 0 rgba(42, 18, 18, 0.09);
   background: white;
   border-color: #fff;
-  margin: 0 0 40px;
+  margin: 20px 0;
   overflow: hidden;
+}
+
+.card-selector-col {
+  margin-left: 20px;
+  flex: 0 0 calc(50% - 30px);
+  max-width: calc(50% - 30px);
+}
+
+.card-selector-col h3 {
+  font-size: larger;
+}
+
+.card-selector-col img {
+  max-width: 200px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.card-selector-col img,
+.card-selector-col label {
+  cursor: pointer;
 }
 
 .stats-card .value {
     font-weight: bold;
     font-size: 20px;
+}
+
+.navbar-site-title {
+  font-size: larger;
+  margin-top: 7px;
+  float: inline-block;
+  font-weight: bold;
+}
+
+.filepond--file-info-sub {
+  display:none;
 }

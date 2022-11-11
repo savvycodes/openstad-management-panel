@@ -152,6 +152,9 @@ app.use(i18n.init);
 app.use(flash());
 app.use(enrichMw.run);
 
+// Routes before csrf
+require('./routes/image-proxy')(app);
+
 // add csrf protection and token to global
 app.use(
   csurf({
@@ -208,6 +211,7 @@ require('./routes/site/user-api')(app);
 require('./routes/site/votes')(app);
 require('./routes/site/newsletter.js')(app);
 require('./routes/user')(app);
+require('./routes/server')(app);
 require('./routes/site/idea')(app);
 require('./routes/site/site')(app);
 require('./routes/api-proxy')(app);

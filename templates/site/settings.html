@@ -38,15 +38,14 @@
           <div class="form-group row">
             <label class="col-form-label col-sm-4" for="">URL</label>
             <div class="col-sm-8">
-              <input class="form-control valid-domain-character" placeholder="" type="text" name="productionUrl" value="{{site.config.cms.url}}">
+              <input class="form-control valid-domain-character valid-domain-character-allow-slash" placeholder="" type="text" name="productionUrl" value="{{site.config.cms.url}}">
             </div>
           </div>
           <div class="form-buttons-w">
             <button class="btn btn-outline-primary" type="submit">Opslaan</button>
           </div>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
-
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
       </div>
 
 {#
@@ -111,34 +110,63 @@
 
 #}
 
-    <div class="card card-openstad">
-      <form method="POST" action="/admin/site/{{site.id}}">
-        <fieldset>
+      <div class="card card-openstad">
+        <form method="POST" action="/admin/site/{{site.id}}">
+          <fieldset>
             <legend><span>{{ __('Widget settings') }}</span></legend>
             {{ renderFields(siteConfigSchema.widgetDisplaySettings, site.config.cms.widgetDisplaySettings, 'config[widgetDisplaySettings]') }}
 
-        <div class="form-buttons-w">
-          <button class="btn btn-outline-primary" type="submit">Opslaan</button>
-        </div>
-        </fieldset>
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    </form>
-    </div>
-</div>
-
-
-
-
+            <div class="form-buttons-w">
+              <button class="btn btn-outline-primary" type="submit">Opslaan</button>
+            </div>
+          </fieldset>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
+      </div>
 
       <div class="card card-openstad">
-        <form method="POST" action="/admin/site/{{site.id}}/delete">
-            <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')" {{ 'disabled' if isDefaultSite }} >Verwijder</button>
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <form method="POST" action="/admin/site/{{site.id}}">
+          <div class="form-group row">
+            <label class="col-form-label col-sm-4" for="">Redirect deze site naar</label>
+            <div class="col-sm-8">
+              <input class="form-control valid-domain-character valid-domain-character-allow-slash" placeholder="" type="text" name="config[cms][redirectURI]" value="{{site.config.cms.redirectURI}}">
+            </div>
+          </div>
+          <div class="form-buttons-w">
+            <button class="btn btn-outline-primary" type="submit">Opslaan</button>
+          </div>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
         </form>
-        {% if isDefaultSite %} <em> Cannot delete the default site </em> {% endif %}
       </div>
+
     </div>
+
+    <div class="card card-openstad">
+      <div style="margin-bottom: 8px;">
+        Let op! Deze actie is definitief en kan niet ongedaan gemaakt worden.<br/>
+        Het project moet eerst aangemerkt staan als ‘beëindigd’ voordat deze actie uitgevoerd kan worden.<br/>
+      </div>
+      <form method="POST" action="/admin/site/{{site.id}}/anonymize">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')" {{ 'disabled' if isDefaultSite }} >Gebruikersgegevens anonimiseren</button>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      </form>
+      {% if isDefaultSite %} <em> Cannot delete the default site </em> {% endif %}
+    </div>
+
+    <div class="card card-openstad">
+      <div style="margin-bottom: 8px;">
+        Let op! Deze actie is definitief en kan niet ongedaan gemaakt worden.<br/>
+        Het project moet eerst aangemerkt staan als ‘beëindigd’ voordat deze actie uitgevoerd kan worden.<br/>
+      </div>
+      <form method="POST" action="/admin/site/{{site.id}}/delete">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('{{__('Sure? It can not be undone')}}')" {{ 'disabled' if isDefaultSite }} >Website verwijderen</button>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      </form>
+      {% if isDefaultSite %} <em> Cannot delete the default site </em> {% endif %}
+    </div>
+
   </div>
+</div>
 </div>
 </div>
 

@@ -14,7 +14,26 @@ function initHideFlash() {
   }, 5000);
 }
 
+/*
+function initExpand () {
+  $( ".expand" ).each(function( index ) {
+  });
+}
+
+ */
+
+function displayDomainFields () {
+  var domainType = $('input[name="domain-type"]:checked').val();
+  $('.display-for-subdir, .display-for-domain, .display-for-subdomain').hide();
+
+  // console.log('.display-for'+domainType);
+  $('.display-for-'+domainType).show();
+}
+
 $(function () {
+
+
+  displayDomainFields ()
 
   // # CREATE SITE FORM VALIDATION
   var existingDomains = [];
@@ -31,13 +50,7 @@ $(function () {
   });
 
   $('.domain-type').change(function (event) {
-    var domainType = $('input[name="domain-type"]:checked').val();
-
-    if (domainType === 'domain') {
-      $('.wildcardHost').addClass('d-none');
-    } else {
-      $('.wildcardHost').removeClass('d-none');
-    }
+    displayDomainFields();
   });
 
   $('#create-site-form').validate({
@@ -58,8 +71,13 @@ $(function () {
   $(".valid-domain-character").keypress(function(event) {
       var key = event.which;
       var keychar = String.fromCharCode(key).toLowerCase();
+      var allowedCharacters = "abcdefghijklmnopqrstuvwxyz0123456789-.:";
 
-      if ((("abcdefghijklmnopqrstuvwxyz0123456789-.:/").indexOf(keychar) === -1)) {
+      if ($(this).hasClass('valid-domain-character-allow-slash')) {
+        allowedCharacters = allowedCharacters + '/';
+      }
+
+      if ((allowedCharacters).indexOf(keychar) === -1) {
          event.preventDefault();
          return false;
       }
@@ -71,9 +89,15 @@ $(function () {
   $(".valid-domain-character").on('input', function(event) {
     //also enfore lowercase
     var lowercaseValue = $(this).val().toLowerCase();
+    var regex = /[^a-zA-Z0-9-.:_]/g;
+
+
+    if ($(this).hasClass('valid-domain-character-allow-slash')) {
+      regex = /[^a-zA-Z0-9-.//:_]/g;
+    }
 
     // remove all chars that are not alpha numeric
-    lowercaseValue = lowercaseValue.replace(/[^a-zA-Z0-9-.://_]/g, "");
+    lowercaseValue = lowercaseValue.replace(regex, "");
 
     $(this).val(lowercaseValue);
   });
@@ -227,4 +251,76 @@ $(function () {
     });
   }
 
+
+  // Init filepond
+  var filepondFieldset = document.querySelector('.filepondFieldset');
+  if (filepondFieldset) {
+    FilePond.registerPlugin(FilePondPluginImagePreview);
+    FilePond.registerPlugin(FilePondPluginFilePoster);
+    FilePond.registerPlugin(FilePondPluginImageValidateSize);
+    FilePond.registerPlugin(FilePondPluginFileValidateType);
+    FilePond.registerPlugin(FilePondPluginImageExifOrientation);
+
+    var image = filepondFieldset.dataset.image;
+    var uploadedFiles = [];
+    if (image) {
+      uploadedFiles.push({
+        source: '{"url":"'+ image +'"}',
+        options : {
+          type: 'local',
+          file: {
+            name: image,
+          },
+          metadata: {
+            poster: image,
+          }
+        }
+      });
+    }
+
+    var filePondSettings = {
+      // set allowed file types with mime types
+      acceptedFileTypes: ['image/*'],
+      allowFileSizeValidation: true,
+      maxFileSize: '8mb',
+      name: 'image',
+      maxFiles: 1,
+      allowBrowse: true,
+      files: uploadedFiles,
+      filePosterMaxHeight: 256,
+      imagePreviewMaxHeight: 256,
+      server: {
+        process: '/image',
+        revert: null
+      },
+      labelIdle: "Sleep afbeelding naar deze plek of <span class='filepond--label-action'>klik hier</span>",
+      labelInvalidField: "Field contains invalid files",
+      labelFileWaitingForSize: "Wachtend op grootte",
+      labelFileSizeNotAvailable: "Grootte niet beschikbaar",
+      labelFileCountSingular: "Bestand in lijst",
+      labelFileCountPlural: "Bestanden in lijst",
+      labelFileLoading: "Laden",
+      labelFileAdded: "Toegevoegd", // assistive only
+      labelFileLoadError: "Fout bij het uploaden",
+      labelFileRemoved: "Verwijderd", // assistive only
+      labelFileRemoveError: "Fout bij het verwijderen",
+      labelFileProcessing: "Laden",
+      labelFileProcessingComplete: "Afbeelding geladen",
+      labelFileProcessingAborted: "Upload cancelled",
+      labelFileProcessingError: "Error during upload",
+      labelFileProcessingRevertError: "Error during revert",
+      labelTapToCancel: "tap to cancel",
+      labelTapToRetry: "tap to retry",
+      labelTapToUndo: "tap to undo",
+      labelButtonRemoveItem: "Verwijderen",
+      labelButtonAbortItemLoad: "Abort",
+      labelButtonRetryItemLoad: "Retry",
+      labelButtonAbortItemProcessing: "Verwijder",
+      labelButtonUndoItemProcessing: "Undo",
+      labelButtonRetryItemProcessing: "Retry",
+      labelButtonProcessItem: "Upload"
+    }
+
+    FilePond.create(filepondFieldset, filePondSettings);
+  }
 });

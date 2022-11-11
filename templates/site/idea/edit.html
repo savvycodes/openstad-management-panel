@@ -16,9 +16,9 @@
     <div class="card-container">
       <h6 class="section-header">
         {% if idea %}
-          Bewerk plan
+        Bewerk plan
         {% else %}
-          Maak nieuw plan
+        Maak nieuw plan
         {% endif %}
       </h6>
       <div class="card card-openstad">
@@ -27,43 +27,43 @@
       <div class="card card-openstad">
         <form method="POST"
         {% if idea %}
-          action="/admin/site/{{site.id}}/idea/{{idea.id}}"
+        action="/admin/site/{{site.id}}/idea/{{idea.id}}"
         {% else %}
-          action="/admin/site/{{site.id}}/idea"
+        action="/admin/site/{{site.id}}/idea"
         {% endif %}
 
         >
-        <div class="form-group row">
-          <label class="col-form-label col-sm-4" for="">
-            Status
-          </label>
-          <div class="col-sm-8">
-            <select id="status" value="{% if idea.status %}{{idea.status}}{% endif %}" name="status" class="form-control">
-              <option value="">Selecteer een status</option>
-              <option value="OPEN" {% if (idea.status === "OPEN") %}selected{% endif %}>Open</option>
-              <option value="CLOSED" {% if (idea.status === "CLOSED") %}selected{% endif %}>Gesloten</option>
-              <option value="ACCEPTED" {% if (idea.status === "ACCEPTED") %}selected{% endif %}>Geaccepteerd</option>
-              <option value="DENIED" {% if (idea.status === "DENIED") %}selected{% endif %}>Afgekeurd</option>
-              <option value="BUSY" {% if (idea.status === "BUSY") %}selected{% endif %}>Busy</option>
-              <option value="DONE" {% if (idea.status === "DONE") %}selected{% endif %}>Afgelopen</option>
-          </select>
+          <div class="form-group row">
+            <label class="col-form-label col-sm-4" for="">
+              Status
+            </label>
+            <div class="col-sm-8">
+              <select id="status" value="{% if idea.status %}{{idea.status}}{% endif %}" name="status" class="form-control">
+                <option value="">Selecteer een status</option>
+                <option value="OPEN" {% if (idea.status === "OPEN") %}selected{% endif %}>Open</option>
+                <option value="CLOSED" {% if (idea.status === "CLOSED") %}selected{% endif %}>Closed</option>
+                <option value="ACCEPTED" {% if (idea.status === "ACCEPTED") %}selected{% endif %}>Accepted</option>
+                <option value="DENIED" {% if (idea.status === "DENIED") %}selected{% endif %}>Denied</option>
+                <option value="BUSY" {% if (idea.status === "BUSY") %}selected{% endif %}>Busy</option>
+                <option value="DONE" {% if (idea.status === "DONE") %}selected{% endif %}>Done</option>
+              </select>
+            </div>
+            <div class="form-buttons-w">
+              <button class="btn btn-outline-primary" type="submit">Opslaan</button>
+            </div>
           </div>
-          <div class="form-buttons-w">
-            <button class="btn btn-outline-primary" type="submit">Opslaan</button>
-          </div>
-        </div>
 
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
       </div>
 
 
 
       <div class="card card-openstad">
         <form method="POST" action="/admin/site/{{site.id}}/idea/{{idea.id}}/delete">
-            <button class="btn btn-danger" type="submit">Verwijder</button>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-</form>
+          <button class="btn btn-danger" type="submit">Verwijder</button>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        </form>
       </div>
     </div>
   </div>
